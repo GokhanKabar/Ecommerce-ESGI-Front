@@ -1,7 +1,10 @@
 import express from "express";
 import { indexRouter } from "./routes/index.js";
+import { dbConnection } from "./database/index.js";
 
 const server = express();
+
+dbConnection();
 
 server.use("/", indexRouter);
 
