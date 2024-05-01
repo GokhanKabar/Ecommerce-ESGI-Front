@@ -4,5 +4,6 @@ import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
 
 <template>
   <DefaultLayout>
+    <div><h1>Admin page!!!!!!!!</h1></div>
   </DefaultLayout>
 </template>

@@ -1,5 +1,5 @@
 <!-- eslint-disable vue/multi-word-component-names -->
-<script setup>
+<script setup="ts">
 import HomeIcon from '../icons/HomeIcon.vue';
 import LogoIcon from '../icons/LogoIcon.vue';
 import CalendarIcon from '../icons/CalendarIcon.vue';
@@ -22,34 +22,34 @@ const props = defineProps({
       </a>
       <hr>
       <nav>
-        <a href="" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'dashboard'">
+        <a href="/admin" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'dashboard'">
           <HomeIcon />
           <span class="text-white font-normal ml-2"> Dashboard</span>
         </a>
 
-        <a href="" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'team'">
+        <a href="/admin/users" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'team'">
           <TeamIcon />
-          <span class="text-white font-normal ml-2"> Team</span>
+          <span class="text-white font-normal ml-2">Utilisateurs</span>
         </a> 
         
-        <a href="" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'projects'">
+        <a href="/admin/orders" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'projects'">
           <ProjectsIcon />
-          <span class="text-white font-normal ml-2"> Projects</span>
+          <span class="text-white font-normal ml-2">Commandes</span>
         </a>
         
-        <a href="" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'calendar'">
+        <a href="/admin/category" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'calendar'">
           <CalendarIcon />
-          <span class="text-white font-normal ml-2"> Calendar</span>
+          <span class="text-white font-normal ml-2">Catégories</span>
         </a> 
         
-        <a href="" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'documents'">
+        <a href="/admin/products" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'documents'">
           <DocumentsIcon />
-          <span class="text-white font-normal ml-2"> Documents</span>
+          <span class="text-white font-normal ml-2">Produits</span>
         </a>
         
-        <a href="" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'reports'">
+        <a href="/admin" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'reports'">
           <ReportsIcon />
-          <span class="text-white font-normal ml-2"> Reports</span>
+          <span class="text-white font-normal ml-2">Statistiques & Rapports</span>
         </a>
       </nav>
     </div>
