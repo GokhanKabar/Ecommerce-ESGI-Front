@@ -10,6 +10,13 @@ import ContactView from '@/views/front/ContactView.vue';
 import ChildrenView from '@/views/front/ChildrenView.vue';
 import ManView from '@/views/front/ManView.vue';
 import WomanView from '@/views/front/WomanView.vue';
+import LoginView from '@/views/front/LoginView.vue';
+import RegisterView from '@/views/front/RegisterView.vue';
+import SendEmailConfirmationView from '@/views/front/SendEmailConfirmationView.vue';
+import SendEmailForgatPasswordView from '@/views/front/SendEmailForgatPasswordView.vue';
+import ResetPassword from '@/views/front/ResetPassword.vue';
+import ForgatPassword from '@/views/front/ForgatPassword.vue';
+import  store  from '@/store/store';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -18,7 +25,7 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       component: AdminView,
-      meta: { title: 'Admin' } 
+      meta: { title: 'Admin',needsAuth:true } 
     },
     {
       path: '/admin/users',
@@ -79,11 +86,56 @@ const router = createRouter({
       name: 'contact',
       component: ContactView,
       meta: { title: 'Nous contacter | Tendance Parfums' } 
+    }, {
+      path: '/connexion',
+      name: 'connexion',
+      component: LoginView,
+      meta: { title: 'Connexion | Tendance Parfums' } 
+    }
+
+    , {
+      path: '/inscription',
+      name: 'inscription',
+      component: RegisterView,
+      meta: { title: 'inscription | Tendance Parfums' } 
+    },
+    {
+      path: '/confirmation-email',
+      name: 'ConfirmationEmail',
+      component: SendEmailConfirmationView,
+      meta: { title: 'Email confirmation | Tendance Parfums' } 
+    },   {
+      path: '/confirmation-email-reset-password',
+      name: 'ConfirmationEmailResetPassword',
+      component: SendEmailForgatPasswordView,
+      meta: { title: 'Email confirmation | Tendance Parfums' } 
+    },
+    {
+      path: '/mot-passe-oublie',
+      name: 'MotPasseOublie', // Renommé le nom de la route
+      component: ForgatPassword,
+      meta: { title: 'Mot de passe oublié | Tendance Parfums' } 
+    },{
+      path: '/renitialisation-mot-de-passe',
+      name: 'RéinitialisationDeMotPasse', // Renommé le nom de la route
+      component: ResetPassword,
+      meta: { title: 'réinitialisation de mot de passe | Tendance Parfums' } 
     }
   ]
 })
 router.beforeEach((to)=>{
   document.title=to.meta?.title??'Default page';
 })
-
+router.beforeEach((to,from,next)=>{
+  console.log(store.state.isUserLoggedIn);
+  if (to.meta.needsAuth) {
+    if (!store.state.isUserLoggedIn) {
+      next('/connexion');
+    }else{
+      next();
+    }
+     }else{
+    next();
+  }
+})
 export default router

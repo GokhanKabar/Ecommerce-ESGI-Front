@@ -47,7 +47,7 @@ const route = useRoute();
             </div>
             <div class="flex flex-row gap-5">
                 <div class="nav-item">
-                    <a href="http://" class="flex flex-row gap-1">
+                    <router-link to="/connexion" class="flex flex-row gap-1">
                         <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_2_473)">
                                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -66,7 +66,7 @@ const route = useRoute();
                         </svg>
                         <span class="hidden md:inline-block text-white hover:text-[#D8B775] font-semibold">MON
                             COMPTE</span>
-                    </a>
+                        </router-link> 
                 </div>
                 <div class="nav-item">
                     <a href="http://" class="flex flex-row gap-1">
