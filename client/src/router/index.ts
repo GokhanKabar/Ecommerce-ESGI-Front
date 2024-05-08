@@ -146,16 +146,4 @@ router.beforeEach((to, from, next) => {
     next()
   }
 })
-router.beforeEach((to, from, next) => {
-  console.log(store.state.isUserLoggedIn)
-  if (to.meta.needsAuth) {
-    if (!store.state.isUserLoggedIn) {
-      next('/connexion')
-    } else {
-      next()
-    }
-  } else {
-    next()
-  }
-})
 export default router
