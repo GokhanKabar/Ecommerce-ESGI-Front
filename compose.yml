@@ -24,4 +24,29 @@ services:
     volumes:
       - ./server:/home/node
     environment:
-      - HOST=0.0.0.0  
+      - HOST=0.0.0.0
+
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: alikhelifa147
+      MYSQL_DATABASE: ecommercedb
+      MYSQL_USER: me
+      MYSQL_PASSWORD: ali123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    command: --pid-file=/var/lib/mysql/mysql.pid
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: alikhelifa147
+
+volumes:
+  mysql-data:

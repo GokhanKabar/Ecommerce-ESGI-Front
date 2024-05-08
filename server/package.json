@@ -2,7 +2,7 @@
   "name": "server",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "dev": "node --env-file=.env src/index.js && node --watch src/index.js",
     "start": "node src/index.js"
@@ -17,13 +17,12 @@
     "jsonwebtoken": "^9.0.2",
     "middleware": "^1.0.0",
     "mongodb": "^6.5.0",
+    "mongoose": "^8.3.2",
     "mongoose-unique-validator": "^5.0.0",
     "mysql2": "^3.9.5",
     "nodemailer": "^6.9.13",
     "route": "^0.2.5",
     "sequelize": "^6.37.3",
     "sequelize-cli": "^6.6.2"
-    "express": "4.19.2",
-    "mongoose": "^8.3.2"
   }
 }

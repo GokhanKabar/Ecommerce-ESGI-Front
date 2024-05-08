@@ -2273,11 +2273,14 @@ exports.resetPassword = (newPassword, confirmPassword, resetToken) => {
             } else if (user.resetTokenExpiration < new Date()) {
                 reject("Opération de réinitialisation expirée");
             } else {
-                // Mettre à jour le mot de passe de l'utilisateur
-                user.update({ password: newPassword, resetToken: null, resetTokenExpiration: null }).then(() => {
-                    resolve("Mot de passe réinitialisé avec succès");
+                bcrypt.hash(newPassword, 10).then(hashedPassword => {
+                    user.update({ password: hashedPassword, resetToken: null, resetTokenExpiration: null }).then(() => {
+                        resolve("Mot de passe réinitialisé avec succès");
+                    }).catch(error => {
+                        reject("Échec de la mise à jour du mot de passe");
+                    });
                 }).catch(error => {
-                    reject("Échec de la mise à jour du mot de passe");
+                    reject("Erreur interne du serveur");
                 });
             }
         }).catch(error => {
@@ -2285,4 +2288,5 @@ exports.resetPassword = (newPassword, confirmPassword, resetToken) => {
         });
     });
 };
+
 
