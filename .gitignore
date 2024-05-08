@@ -1,8 +1,98 @@
-# Dependency directories
+# Dossiers
 node_modules/
+dist/
+.cache/
+out/
 
-# env file
+# Fichiers
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environnement
 .env
+.env.local
+.env.*.local
 
-# Build directory
-.npm/
+# Fichiers de build ou de compilation
+*.rbc
+*.sassc
+*.gem
+*.map
+*.scssc
+*.sublime-workspace
+*.sublime-project
+*.log
+*.log*
+*.komodoproject
+*.komodotools
+*.bak
+*.backup
+*.swp
+*.cache
+*.project
+*.DS_Store
+Thumbs.db
+desktop.ini
+
+# Dossiers et fichiers spécifiques à Windows
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+/System Volume Information/
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Fichiers de sauvegarde ou de swap
+*~
+*.swp
+*.db
+*.bak
+
+# .eslintcache
+.eslintcache
+
+# .vscode
+.vscode/
+
+# Fichiers temporaires
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# yarn
+yarn.lock
+
+# Tailwind CSS
+.cache/
+
+# Build de production
+/dist/
+
+# Configurations de Webpack
+node_modules/
+webpack.config.js
+
+# NPM Debug Log
+npm-debug.log*
+
+# yarn
+yarn-error.log*
+
+# Bower
+bower_components/
+
+# JSHint
+*.js~
+
+# Flow
+.flowconfig
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
