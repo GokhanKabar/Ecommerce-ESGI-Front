@@ -7,8 +7,6 @@ import './styles/app.css'; // Here
 import router from './router';
 
 
-
-
 import store from '@/store/store';
 const app = createApp(App)
 app.use(router)
