@@ -1,9 +1,9 @@
 const { response } = require("express");
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
-const db = require("../models");
-const jwt =require('jsonwebtoken');
-const config = require('../config/config.json');
+const db = require("../databases/sequelize/models");
+const jwt = require("jsonwebtoken");
+const config = require("../config/config.json");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 // Définir le schéma de validation pour l'enregistrement d'utilisateur
@@ -11,73 +11,84 @@ const schemaRegister = Joi.object({
   firstName: Joi.string().min(3).max(50).required().messages({
     "string.empty": "Le nom est requis.",
     "string.min": "Le nom doit comporter au moins {#limit} caractères.",
-    "string.max": "Le nom ne peut pas dépasser {#limit} caractères."
+    "string.max": "Le nom ne peut pas dépasser {#limit} caractères.",
   }),
   lastName: Joi.string().min(3).max(50).required().messages({
     "string.empty": "Le prénom est requis.",
     "string.min": "Le prénom doit comporter au moins {#limit} caractères.",
-    "string.max": "Le prénom ne peut pas dépasser {#limit} caractères."
-  
+    "string.max": "Le prénom ne peut pas dépasser {#limit} caractères.",
   }),
   address: Joi.string()
-    .pattern(new RegExp('^[0-9]+\\s+[a-zA-Z]+\\s+[a-zA-Z\\s]+\\s+[0-9]{5}$'))
+    .pattern(new RegExp("^[0-9]+\\s+[a-zA-Z]+\\s+[a-zA-Z\\s]+\\s+[0-9]{5}$"))
     .required()
     .messages({
       "string.empty": "L'adresse est requis.",
-      'string.pattern.base': 'Le format de l\'adresse est incorrect. Veuillez saisir un numéro de rue, le nom de la rue, la ville et le code postal.'
+      "string.pattern.base":
+        "Le format de l'adresse est incorrect. Veuillez saisir un numéro de rue, le nom de la rue, la ville et le code postal.",
     }),
   email: Joi.string().email().required().messages({
     "string.empty": "L'e-mail est requis.",
-    "string.email": "L'e-mail doit être une adresse e-mail valide."
+    "string.email": "L'e-mail doit être une adresse e-mail valide.",
   }),
-  password: Joi.string().pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{12,})')).required().messages({
-    "string.empty": "Le mot de passe est requis.",
-    "string.pattern.base": "Le mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule, un chiffre, un symbole et être d'au moins 12 caractères."
-  }),
-  phone: Joi.string().pattern(new RegExp('^(?:\\+33|0|0033)[1-9][0-9]{8}$')).allow(null, '').messages({
-    "string.pattern.base": "Le numéro de téléphone doit être un numéro valide."
-  }),
-  role: Joi.string().allow(null, ''),
-  emailToken: Joi.string().allow(null, ''),
+  password: Joi.string()
+    .pattern(
+      new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{12,})")
+    )
+    .required()
+    .messages({
+      "string.empty": "Le mot de passe est requis.",
+      "string.pattern.base":
+        "Le mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule, un chiffre, un symbole et être d'au moins 12 caractères.",
+    }),
+  phone: Joi.string()
+    .pattern(new RegExp("^(?:\\+33|0|0033)[1-9][0-9]{8}$"))
+    .allow(null, "")
+    .messages({
+      "string.pattern.base":
+        "Le numéro de téléphone doit être un numéro valide.",
+    }),
+  role: Joi.string().allow(null, ""),
+  emailToken: Joi.string().allow(null, ""),
 });
 const resetPasswordSchema = Joi.object({
-    newPassword: Joi.string()
-        .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{12,})'))
-        .required()
-        .messages({
-            "string.empty": "Le mot de passe est requis.",
-            "string.pattern.base": "Le mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule, un chiffre, un symbole et être d'au moins 12 caractères."
-        }),
-    confirmPassword: Joi.string()
-        .required()
-        .valid(Joi.ref('newPassword'))
-        .messages({
-            'any.required': 'La confirmation du mot de passe est requise.',
-            'any.only': 'La confirmation du mot de passe doit correspondre au nouveau mot de passe.',
-            'string.empty': 'La confirmation du mot de passe ne peut pas être vide.'
-        })
+  newPassword: Joi.string()
+    .pattern(
+      new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{12,})")
+    )
+    .required()
+    .messages({
+      "string.empty": "Le mot de passe est requis.",
+      "string.pattern.base":
+        "Le mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule, un chiffre, un symbole et être d'au moins 12 caractères.",
+    }),
+  confirmPassword: Joi.string()
+    .required()
+    .valid(Joi.ref("newPassword"))
+    .messages({
+      "any.required": "La confirmation du mot de passe est requise.",
+      "any.only":
+        "La confirmation du mot de passe doit correspondre au nouveau mot de passe.",
+      "string.empty": "La confirmation du mot de passe ne peut pas être vide.",
+    }),
 });
 
-
-
-
 function generateConfirmationToken() {
-    return crypto.randomBytes(20).toString('hex');
+  return crypto.randomBytes(20).toString("hex");
 }
 
-function sendConfirmationEmail(email, emailToken,lastName,firstName) {
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        host:"smtp.gmail.com",
-        port:587,
-        secure:false,                                  
-        auth: {
-            user: 'ali.khelifa@se.univ-bejaia.dz',
-            pass: 'nysn mjoy aotv bztg'
-        },
-        tls : { rejectUnauthorized: false }
-    });
-    const htmlContent = `
+function sendConfirmationEmail(email, emailToken, lastName, firstName) {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: "ali.khelifa@se.univ-bejaia.dz",
+      pass: "nysn mjoy aotv bztg",
+    },
+    tls: { rejectUnauthorized: false },
+  });
+  const htmlContent = `
     <style type="text/css">
     #outlook a {
         padding: 0;
@@ -728,128 +739,160 @@ function sendConfirmationEmail(email, emailToken,lastName,firstName) {
 </div>
 </body>
   `;
-  
+
   const mailOptions = {
-    from: 'votre_email@gmail.com',
+    from: "votre_email@gmail.com",
     to: email,
     subject: "Confirmation d'inscription",
-    html: htmlContent
+    html: htmlContent,
   };
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error("Erreur lors de l'envoi de l'e-mail de confirmation :", error);
-        } else {
-            console.log("E-mail de confirmation envoyé :", info.response);
-        }
-    });
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error(
+        "Erreur lors de l'envoi de l'e-mail de confirmation :",
+        error
+      );
+    } else {
+      console.log("E-mail de confirmation envoyé :", info.response);
+    }
+  });
 }
 
-
-
-
-exports.register = (firstName, lastName, password, address, email, phone, role) => {
-    return new Promise((resolve, reject) => {
-        let validate = schemaRegister.validate({ firstName, lastName, password, address, email, phone, role });
-        if (validate.error) {
-            reject(validate.error.details[0].message);
-        } else {
-            db.User.count({ where: { email: email } }).then(userCount => {
-                if (userCount !== 0) {
-                    reject("Cet email existe déjà");
-                } else {
-                    bcrypt.hash(password, 10).then(hashedPassword => {
-                        const emailToken = generateConfirmationToken();
-                        const emailTokenExpiration = new Date();
-                        emailTokenExpiration.setDate(emailTokenExpiration.getDate() + 1);
-                        db.User.create({
-                            firstName: firstName,
-                            lastName: lastName,
-                            email: email,
-                            password: hashedPassword,
-                            address: address,
-                            phone: phone,
-                            role: role,
-                            accountConfirmation: false,
-                            emailToken: emailToken,
-                            emailTokenExpiration: emailTokenExpiration
-                        }).then(response => {
-                            sendConfirmationEmail(email, emailToken, lastName, firstName);
-                            resolve(response);
-                        }).catch(error => {
-                            reject(error);
-                        });
-                    });
-                }
-            }).catch(error => {
-                reject("Erreur lors de la vérification de l'existence de l'email");
+exports.register = (
+  firstName,
+  lastName,
+  password,
+  address,
+  email,
+  phone,
+  role
+) => {
+  return new Promise((resolve, reject) => {
+    let validate = schemaRegister.validate({
+      firstName,
+      lastName,
+      password,
+      address,
+      email,
+      phone,
+      role,
+    });
+    if (validate.error) {
+      reject(validate.error.details[0].message);
+    } else {
+      db.User.count({ where: { email: email } })
+        .then((userCount) => {
+          if (userCount !== 0) {
+            reject("Cet email existe déjà");
+          } else {
+            bcrypt.hash(password, 10).then((hashedPassword) => {
+              const emailToken = generateConfirmationToken();
+              const emailTokenExpiration = new Date();
+              emailTokenExpiration.setDate(emailTokenExpiration.getDate() + 1);
+              db.User.create({
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                password: hashedPassword,
+                address: address,
+                phone: phone,
+                role: role,
+                accountConfirmation: false,
+                emailToken: emailToken,
+                emailTokenExpiration: emailTokenExpiration,
+              })
+                .then((response) => {
+                  sendConfirmationEmail(email, emailToken, lastName, firstName);
+                  resolve(response);
+                })
+                .catch((error) => {
+                  reject(error);
+                });
             });
-        }
-    });
-}
-
+          }
+        })
+        .catch((error) => {
+          reject("Erreur lors de la vérification de l'existence de l'email");
+        });
+    }
+  });
+};
 
 exports.login = (email, password) => {
-    return new Promise((resolve, reject) => {
-        db.User.findOne({ where: { email: email } }).then(user => {
-            if (!user) {
-                reject("Adresse email invalide ou mot de passe incorrect");
-            } else if (!user.accountConfirmation) {
-                reject("L'email n'a pas été confirmé. Veuillez vérifier votre boîte de réception pour le lien de confirmation.");
-            } else if (user.lockedUntil && user.lockedUntil > new Date()) {
-                reject(`Votre compte est temporairement verrouillé. Réessayez après 2 min.`);
-            } else {
-                bcrypt.compare(password, user.password).then((same) => {
-                    if (same) {
-                        console.log("isPasswordExpired:",isPasswordExpired(user));
-                        if (isPasswordExpired(user)) {
-                            const resetToken = generateConfirmationToken();
-                            const resetTokenExpiration = new Date();
-                            resetTokenExpiration.setDate(resetTokenExpiration.getDate() + 1);
-                            user.resetToken = resetToken;
-                            user.resetTokenExpiration=resetTokenExpiration;
-                            user.save();
-                            sendEmailforgotPassword(user.email, resetToken);
-                            reject("Votre mot de passe a expiré. Un e-mail de renouvellement du mot de passe a été envoyé.");
-                        } else {
-                            let token = jwt.sign(
-                                { id: user.id },
-                                config.development.privateKey,
-                                { expiresIn: "1h" }
-                            );
-                            const userJson = user.toJSON();
-                            // Réinitialiser les tentatives infructueuses après une connexion réussie
-                            user.update({ failedLoginAttempts: 0 });
-                            resolve({
-                                user: userJson,
-                                token: token
-                            });
-                        }
-                    } else {
-                        // Incrémenter le nombre de tentatives infructueuses
-                        user.update({ failedLoginAttempts: user.failedLoginAttempts + 1 });
-                        if (user.failedLoginAttempts >= 3) {
-                            // Verrouiller le compte pour 30 minutes après 3 tentatives infructueuses
-                            const lockTime = new Date(Date.now() + 2 * 60000);
-                            user.update({ lockedUntil: lockTime });
-                            sendLockoutNotification(user.email, lockTime);
-                            reject(`Vous avez dépassé le nombre maximal de tentatives de connexion. Veuillez réessayer après 2 min.`);
-                        } else {
-                            reject("Adresse email invalide ou mot de passe incorrect");
-                        }
-                    }
+  return new Promise((resolve, reject) => {
+    db.User.findOne({ where: { email: email } })
+      .then((user) => {
+        if (!user) {
+          reject("Adresse email invalide ou mot de passe incorrect");
+        } else if (!user.accountConfirmation) {
+          reject(
+            "L'email n'a pas été confirmé. Veuillez vérifier votre boîte de réception pour le lien de confirmation."
+          );
+        } else if (user.lockedUntil && user.lockedUntil > new Date()) {
+          reject(
+            `Votre compte est temporairement verrouillé. Réessayez après 2 min.`
+          );
+        } else {
+          bcrypt.compare(password, user.password).then((same) => {
+            if (same) {
+              console.log("isPasswordExpired:", isPasswordExpired(user));
+              if (isPasswordExpired(user)) {
+                const resetToken = generateConfirmationToken();
+                const resetTokenExpiration = new Date();
+                resetTokenExpiration.setDate(
+                  resetTokenExpiration.getDate() + 1
+                );
+                user.resetToken = resetToken;
+                user.resetTokenExpiration = resetTokenExpiration;
+                user.save();
+                sendEmailforgotPassword(user.email, resetToken);
+                reject(
+                  "Votre mot de passe a expiré. Un e-mail de renouvellement du mot de passe a été envoyé."
+                );
+              } else {
+                let token = jwt.sign(
+                  { id: user.id },
+                  config.development.privateKey,
+                  { expiresIn: "1h" }
+                );
+                const userJson = user.toJSON();
+                // Réinitialiser les tentatives infructueuses après une connexion réussie
+                user.update({ failedLoginAttempts: 0 });
+                resolve({
+                  user: userJson,
+                  token: token,
                 });
+              }
+            } else {
+              // Incrémenter le nombre de tentatives infructueuses
+              user.update({
+                failedLoginAttempts: user.failedLoginAttempts + 1,
+              });
+              if (user.failedLoginAttempts >= 3) {
+                // Verrouiller le compte pour 30 minutes après 3 tentatives infructueuses
+                const lockTime = new Date(Date.now() + 2 * 60000);
+                user.update({ lockedUntil: lockTime });
+                sendLockoutNotification(user.email, lockTime);
+                reject(
+                  `Vous avez dépassé le nombre maximal de tentatives de connexion. Veuillez réessayer après 2 min.`
+                );
+              } else {
+                reject("Adresse email invalide ou mot de passe incorrect");
+              }
             }
-        }).catch(error => {
-            reject(error);
-        });
-    });
-}
-
-
+          });
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
 
 exports.confirmEmail = (email, emailToken) => {
-    return new Promise((resolve, reject) => {
-      db.User.findOne({ where: { email: email, emailToken: emailToken } }).then(user => {
+  return new Promise((resolve, reject) => {
+    db.User.findOne({ where: { email: email, emailToken: emailToken } })
+      .then((user) => {
         if (!user) {
           reject("Lien de confirmation invalide");
         } else {
@@ -858,36 +901,39 @@ exports.confirmEmail = (email, emailToken) => {
             reject("Le lien de confirmation a expiré");
           } else {
             // Marquer l'utilisateur comme confirmé dans la base de données
-            user.update({ accountConfirmation: true }).then(() => {
-              resolve("Email confirmé avec succès");
-            }).catch(error => {
-              reject(error);
-            });
+            user
+              .update({ accountConfirmation: true })
+              .then(() => {
+                resolve("Email confirmé avec succès");
+              })
+              .catch((error) => {
+                reject(error);
+              });
           }
         }
-      }).catch(error => {
+      })
+      .catch((error) => {
         reject(error);
       });
-    });
-}
+  });
+};
 
 function sendEmailforgotPassword(email, resetToken) {
-   
-    return new Promise((resolve, reject) => {
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            host: "smtp.gmail.com",
-            port: 587,
-            secure: false,
-            auth: {
-                user: 'ali.khelifa@se.univ-bejaia.dz',
-                pass: 'nysn mjoy aotv bztg'
-            },
-            tls: { rejectUnauthorized: false }
-        });       
-       
-         const resetLink = `http://localhost:5173/renitialisation-mot-de-passe?token=${resetToken}`;
-        const htmlContent = `
+  return new Promise((resolve, reject) => {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "ali.khelifa@se.univ-bejaia.dz",
+        pass: "nysn mjoy aotv bztg",
+      },
+      tls: { rejectUnauthorized: false },
+    });
+
+    const resetLink = `http://localhost:5173/renitialisation-mot-de-passe?token=${resetToken}`;
+    const htmlContent = `
         <style type="text/css">
         #outlook a {
             padding: 0;
@@ -1532,41 +1578,49 @@ function sendEmailforgotPassword(email, resetToken) {
     </body>
       `;
 
-        const mailOptions = {
-            from: 'votre_email@gmail.com',
-            to: email,
-            subject: "Réinitialisation de mot de passe",
-            html: htmlContent
-        };
+    const mailOptions = {
+      from: "votre_email@gmail.com",
+      to: email,
+      subject: "Réinitialisation de mot de passe",
+      html: htmlContent,
+    };
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error("Erreur lors de l'envoi de l'e-mail de réinitialisation du mot de passe :", error);
-                reject("Erreur lors de l'envoi de l'e-mail de réinitialisation du mot de passe");
-            } else {
-                console.log("E-mail de réinitialisation du mot de passe envoyé :", info.response);
-                resolve("Un e-mail de réinitialisation du mot de passe a été envoyé avec succès");
-            }
-        });
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(
+          "Erreur lors de l'envoi de l'e-mail de réinitialisation du mot de passe :",
+          error
+        );
+        reject(
+          "Erreur lors de l'envoi de l'e-mail de réinitialisation du mot de passe"
+        );
+      } else {
+        console.log(
+          "E-mail de réinitialisation du mot de passe envoyé :",
+          info.response
+        );
+        resolve(
+          "Un e-mail de réinitialisation du mot de passe a été envoyé avec succès"
+        );
+      }
     });
+  });
 }
 function sendLockoutNotification(email, lockUntil) {
-   
-    return new Promise((resolve, reject) => {
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            host: "smtp.gmail.com",
-            port: 587,
-            secure: false,
-            auth: {
-                user: 'ali.khelifa@se.univ-bejaia.dz',
-                pass: 'nysn mjoy aotv bztg'
-            },
-            tls: { rejectUnauthorized: false }
-        });       
-       
-        
-        const htmlContent = `
+  return new Promise((resolve, reject) => {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "ali.khelifa@se.univ-bejaia.dz",
+        pass: "nysn mjoy aotv bztg",
+      },
+      tls: { rejectUnauthorized: false },
+    });
+
+    const htmlContent = `
         <style type="text/css">
         #outlook a {
             padding: 0;
@@ -2199,94 +2253,116 @@ function sendLockoutNotification(email, lockUntil) {
     </body>
       `;
 
-        const mailOptions = {
-            from: 'votre_email@gmail.com',
-            to: email,
-            subject: "Notification de verrouillage de compte",
-            html: htmlContent
-        };
+    const mailOptions = {
+      from: "votre_email@gmail.com",
+      to: email,
+      subject: "Notification de verrouillage de compte",
+      html: htmlContent,
+    };
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error("Erreur lors de l'envoi de l'e-mail  :", error);
-                reject("Erreur lors de l'envoi de l'e-mail ");
-            } else {
-                console.log("E-mail a été envoyé avec succès :", info.response);
-                resolve("Un e-mail a été envoyé avec succès");
-            }
-        });
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Erreur lors de l'envoi de l'e-mail  :", error);
+        reject("Erreur lors de l'envoi de l'e-mail ");
+      } else {
+        console.log("E-mail a été envoyé avec succès :", info.response);
+        resolve("Un e-mail a été envoyé avec succès");
+      }
     });
+  });
 }
 function isPasswordExpired(user) {
-    const passwordExpirationDate = user.lastPasswordChange ?
-        new Date(user.lastPasswordChange.getTime() + 60 * 24* 60 * 1000) : 
-        new Date(user.createdAt.getTime() + 60 * 24 * 60 * 1000); 
-console.log(passwordExpirationDate);
-console.log(new Date());
-    return passwordExpirationDate <= new Date();
+  const passwordExpirationDate = user.lastPasswordChange
+    ? new Date(user.lastPasswordChange.getTime() + 60 * 24 * 60 * 1000)
+    : new Date(user.createdAt.getTime() + 60 * 24 * 60 * 1000);
+  console.log(passwordExpirationDate);
+  console.log(new Date());
+  return passwordExpirationDate <= new Date();
 }
 exports.forgotPassword = (email) => {
-    return new Promise((resolve, reject) => {
-        db.User.findOne({ where: { email: email } }).then(user => {
-            if (!user) {
-                reject("Aucun utilisateur trouvé avec cet e-mail");
-            } else {
-                const resetToken = crypto.randomBytes(20).toString('hex');
-                const resetTokenExpiration = new Date();
-                resetTokenExpiration.setHours(resetTokenExpiration.getHours() + 1); 
+  return new Promise((resolve, reject) => {
+    db.User.findOne({ where: { email: email } })
+      .then((user) => {
+        if (!user) {
+          reject("Aucun utilisateur trouvé avec cet e-mail");
+        } else {
+          const resetToken = crypto.randomBytes(20).toString("hex");
+          const resetTokenExpiration = new Date();
+          resetTokenExpiration.setHours(resetTokenExpiration.getHours() + 1);
 
-                if (resetTokenExpiration < new Date()) {
-                    reject("Le token de réinitialisation a expiré");
-                    return;
-                }
-                 
-                user.update({ resetToken: resetToken, resetTokenExpiration: resetTokenExpiration }).then(response => {
-                    sendEmailforgotPassword(email, resetToken).then(() => {
-                        console.log("E-mail envoyé avec succès");
-                        resolve(response);
-                    }).catch(error => {
-                        reject(error);
-                    });
-                }).catch(error => {
-                    reject(error);
-                });
-            }
-        }).catch(error => {
-            reject(error);
-        });
-    });
-}
-
-
-exports.resetPassword = (newPassword, confirmPassword, resetToken) => {
-    return new Promise((resolve, reject) => {
-        // Validation des données
-        const { error } = resetPasswordSchema.validate({ newPassword, confirmPassword });
-        if (error) {
-            reject("Validation des données échouée");
+          if (resetTokenExpiration < new Date()) {
+            reject("Le token de réinitialisation a expiré");
             return;
-        }
+          }
 
-        db.User.findOne({ where: { resetToken: resetToken } }).then(user => {
-            if (!user) {
-                reject("Opération de réinitialisation invalide");
-            } else if (user.resetTokenExpiration < new Date()) {
-                reject("Opération de réinitialisation expirée");
-            } else {
-                bcrypt.hash(newPassword, 10).then(hashedPassword => {
-                    user.update({ password: hashedPassword, resetToken: null, resetTokenExpiration: null }).then(() => {
-                        resolve("Mot de passe réinitialisé avec succès");
-                    }).catch(error => {
-                        reject("Échec de la mise à jour du mot de passe");
-                    });
-                }).catch(error => {
-                    reject("Erreur interne du serveur");
+          user
+            .update({
+              resetToken: resetToken,
+              resetTokenExpiration: resetTokenExpiration,
+            })
+            .then((response) => {
+              sendEmailforgotPassword(email, resetToken)
+                .then(() => {
+                  console.log("E-mail envoyé avec succès");
+                  resolve(response);
+                })
+                .catch((error) => {
+                  reject(error);
                 });
-            }
-        }).catch(error => {
-            reject("Erreur interne du serveur");
-        });
-    });
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
 };
 
+exports.resetPassword = (newPassword, confirmPassword, resetToken) => {
+  return new Promise((resolve, reject) => {
+    // Validation des données
+    const { error } = resetPasswordSchema.validate({
+      newPassword,
+      confirmPassword,
+    });
+    if (error) {
+      reject("Validation des données échouée");
+      return;
+    }
 
+    db.User.findOne({ where: { resetToken: resetToken } })
+      .then((user) => {
+        if (!user) {
+          reject("Opération de réinitialisation invalide");
+        } else if (user.resetTokenExpiration < new Date()) {
+          reject("Opération de réinitialisation expirée");
+        } else {
+          bcrypt
+            .hash(newPassword, 10)
+            .then((hashedPassword) => {
+              user
+                .update({
+                  password: hashedPassword,
+                  resetToken: null,
+                  resetTokenExpiration: null,
+                })
+                .then(() => {
+                  resolve("Mot de passe réinitialisé avec succès");
+                })
+                .catch((error) => {
+                  reject("Échec de la mise à jour du mot de passe");
+                });
+            })
+            .catch((error) => {
+              reject("Erreur interne du serveur");
+            });
+        }
+      })
+      .catch((error) => {
+        reject("Erreur interne du serveur");
+      });
+  });
+};

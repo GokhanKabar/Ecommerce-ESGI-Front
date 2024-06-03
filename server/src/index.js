@@ -1,15 +1,19 @@
+const productsRoutes = require("./routes/products.route.js");
 const express = require("express");
 const { indexRouter } = require("./routes/index.js");
-const userRoute  = require("./routes/userRoutes.js");
-const cors =require("cors");
+const userRoute = require("./routes/userRoutes.js");
+const cors = require("cors");
 const app = express();
-const db = require("./models");
-app.use(cors({
-  origin: 'http://localhost:5173', // Autoriser les requêtes depuis votre domaine
-  credentials: true,
-}));
+const db = require("./databases/sequelize/models");
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Autoriser les requêtes depuis votre domaine
+    credentials: true,
+  })
+);
 app.use("/", indexRouter);
 app.use(userRoute);
+app.use(productsRoutes);
 
 // Syncing our database
 
@@ -18,4 +22,3 @@ db.sequelize.sync().then(() => {
     console.log("Server listening on http://localhost:8000");
   });
 });
-
