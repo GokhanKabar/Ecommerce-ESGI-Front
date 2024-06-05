@@ -1,4 +1,6 @@
 const productsRoutes = require("./routes/products.route.js");
+const brandsRoutes = require("./routes/brands.route.js");
+const familiesRoutes = require("./routes/families.route.js");
 const express = require("express");
 const { indexRouter } = require("./routes/index.js");
 const userRoute = require("./routes/userRoutes.js");
@@ -14,6 +16,8 @@ app.use(
 app.use("/", indexRouter);
 app.use(userRoute);
 app.use(productsRoutes);
+app.use(brandsRoutes);
+app.use(familiesRoutes);
 
 // Syncing our database
 
