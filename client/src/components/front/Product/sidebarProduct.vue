@@ -1,85 +1,122 @@
 <script setup lang="ts">
-const perfumeBrands = [
-  'Chanel',
-  'Dior',
-  'Gucci',
-  'Armani',
-  'Versace',
-  'Burberry',
-  'Calvin Klein',
-  'Hugo Boss',
-  'Yves Saint Laurent',
-  'Givenchy'
-]
-const selectedBrands = [] // Tableau pour stocker les marques sélectionnées
-const perfumeCategories = [
-  'Floral',
-  'Boisé',
-  'Aromatique',
-  'Fruité',
-  'Oriental',
-  'Chypré',
-  'Agrumes',
-  'Aquatique'
-]
+import { ref, onMounted, defineEmits } from 'vue'
+import { getBrands } from '../../../api/brands'
+import { type Brand } from '../../../types/brands.types'
+import { getFamilies } from '../../../api/families'
+import { type Family } from '../../../types/families.types'
+import { type Ref } from 'vue'
+
+const brands: Ref<Brand[]> = ref([])
+const selectedBrands: Ref<string[]> = ref([])
+const families: Ref<Family[]> = ref([])
+const selectedFamilies: Ref<string[]> = ref([]) // Use number for familyId
+
+const priceRange = ref<[number, number]>([0, 1000])
+
+onMounted(async () => {
+  brands.value = await getBrands()
+  families.value = await getFamilies()
+})
+
+const emit = defineEmits(['apply-filters'])
+
+const applyFilters = () => {
+  emit('apply-filters', {
+    brands: selectedBrands.value,
+    families: selectedFamilies.value,
+    priceRange: priceRange.value
+  })
+}
 </script>
 
 <template>
-  <div class="flex">
-    <div class="w-1/6 bg-sidebar-gray px-4">
-      <div class="mt-24">
-        <h1 class="text-xl font-bold text-black">Affiner par :</h1>
+  <div class="w-1/6 bg-gray-100 px-4 py-6">
+    <div class="mb-6">
+      <h1 class="text-xl font-bold text-black">Affiner par :</h1>
+    </div>
+    <div class="mb-4">
+      <h2 class="text-lg font-semibold mb-3">Famille</h2>
+      <div class="max-h-44 overflow-y-scroll scrollbar-visible">
+        <div v-for="(family, index) in families" :key="index" class="mt-3">
+          <input
+            type="checkbox"
+            :id="'checkbox_' + index"
+            :name="'checkbox_' + index"
+            v-model="selectedFamilies"
+            :value="family.id"
+            class="mr-2 checkbox"
+          />
+          <label :for="'checkbox_' + index" class="text-sm">{{ family.name }}</label>
+        </div>
       </div>
-      <div class="h-px bg-gray-200 my-2"></div>
-      <div class="my-4">
-        <h2 class="text-lg font-semibold mb-3">CATÉGORIE</h2>
-        <v-select
-          label="Choissisez une catégorie"
-          :items="perfumeCategories"
-          variant="solo"
-          hide-details="auto"
-        ></v-select>
-      </div>
-      <div class="h-px bg-gray-200 my-2"></div>
-      <div class="my-4">
-        <h2 class="text-lg font-semibold mb-3">MARQUE</h2>
-        <v-text-field hide-details="auto" placeholder="Recherche" bg-color="white"></v-text-field>
-        <div v-for="(brand, index) in perfumeBrands" :key="index" class="mt-3">
+    </div>
+    <div class="mb-4">
+      <h2 class="text-lg font-semibold mb-3">MARQUE</h2>
+      <div class="max-h-44 overflow-y-scroll scrollbar-visible">
+        <div v-for="(brand, index) in brands" :key="index" class="mt-3">
           <input
             type="checkbox"
             :id="'checkbox_' + index"
             :name="'checkbox_' + index"
             v-model="selectedBrands"
-            :value="brand"
-            class="mr-2"
+            :value="brand.name"
+            class="mr-2 checkbox"
           />
-          <label :for="'checkbox_' + index" class="text-sm">{{ brand }}</label>
+          <label :for="'checkbox_' + index" class="text-sm">{{ brand.name }}</label>
         </div>
-      </div>
-      <div class="h-px bg-gray-200 my-2"></div>
-      <div class="my-4">
-        <h2 class="text-lg font-semibold">PRIX</h2>
-        <input
-          type="range"
-          id="priceRange"
-          name="priceRange"
-          min="0"
-          max="1000"
-          step="10"
-          value="500"
-          class="w-full mt-2"
-        />
-        <div class="flex justify-between mt-2">
-          <span class="text-xs">0€</span>
-          <span class="text-xs">1000€</span>
-        </div>
-      </div>
-      <div class="flex justify-center mb-14">
-        <button class="w-full mt-8 bg-[#D8B775] text-white font-bold py-2 rounded text-center">
-          APPLIQUER LES FILTRES
-        </button>
       </div>
     </div>
-    <slot></slot>
+    <div class="mb-4">
+      <h2 class="text-lg font-semibold">PRIX</h2>
+      <v-range-slider
+        v-model="priceRange"
+        :min="0"
+        :max="1000"
+        :step="10"
+        range
+        class="mt-2"
+      ></v-range-slider>
+      <div class="flex justify-between mt-2 text-xs">
+        <span>{{ priceRange[0] }}€</span>
+        <span>{{ priceRange[1] }}€</span>
+      </div>
+    </div>
+    <div class="flex justify-center">
+      <button
+        @click="applyFilters"
+        class="w-full mt-4 bg-[#D8B775] text-white font-bold py-2 rounded text-center apply-button"
+      >
+        APPLIQUER LES FILTRES
+      </button>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.scrollbar-visible::-webkit-scrollbar {
+  width: 12px;
+}
+
+.scrollbar-visible::-webkit-scrollbar-thumb {
+  background-color: #d8b775;
+  border-radius: 6px;
+}
+
+.scrollbar-visible::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Styles for checkboxes */
+.checkbox:checked {
+  accent-color: #d8b775; /* For browsers supporting accent-color */
+}
+
+.checkbox:checked + label::before {
+  background-color: #d8b775; /* For custom styled checkboxes */
+}
+
+/* Styles for apply button */
+.apply-button:active {
+  background-color: #b59461;
+}
+</style>

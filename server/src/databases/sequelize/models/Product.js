@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    concentration: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     promotion: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -29,9 +33,22 @@ module.exports = (sequelize, DataTypes) => {
     image: DataTypes.STRING,
     dateAdded: DataTypes.DATE,
     dateUpdated: DataTypes.DATE,
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
   });
+
   Product.associate = (models) => {
     Product.belongsTo(models.Brand, { foreignKey: "brandId" });
+    Product.belongsTo(models.Family, { foreignKey: "familyId" });
   };
+
   return Product;
 };

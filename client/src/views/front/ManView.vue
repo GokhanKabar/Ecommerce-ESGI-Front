@@ -1,20 +1,60 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
-import sidebarProduct from '../../components/front/Product/sidebarProduct.vue'
-import cardPerfume from '../../components/front/Product/cardPerfume.vue'
-import carousselPerfume from '../../components/front/Product/carousselPerfume.vue'
+import SidebarProduct from '../../components/front/Product/SidebarProduct.vue'
+import CardPerfume from '../../components/front/Product/CardPerfume.vue'
+import CarousselPerfume from '../../components/front/Product/CarousselPerfume.vue'
+import { getMenProducts } from '../../api/products'
+import { getBrands } from '../../api/brands'
+import { type Product } from '../../types/products.types'
+import { type Brand } from '../../types/brands.types'
+import { type Ref } from 'vue'
+
+const allProducts: Ref<Product[]> = ref([])
+const filteredProducts: Ref<Product[]> = ref([])
+const brands: Ref<Brand[]> = ref([])
+
+onMounted(async () => {
+  allProducts.value = await getMenProducts()
+  filteredProducts.value = allProducts.value // Initialement, tous les produits sont affichés
+  brands.value = await getBrands()
+})
+
+function getBrandName(brandId: string): string {
+  const brand = brands.value.find((b) => b.id === brandId)
+  return brand ? brand.name : 'Unknown'
+}
+
+const applyFilters = (filters: {
+  brands: string[]
+  families: string[]
+  priceRange: [number, number]
+}) => {
+  filteredProducts.value = allProducts.value.filter((product) => {
+    const matchesBrand = filters.brands.length
+      ? filters.brands.includes(getBrandName(product.brandId))
+      : true
+    const matchesFamily = filters.families.length
+      ? filters.families.includes(product.familyId)
+      : true
+    const matchesPrice =
+      product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
+    return matchesBrand && matchesFamily && matchesPrice
+  })
+}
 </script>
 
 <template>
   <DefaultLayout>
-    <carousselPerfume />
-    <sidebarProduct>
+    <CarousselPerfume />
+    <div class="flex">
+      <SidebarProduct @apply-filters="applyFilters" />
       <div class="w-5/6 p-4">
         <div class="text-center text-black text-3xl p-12">
           <h1>NOS PRODUITS PARFUM HOMME</h1>
         </div>
-        <cardPerfume />
+        <CardPerfume :products="filteredProducts" :getBrandName="getBrandName" />
       </div>
-    </sidebarProduct>
+    </div>
   </DefaultLayout>
 </template>
