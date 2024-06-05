@@ -9,7 +9,7 @@ import { type Ref } from 'vue'
 const brands: Ref<Brand[]> = ref([])
 const selectedBrands: Ref<string[]> = ref([])
 const families: Ref<Family[]> = ref([])
-const selectedFamilies: Ref<string[]> = ref([]) // Use number for familyId
+const selectedFamilies: Ref<string[]> = ref([])
 
 const priceRange = ref<[number, number]>([0, 1000])
 
