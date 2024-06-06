@@ -29,6 +29,8 @@ const applyFilters = (filters: {
   brands: string[]
   families: string[]
   priceRange: [number, number]
+  promotion: boolean
+  stock: boolean
 }) => {
   filteredProducts.value = allProducts.value.filter((product) => {
     const matchesBrand = filters.brands.length
@@ -39,7 +41,9 @@ const applyFilters = (filters: {
       : true
     const matchesPrice =
       product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
-    return matchesBrand && matchesFamily && matchesPrice
+    const matchesPromotion = !filters.promotion || (filters.promotion && product.promotion > 0)
+    const matchesStock = !filters.stock || (filters.stock && product.stock > 0)
+    return matchesBrand && matchesFamily && matchesPrice && matchesPromotion && matchesStock
   })
 }
 </script>

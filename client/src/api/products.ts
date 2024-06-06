@@ -12,6 +12,11 @@ export const getMenProducts = async (): Promise<Product[]> => {
   return response.json()
 }
 
+export const getWomenProducts = async (): Promise<Product[]> => {
+  const response = await fetch(`http://localhost:8000/products/women`)
+  return response.json()
+}
+
 export const getProductById = async (id: string): Promise<Product> => {
   const response = await fetch(`http://localhost:8000/products/${id}`)
   if (!response.ok) {

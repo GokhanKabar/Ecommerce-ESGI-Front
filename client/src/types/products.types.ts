@@ -5,6 +5,7 @@ export type Product = {
   price: number
   stock: number
   concentration: string
+  promotion: number
   image: string
   category: string
   brandId: string

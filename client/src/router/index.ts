@@ -7,7 +7,6 @@ import AdminOrders from '@/views/back/AdminOrders.vue'
 import HomeView from '@/views/front/HomeView.vue'
 import BrandView from '@/views/front/BrandView.vue'
 import ContactView from '@/views/front/ContactView.vue'
-import ChildrenView from '@/views/front/ChildrenView.vue'
 import ManView from '@/views/front/ManView.vue'
 import WomanView from '@/views/front/WomanView.vue'
 import LoginView from '@/views/front/LoginView.vue'
@@ -68,12 +67,6 @@ const router = createRouter({
       name: 'femme',
       component: WomanView,
       meta: { title: 'Parfum Femme : Parfum  | Tendance Parfums' }
-    },
-    {
-      path: '/enfant',
-      name: 'enfant',
-      component: ChildrenView,
-      meta: { title: 'Parfum bébé, parfum enfant pour fille et garçon | Tendance Parfums' }
     },
     {
       path: '/marque',
