@@ -12,6 +12,8 @@ const families: Ref<Family[]> = ref([])
 const selectedFamilies: Ref<string[]> = ref([])
 
 const priceRange = ref<[number, number]>([0, 1000])
+const promotionFilter = ref(false)
+const stockFilter = ref(false)
 
 onMounted(async () => {
   brands.value = await getBrands()
@@ -24,7 +26,9 @@ const applyFilters = () => {
   emit('apply-filters', {
     brands: selectedBrands.value,
     families: selectedFamilies.value,
-    priceRange: priceRange.value
+    priceRange: priceRange.value,
+    promotion: promotionFilter.value,
+    stock: stockFilter.value
   })
 }
 </script>
@@ -37,32 +41,32 @@ const applyFilters = () => {
     <div class="mb-4">
       <h2 class="text-lg font-semibold mb-3">Famille</h2>
       <div class="max-h-44 overflow-y-scroll scrollbar-visible">
-        <div v-for="(family, index) in families" :key="index" class="mt-3">
+        <div v-for="(family, index) in families" :key="index" class="flex items-center mt-3">
           <input
             type="checkbox"
-            :id="'checkbox_' + index"
-            :name="'checkbox_' + index"
+            :id="'family_' + index"
+            :name="'family_' + index"
             v-model="selectedFamilies"
             :value="family.id"
             class="mr-2 checkbox"
           />
-          <label :for="'checkbox_' + index" class="text-sm">{{ family.name }}</label>
+          <label :for="'family_' + index" class="text-sm">{{ family.name }}</label>
         </div>
       </div>
     </div>
     <div class="mb-4">
       <h2 class="text-lg font-semibold mb-3">MARQUE</h2>
       <div class="max-h-44 overflow-y-scroll scrollbar-visible">
-        <div v-for="(brand, index) in brands" :key="index" class="mt-3">
+        <div v-for="(brand, index) in brands" :key="index" class="flex items-center mt-3">
           <input
             type="checkbox"
-            :id="'checkbox_' + index"
-            :name="'checkbox_' + index"
+            :id="'brand_' + index"
+            :name="'brand_' + index"
             v-model="selectedBrands"
             :value="brand.name"
             class="mr-2 checkbox"
           />
-          <label :for="'checkbox_' + index" class="text-sm">{{ brand.name }}</label>
+          <label :for="'brand_' + index" class="text-sm">{{ brand.name }}</label>
         </div>
       </div>
     </div>
@@ -79,6 +83,25 @@ const applyFilters = () => {
       <div class="flex justify-between mt-2 text-xs">
         <span>{{ priceRange[0] }}€</span>
         <span>{{ priceRange[1] }}€</span>
+      </div>
+    </div>
+    <div class="mb-4">
+      <h2 class="text-lg font-semibold mb-3">Promotion</h2>
+      <div class="flex items-center">
+        <input
+          type="checkbox"
+          id="promotionFilter"
+          v-model="promotionFilter"
+          class="mr-2 checkbox"
+        />
+        <label for="promotionFilter" class="text-sm">En Promotion</label>
+      </div>
+    </div>
+    <div class="mb-4">
+      <h2 class="text-lg font-semibold mb-3">Stock</h2>
+      <div class="flex items-center">
+        <input type="checkbox" id="stockFilter" v-model="stockFilter" class="mr-2 checkbox" />
+        <label for="stockFilter" class="text-sm">En Stock</label>
       </div>
     </div>
     <div class="flex justify-center">

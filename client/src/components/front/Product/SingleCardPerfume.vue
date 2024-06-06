@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { defineProps } from 'vue'
 import { type Product } from '@/types/products.types'
+import getImagePath from '@/utils/getImagePath'
 
 interface Props {
   product: Product
@@ -17,7 +19,7 @@ function formatPrice(price: number): string {
   <div class="w-full max-w-md rounded-lg overflow-hidden shadow-lg">
     <a :href="`/product/${props.product.id}`">
       <img
-        :src="props.product.image"
+        :src="getImagePath(props.product.image)"
         :alt="props.product.name"
         class="w-full h-64 object-cover cursor-pointer"
       />
