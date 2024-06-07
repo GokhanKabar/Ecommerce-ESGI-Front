@@ -43,6 +43,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
+    brandId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    familyId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   });
 
   Product.associate = (models) => {

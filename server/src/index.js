@@ -7,17 +7,22 @@ const userRoute = require("./routes/userRoutes.js");
 const cors = require("cors");
 const app = express();
 const db = require("./databases/sequelize/models");
+const path = require('path');  // Assurez-vous d'importer le module 'path'
+
+
 app.use(
   cors({
     origin: "http://localhost:5173", // Autoriser les requêtes depuis votre domaine
     credentials: true,
   })
 );
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 app.use("/", indexRouter);
 app.use(userRoute);
 app.use(productsRoutes);
 app.use(brandsRoutes);
 app.use(familiesRoutes);
+
 
 // Syncing our database
 

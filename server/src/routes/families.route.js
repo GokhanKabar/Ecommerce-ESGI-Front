@@ -1,12 +1,11 @@
-const {
-  getFamilies,
-  getFamilyById,
-} = require("../controllers/family.controller");
-const express = require("express");
+const express = require('express');
+const router = express.Router();
+const familyController = require('../controllers/family.controller');
 
-const familiesRoutes = express.Router();
+router.post('/families', familyController.createFamily);
+router.get('/families', familyController.getAllFamilies);
+router.get('/families/:id', familyController.getFamilyById);
+router.put('/families/:id', familyController.updateFamily);
+router.delete('/families/:id', familyController.deleteFamily);
 
-familiesRoutes.get("/families", getFamilies);
-familiesRoutes.get("/families/:id", getFamilyById);
-
-module.exports = familiesRoutes;
+module.exports = router;

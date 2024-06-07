@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AdminView from '@/views/back/AdminView.vue'
 import AdminUsers from '@/views/back/AdminUsers.vue'
 import AdminProducts from '@/views/back/AdminProducts.vue'
-import AdminCategory from '@/views/back/AdminCategory.vue'
+import AdminBrand from '@/views/back/AdminBrand.vue'
+import AdminFamily from '@/views/back/AdminFamily.vue'
 import AdminOrders from '@/views/back/AdminOrders.vue'
 import HomeView from '@/views/front/HomeView.vue'
 import BrandView from '@/views/front/BrandView.vue'
@@ -39,9 +40,15 @@ const router = createRouter({
       meta: { title: 'Admin' }
     },
     {
-      path: '/admin/category',
-      name: 'adminCategory',
-      component: AdminCategory,
+      path: '/admin/brand',
+      name: 'adminBrand',
+      component: AdminBrand,
+      meta: { title: 'Admin' }
+    },
+    {
+      path: '/admin/family',
+      name: 'adminFamily',
+      component: AdminFamily,
       meta: { title: 'Admin' }
     },
     {

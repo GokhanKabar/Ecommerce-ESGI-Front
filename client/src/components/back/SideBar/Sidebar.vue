@@ -37,10 +37,15 @@ const props = defineProps({
           <span class="text-white font-normal ml-2">Commandes</span>
         </a>
         
-        <a href="/admin/category" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'calendar'">
+        <a href="/admin/brand" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'calendar'">
           <CalendarIcon />
-          <span class="text-white font-normal ml-2">Catégories</span>
-        </a> 
+          <span class="text-white font-normal ml-2">Marques</span>
+        </a>
+        
+        <a href="/admin/family" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'calendar'">
+          <CalendarIcon />
+          <span class="text-white font-normal ml-2">Familles</span>
+        </a>
         
         <a href="/admin/products" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#D8B775] rounded : activeItem === 'documents'">
           <DocumentsIcon />
