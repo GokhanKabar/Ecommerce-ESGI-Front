@@ -1,18 +1,17 @@
-const {
-  getProducts,
-  getMenProducts,
-  getWomenProducts,
-  getProductById,
-  getProductsByFamilyId,
-} = require("../controllers/product.controller");
-const express = require("express");
+const express = require('express');
+const multer = require('multer');
+const productController = require('../controllers/product.controller');
 
-const productsRoutes = express.Router();
+const router = express.Router();
+const upload = multer({ dest: 'uploads/' });
 
-productsRoutes.get("/products", getProducts);
-productsRoutes.get("/products/men", getMenProducts);
-productsRoutes.get("/products/women", getWomenProducts);
-productsRoutes.get("/products/:id", getProductById);
-productsRoutes.get("/products/family/:familyId", getProductsByFamilyId);
+router.get('/products', productController.getProducts);
+router.get('/products/men', productController.getMenProducts);
+router.get('/products/women', productController.getWomenProducts);
+router.get('/products/:id', productController.getProductById);
+router.get('/products/family/:familyId', productController.getProductsByFamilyId);
+router.post('/products', upload.single('image'), productController.createProduct);
+router.put('/products/:id', upload.single('image'), productController.updateProduct);
+router.delete('/products/:id', productController.deleteProduct);
 
-module.exports = productsRoutes;
+module.exports = router;
