@@ -54,11 +54,17 @@ onMounted(() => {
           <ProjectsIcon />
           <span class="text-white font-normal ml-2">Commandes</span>
         </a>
-        
-        <a href="/admin/category" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#f9d896] rounded" :class="{'bg-[#D8B775]': activeItem === 'calendar'}">
+      
+        <a href="/admin/brand" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#f9d896] rounded" :class="{'bg-[#D8B775]': activeItem === 'calendar'}">
+
           <CalendarIcon />
-          <span class="text-white font-normal ml-2">Catégories</span>
-        </a> 
+          <span class="text-white font-normal ml-2">Marques</span>
+        </a>
+        
+        <a href="/admin/family" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#f9d896] rounded" :class="{'bg-[#D8B775]': activeItem === 'calendar'}">
+          <CalendarIcon />
+          <span class="text-white font-normal ml-2">Familles</span>
+        </a>
         
         <a href="/admin/products" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#f9d896] rounded" :class="{'bg-[#D8B775]': activeItem === 'documents'}">
           <DocumentsIcon />

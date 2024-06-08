@@ -96,3 +96,5 @@ bower_components/
 
 # dotenv environment variables file
 .env
+# Build directory
+.npm/
