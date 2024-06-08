@@ -37,7 +37,7 @@ const register = async () => {
     <DefaultLayout>
 
         <DefaultAuthCard subtitle="E-parfums" title="Inscrivez-vous">
-            <h1 v-html="errorMessage" class=" text-red-500 text-xs"></h1>
+            <h1 v-html="errorMessage" class=" text-danger text-xs"></h1>
             <InputGroup label="Nom" type="text" placeholder="Enter votre Nom" :value="firstName"
                 @input="firstName = $event.target.value" :isRequired="true">
 

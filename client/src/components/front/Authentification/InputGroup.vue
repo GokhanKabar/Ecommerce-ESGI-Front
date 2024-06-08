@@ -1,7 +1,7 @@
 <template>
   <div class="mb-4">
     <label class="mb-2.5 block font-medium text-black dark:text-white">
-      {{ props.label }}<span v-if="isRequired" class="text-red-500 ml-1">*</span>
+      {{ props.label }}<span v-if="isRequired" class="text-red ml-1">*</span>
     </label>
     <div class="relative">
       <input

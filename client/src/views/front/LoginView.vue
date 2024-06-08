@@ -19,7 +19,6 @@ const login = async () => {
     });
     store.dispatch('setToken', response.data.token)
     store.dispatch('setUser', response.data.user)
-    console.log('setUser:',)
     router.push('/admin');
   } catch (error) {
     errorMessage.value = error.response.data;
@@ -31,7 +30,7 @@ const login = async () => {
   <DefaultLayout>
 
     <DefaultAuthCard subtitle="E-parfums" title="Connectez-vous">
-      <h1 v-html="errorMessage" class=" text-red-500 text-xs"></h1>
+      <h1 v-html="errorMessage" class=" text-danger text-xs"></h1>
 
       <InputGroup label="Email" type="email" placeholder="Enter your email" :value="email"
         @input="email = $event.target.value">

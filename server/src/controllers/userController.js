@@ -34,12 +34,62 @@ const schemaRegister = Joi.object({
     "string.empty": "Le mot de passe est requis.",
     "string.pattern.base": "Le mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule, un chiffre, un symbole et être d'au moins 12 caractères."
   }),
-  phone: Joi.string().pattern(new RegExp('^(?:\\+33|0|0033)[1-9][0-9]{8}$')).allow(null, '').messages({
+  phone: Joi.string().required().pattern(new RegExp('^(?:\\+33|0|0033)[1-9][0-9]{8}$')).messages({
+    "string.empty": "Le numéro de téléphone est requis.",
     "string.pattern.base": "Le numéro de téléphone doit être un numéro valide."
   }),
-  role: Joi.string().allow(null, ''),
+  role: Joi.string().required().messages({
+    "string.empty": "Le role est requis.",
+    
+  }),
   emailToken: Joi.string().allow(null, ''),
 });
+
+const schemaUpdateUser = Joi.object({
+    firstName: Joi.string().min(3).max(50).required().messages({
+      "string.base": "Le nom doit être une chaîne de caractères.",
+      "string.empty": "Le nom est requis.",
+      "string.min": "Le nom doit comporter au moins {#limit} caractères.",
+      "string.max": "Le nom ne peut pas dépasser {#limit} caractères.",
+      "any.required": "Le nom est requis."
+    }),
+    lastName: Joi.string().min(3).max(50).required().messages({
+      "string.base": "Le prénom doit être une chaîne de caractères.",
+      "string.empty": "Le prénom est requis.",
+      "string.min": "Le prénom doit comporter au moins {#limit} caractères.",
+      "string.max": "Le prénom ne peut pas dépasser {#limit} caractères.",
+      "any.required": "Le prénom est requis."
+    }),
+    email: Joi.string().email().required().messages({
+      "string.email": "L'email doit être valide.",
+      "any.required": "L'email est requis.",
+      "string.empty": "L'email est requis.",
+
+
+    }),
+  password: Joi.string().pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{12,})')).required().messages({
+    "any.required":"Le mot de passe est requis.",
+    "string.pattern.base": "Le mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule, un chiffre, un symbole et être d'au moins 12 caractères."
+  }),
+  phone: Joi.string().required().pattern(new RegExp('^(?:\\+33|0|0033)[1-9][0-9]{8}$')).messages({
+    "string.empty": "Le numéro de téléphone est requis",
+    "any.required": "Le numéro de téléphone est requis.",
+    "string.pattern.base": "Le numéro de téléphone doit être un numéro valide."
+  }),
+  address: Joi.string()
+  .pattern(new RegExp('^[0-9]+\\s+[a-zA-Z]+\\s+[a-zA-Z\\s]+\\s+[0-9]{5}$'))
+  .required()
+  .messages({
+    "any.required": "L'adresse est requis.",
+    'string.pattern.base': 'Le format de l\'adresse est incorrect. Veuillez saisir un numéro de rue, le nom de la rue, la ville et le code postal.'
+  }),
+    role: Joi.string().valid('COMTABLE', 'USER').required().messages({
+      "any.only": "Le rôle doit être soit 'COMTABLE', soit 'USER'.",
+      "string.empty": "Le rôle est requis.",
+      "any.required": "Le rôle est requis."
+    })
+  });
+
 const resetPasswordSchema = Joi.object({
     newPassword: Joi.string()
         .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{12,})'))
@@ -747,7 +797,7 @@ function sendConfirmationEmail(email, emailToken,lastName,firstName) {
 
 
 
-exports.register = (firstName, lastName, password, address, email, phone, role) => {
+exports.register = (firstName, lastName, password, address, email, phone,role="USER") => {
     return new Promise((resolve, reject) => {
         let validate = schemaRegister.validate({ firstName, lastName, password, address, email, phone, role });
         if (validate.error) {
@@ -2289,4 +2339,118 @@ exports.resetPassword = (newPassword, confirmPassword, resetToken) => {
     });
 };
 
+exports.createUser = ({firstName, lastName, password, address, email, phone, role}) => {
+    console.log({firstName, lastName, password, address, email, phone, role});
+    return new Promise((resolve, reject) => {
+        let validate = schemaRegister.validate({ firstName, lastName, password, address, email, phone, role });
+        if (validate.error) {
+            reject(validate.error.details[0].message);
+        } else {
+            db.User.count({ where: { email: email } }).then(userCount => {
+                if (userCount !== 0) {
+                    reject("Cet email existe déjà");
+                } else {
+                    bcrypt.hash(password, 10).then(hashedPassword => {
+                        const emailToken = generateConfirmationToken();
+                        const emailTokenExpiration = new Date();
+                        emailTokenExpiration.setDate(emailTokenExpiration.getDate() + 1);
+                        db.User.create({
+                            firstName: firstName,
+                            lastName: lastName,
+                            email: email,
+                            password: hashedPassword,
+                            address: address,
+                            phone: phone,
+                            role: role,
+                            accountConfirmation: false,
+                            emailToken: emailToken,
+                            emailTokenExpiration: emailTokenExpiration
+                        }).then(response => {
+                            sendConfirmationEmail(email, emailToken, lastName, firstName);
+                            resolve(response);
+                        }).catch(error => {
+                            reject(error);
+                        });
+                    });
+                }
+            }).catch(error => {
+                reject("Erreur lors de la vérification de l'existence de l'email");
+            });
+        }
+    });
+};
+// Get all users (CRUD Read All)
+exports.getAllUsers = () => {
+    return new Promise((resolve, reject) => {
+        db.User.findAll()
+            .then(users => resolve(users))
+            .catch(err => reject(err));
+    });
+};
 
+// Get a user by ID (CRUD Read)
+exports.getUserById = (userId) => {
+    return new Promise((resolve, reject) => {
+        db.User.findByPk(userId)
+            .then(user => {
+                if (!user) {
+                    reject("User not found");
+                } else {
+                    resolve(user);
+                }
+            })
+            .catch(err => reject(err));
+    });
+};
+
+// Update a user by ID (CRUD Update)
+exports.updateUser = (userId, { firstName, lastName, email, password, address,phone, role }) => {
+    console.log({ firstName, lastName, email, password, address,phone, role }, userId);
+  
+    return new Promise((resolve, reject) => {
+      // Valider les données de l'utilisateur
+      const { error } = schemaUpdateUser.validate({ firstName, lastName, email, password, address,phone, role });
+      if (error) {
+        return reject(error.details[0].message);
+      }
+  
+      db.User.findByPk(userId)
+        .then(user => {
+          if (!user) {
+            return reject("User not found");
+          }
+  
+          // Si un mot de passe est fourni, le hacher
+          if (password) {
+            return bcrypt.hash(password, 10).then(hashedPassword => {
+                console.log('success update');
+              return user.update({ firstName, lastName, email, password: hashedPassword, address,phone, role });
+            });
+          } else {
+            console.log('success update');
+            // Mettre à jour sans le mot de passe
+            return user.update({ firstName, lastName, email, address,phone, role });
+          }
+          
+        })
+        .then(updatedUser => resolve(updatedUser))
+        .catch(err => reject(err));
+        console.log('success errors');
+    });
+  };
+
+// Delete a user by ID (CRUD Delete)
+exports.deleteUser = (userId) => {
+    return new Promise((resolve, reject) => {
+        db.User.findByPk(userId)
+            .then(user => {
+                if (!user) {
+                    reject("User not found");
+                } else {
+                    return user.destroy();
+                }
+            })
+            .then(() => resolve())
+            .catch(err => reject(err));
+    });
+};
