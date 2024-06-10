@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
-import SidebarProduct from '../../components/front/Product/SidebarProduct.vue'
-import CardPerfume from '../../components/front/Product/CardPerfume.vue'
-import CarousselPerfume from '../../components/front/Product/CarousselPerfume.vue'
+import SidebarProduct from '@/components/front/Product/SidebarProduct.vue'
+import CardPerfume from '@/components/front/Product/CardPerfume.vue'
+import CarousselPerfume from '@/components/front/Product/CarousselPerfume.vue'
 import { getMenProducts } from '../../api/products'
 import { getBrands } from '../../api/brands'
 import { type Product } from '../../types/products.types'

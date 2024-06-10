@@ -47,11 +47,11 @@ const apexOptions = {
 
 <template>
   <div
-    class="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7.5 pb-5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-5"
+    class="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7.5 pb-5 shadow-default sm:px-7.5 xl:col-span-5"
   >
     <div class="mb-3 justify-between gap-4 sm:flex">
       <div>
-        <h4 class="text-xl font-bold text-black dark:text-white">Nombre de ventes par Catégorie </h4>
+        <h4 class="text-xl font-bold ">Nombre de ventes par Catégorie </h4>
       </div>
       <div>
         <div class="relative z-20 inline-block">
@@ -100,8 +100,8 @@ const apexOptions = {
     <div class="-mx-8 flex flex-wrap items-center justify-center gap-y-3">
       <div class="w-full px-8 sm:w-1/2">
         <div class="flex w-full items-center">
-          <span class="mr-2 block h-3 w-full max-w-3 rounded-full bg-primary"></span>
-          <p class="flex w-full justify-between text-sm font-medium text-black dark:text-white">
+          <span class="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#C28B0]"></span>
+          <p class="flex w-full justify-between text-sm font-medium text-black">
             <span> Femme </span>
             <span> 65% </span>
           </p>
@@ -110,7 +110,7 @@ const apexOptions = {
       <div class="w-full px-8 sm:w-1/2">
         <div class="flex w-full items-center">
           <span class="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#FFEFCF]"></span>
-          <p class="flex w-full justify-between text-sm font-medium text-black dark:text-white">
+          <p class="flex w-full justify-between text-sm font-medium text-black ">
             <span> Homme </span>
             <span> 34% </span>
           </p>
@@ -119,7 +119,7 @@ const apexOptions = {
       <div class="w-full px-8 sm:w-1/2">
         <div class="flex w-full items-center">
           <span class="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#C27A00]"></span>
-          <p class="flex w-full justify-between text-sm font-medium text-black dark:text-white">
+          <p class="flex w-full justify-between text-sm font-medium text-black ">
             <span> Enfants </span>
             <span> 45% </span>
           </p>

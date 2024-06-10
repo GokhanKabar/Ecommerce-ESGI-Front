@@ -22,7 +22,7 @@ const changeTextColor = () => {
       >
         <option value="" disabled selected>Selectioner un Role</option>
         <option value="USER">User</option>
-        <option value="COMTABLE">Comptable</option>
+        <option value="ROLE_STORE_KEEPER">Magasinier</option>
       </select>
 
       <span class="absolute top-1/2 right-4 z-30 -translate-y-1/2">

@@ -7,7 +7,7 @@ import DefaultCard from '@/components/back/componentsGeneric/Forms/DefaultCard.v
 import InputGroup from '@/components/front/Authentification/InputGroup.vue';
 import SelectGroupTwo from '@/components/back/componentsGeneric/Forms/SelectGroup/SelectGroupTwo.vue';
 import DataTable from '@/components/back/componentsGeneric/DataTable.vue';
-import CrudUser from '@/services/CrudUser';
+import CrudUser from '@/services/UserService';
 import AlertSuccess from '@/components/back/componentsGeneric/Alerts/AlertSuccess.vue';
 import ConfirmationPopup from '@/components/back/componentsGeneric/Popup/ConfirmationPopup.vue';
 const headers = ['Email', 'Nom', 'Prénom', 'Téléphone', 'Adresse', 'Role'];
@@ -172,7 +172,7 @@ const cancelDelete = () => {
     <div v-if="showForm || showEditForm" class="overlay"></div>
     <BreadcrumbDefault :pageTitle="pageTitle" />
     <div class="flex justify-end py-1 px-5">
-      <ButtonDefault @click="toggleForm" label="Ajouter un utilisateur" customClasses="bg-primary text-white rounded-md">
+      <ButtonDefault @click="toggleForm" label="Ajouter un utilisateur" customClasses="bg-[#D8B775] text-white rounded-md">
         <span>
           <svg class="fill-current" height="22px" width="22px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 492.308 492.308" xml:space="preserve">
             <g>
@@ -270,7 +270,7 @@ const cancelDelete = () => {
             <div class="flex justify-around items-center">
               <button
                 type="submit"
-                class="flex w-full justify-center rounded bg-primary p-3 font-medium m-1 text-gray hover:bg-opacity-90"
+                class="flex w-full justify-center rounded bg-[#D8B775] p-3 font-medium m-1 text-gray hover:bg-opacity-90"
               >
                 Ajouter
               </button>
@@ -347,7 +347,7 @@ const cancelDelete = () => {
             <div class="flex justify-around items-center">
               <button
                 type="submit"
-                class="flex w-full justify-center rounded bg-primary p-3 font-medium m-1 text-gray hover:bg-opacity-90"
+                class="flex w-full justify-center rounded bg-[#D8B775] p-3 font-medium m-1 text-gray hover:bg-opacity-90"
               >
                 Enregistrer
               </button>

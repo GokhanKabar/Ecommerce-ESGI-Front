@@ -30,7 +30,7 @@ const cancel = () => {
       </div>
         <p class="font-semibold">{{props. message }}</p>
         <div class="buttons">
-          <button @click="confirm" class="bg-primary text-white rounded px-5 py-2">Confirmer</button>
+          <button @click="confirm" class="bg-[#D8B775] text-white rounded px-5 py-2">Confirmer</button>
           <button @click="cancel" class="bg-red text-white rounded px-5 py-2">Annuler</button>
         </div>
       </div>
