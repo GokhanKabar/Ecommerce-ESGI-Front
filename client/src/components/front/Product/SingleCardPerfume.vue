@@ -2,11 +2,22 @@
 import { defineProps } from 'vue'
 import { type Product } from '@/types/products.types'
 import getImagePath from '@/utils/getImagePath'
+import { onMounted } from 'vue'
+import BrandService from '@/services/BrandService'
+import { type Brand } from '@/types/brands.types'
+import { ref } from 'vue'
 
 interface Props {
   product: Product
-  getBrandName: (brandId: string) => string
 }
+
+const brand = ref<Brand | null>(null)
+
+onMounted(async () => {
+  const productData = props.product
+  const getBrand = await BrandService.getBrandById(productData.brandId)
+  brand.value = getBrand.data
+})
 
 const props = defineProps<Props>()
 
@@ -17,20 +28,20 @@ function formatPrice(price: number): string {
 
 <template>
   <div class="w-full max-w-md rounded-lg overflow-hidden shadow-lg">
-    <a :href="`/product/${props.product.id}`">
+    <a :href="`/product/${product._id}`">
       <img
-        :src="getImagePath(props.product.image)"
-        :alt="props.product.name"
+        :src="getImagePath(product.image)"
+        :alt="product.name"
         class="w-full h-64 object-cover cursor-pointer"
       />
     </a>
     <div class="px-6 py-4 text-center">
       <p class="text-black text-xl font-semibold">
-        {{ props.getBrandName(props.product.brandId) }}
+        {{ brand?.name }}
       </p>
-      <div class="text-lg">{{ props.product.name }}</div>
-      <p class="text-gray-500 text-sm pb-2">{{ props.product.concentration }}</p>
-      <p class="font-bold text-2xl">{{ formatPrice(props.product.price) }}</p>
+      <div class="text-lg">{{ product.name }}</div>
+      <p class="text-gray-500 text-sm pb-2">{{ product.concentration }}</p>
+      <p class="font-bold text-2xl">{{ formatPrice(product.price) }}</p>
     </div>
   </div>
 </template>

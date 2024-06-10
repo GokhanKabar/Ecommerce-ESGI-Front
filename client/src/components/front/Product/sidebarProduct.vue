@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, defineEmits } from 'vue'
-import { getBrands } from '../../../api/brands'
+import BrandService from '../../../services/BrandService.js'
 import { type Brand } from '../../../types/brands.types'
-import { getFamilies } from '../../../api/families'
+import FamilyService from '../../../services/FamilyService'
 import { type Family } from '../../../types/families.types'
 import { type Ref } from 'vue'
 
@@ -16,8 +16,8 @@ const promotionFilter = ref(false)
 const stockFilter = ref(false)
 
 onMounted(async () => {
-  brands.value = await getBrands()
-  families.value = await getFamilies()
+  brands.value = await BrandService.getAllBrands()
+  families.value = await FamilyService.getAllFamilies()
 })
 
 const emit = defineEmits(['apply-filters'])
@@ -41,32 +41,32 @@ const applyFilters = () => {
     <div class="mb-4">
       <h2 class="text-lg font-semibold mb-3">Famille</h2>
       <div class="max-h-44 overflow-y-scroll scrollbar-visible">
-        <div v-for="(family, index) in families" :key="index" class="flex items-center mt-3">
+        <div v-for="(family, index) in families" :key="family._id" class="flex items-center mt-3">
           <input
             type="checkbox"
-            :id="'family_' + index"
-            :name="'family_' + index"
+            :id="'family_' + family._id"
+            :name="'family_' + family._id"
             v-model="selectedFamilies"
-            :value="family.id"
+            :value="family._id"
             class="mr-2 checkbox"
           />
-          <label :for="'family_' + index" class="text-sm">{{ family.name }}</label>
+          <label :for="'family_' + family._id" class="text-sm">{{ family.name }}</label>
         </div>
       </div>
     </div>
     <div class="mb-4">
       <h2 class="text-lg font-semibold mb-3">MARQUE</h2>
       <div class="max-h-44 overflow-y-scroll scrollbar-visible">
-        <div v-for="(brand, index) in brands" :key="index" class="flex items-center mt-3">
+        <div v-for="(brand, index) in brands" :key="brand._id" class="flex items-center mt-3">
           <input
             type="checkbox"
-            :id="'brand_' + index"
-            :name="'brand_' + index"
+            :id="'brand_' + brand._id"
+            :name="'brand_' + brand._id"
             v-model="selectedBrands"
-            :value="brand.name"
+            :value="brand._id"
             class="mr-2 checkbox"
           />
-          <label :for="'brand_' + index" class="text-sm">{{ brand.name }}</label>
+          <label :for="'brand_' + brand._id" class="text-sm">{{ brand.name }}</label>
         </div>
       </div>
     </div>

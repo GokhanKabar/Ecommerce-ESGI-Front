@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
-import SidebarProduct from '@/components/front/Product/SidebarProduct.vue'
-import CardPerfume from '@/components/front/Product/CardPerfume.vue'
-import CarousselPerfume from '@/components/front/Product/CarousselPerfume.vue'
-import { getWomenProducts } from '../../api/products'
-import { getBrands } from '../../api/brands'
+import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
+import SidebarProduct from '../../components/front/Product/SidebarProduct.vue'
+import CardPerfume from '../../components/front/Product/CardPerfume.vue'
+import CarousselPerfume from '../../components/front/Product/CarousselPerfume.vue'
+import ProductService from '../../services/ProductService'
+import BrandService from '../../services/BrandService'
 import { type Product } from '../../types/products.types'
 import { type Brand } from '../../types/brands.types'
 import { type Ref } from 'vue'
@@ -15,13 +15,13 @@ const filteredProducts: Ref<Product[]> = ref([])
 const brands: Ref<Brand[]> = ref([])
 
 onMounted(async () => {
-  allProducts.value = await getWomenProducts()
+  allProducts.value = await ProductService.getWomenProducts()
   filteredProducts.value = allProducts.value // Initialement, tous les produits sont affichés
-  brands.value = await getBrands()
+  brands.value = await BrandService.getAllBrands()
 })
 
 function getBrandName(brandId: string): string {
-  const brand = brands.value.find((b) => b.id === brandId)
+  const brand = brands.value.find((b) => b._id === brandId)
   return brand ? brand.name : 'Unknown'
 }
 
