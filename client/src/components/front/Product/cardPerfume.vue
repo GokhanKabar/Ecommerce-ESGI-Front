@@ -2,6 +2,7 @@
 import { defineProps } from 'vue'
 import { type Product } from '@/types/products.types'
 import getImagePath from '@/utils/getImagePath'
+import { onUpdated } from 'vue'
 
 interface Props {
   products: Product[]
@@ -27,7 +28,7 @@ function calculateDiscountedPrice(price: number, promotion: number): string {
       :key="index"
       class="max-w-xs rounded overflow-hidden shadow-lg"
     >
-      <a :href="`/product/${perfume.id}`">
+      <a :href="`/product/${perfume._id}`">
         <img :src="getImagePath(perfume.image)" :alt="perfume.name" class="w-full cursor-pointer" />
       </a>
       <div class="px-4 py-2 text-center">

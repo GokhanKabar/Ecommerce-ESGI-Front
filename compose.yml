@@ -25,6 +25,10 @@ services:
       - ./server:/home/node
     environment:
       - HOST=0.0.0.0
+      - MONGO_URL=mongodb://root:password@mongodb:27017/app?authSource=admin
+    depends_on:
+      - db
+      - mongodb
 
   db:
     image: mysql:latest
@@ -48,5 +52,18 @@ services:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: alikhelifa147
 
+  mongodb:
+    image: mongo
+    ports:
+      - 127.0.0.1:27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - db-data:/data/db
+      - ./mongo/data:/home/data
+    working_dir: /home/data
+
 volumes:
-  mysql-data:
+  mysql-data: {}
+  db-data: {}

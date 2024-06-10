@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import {
-  getProductById,
-  getBrandById,
-  getFamilyById,
-  getProductsByFamilyId
-} from '../../api/products'
+import ProductService from '../../services/ProductService'
+import BrandService from '../../services/BrandService'
+import FamilyService from '../../services/FamilyService'
 import { type Product } from '../../types/products.types'
 import { type Brand } from '../../types/brands.types'
 import { type Family } from '../../types/families.types'
@@ -27,14 +24,17 @@ const errorMessage = ref('')
 
 onMounted(async () => {
   try {
-    const productData = await getProductById(productId)
+    const productData = await ProductService.getProductById(productId)
     product.value = productData
     if (productData) {
-      brand.value = await getBrandById(productData.brandId)
-      family.value = await getFamilyById(productData.familyId)
-      const allRelatedProducts = await getProductsByFamilyId(productData.familyId, 5)
+      const getBrand = await BrandService.getBrandById(productData.brandId)
+      brand.value = getBrand.data
+      console.log(brand.value)
+      const getFamily = await FamilyService.getFamilyById(productData.familyId)
+      family.value = getFamily.data
+      const allRelatedProducts = await ProductService.getProductsByFamilyId(productData.familyId, 5)
       // Filtre pour exclure le produit actuellement affiché
-      relatedProducts.value = allRelatedProducts.filter((p) => p.id !== productData.id)
+      relatedProducts.value = allRelatedProducts.filter((p: Product) => p._id !== productData._id)
     }
     isLoading.value = false
   } catch (error) {
@@ -42,10 +42,6 @@ onMounted(async () => {
     isLoading.value = false
   }
 })
-
-function getBrandName(brandId: string): string {
-  return brand?.value?.id === brandId ? brand.value.name : 'Unknown'
-}
 
 function formatPrice(price: number): string {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price)
@@ -140,9 +136,8 @@ function goBack() {
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           <SingleCardPerfume
             v-for="relatedProduct in relatedProducts"
-            :key="relatedProduct.id"
+            :key="relatedProduct._id"
             :product="relatedProduct"
-            :getBrandName="getBrandName"
           />
         </div>
       </div>

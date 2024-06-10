@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
-import SidebarProduct from '@/components/front/Product/SidebarProduct.vue'
-import CardPerfume from '@/components/front/Product/CardPerfume.vue'
-import CarousselPerfume from '@/components/front/Product/CarousselPerfume.vue'
-import { getMenProducts } from '../../api/products'
-import { getBrands } from '../../api/brands'
+import SidebarProduct from '../../components/front/Product/SidebarProduct.vue'
+import CardPerfume from '../../components/front/Product/CardPerfume.vue'
+import CarousselPerfume from '../../components/front/Product/CarousselPerfume.vue'
+import ProductService from '../../services/ProductService'
+import BrandService from '../../services/BrandService'
 import { type Product } from '../../types/products.types'
 import { type Brand } from '../../types/brands.types'
 import { type Ref } from 'vue'
@@ -15,13 +15,13 @@ const filteredProducts: Ref<Product[]> = ref([])
 const brands: Ref<Brand[]> = ref([])
 
 onMounted(async () => {
-  allProducts.value = await getMenProducts()
+  allProducts.value = await ProductService.getMenProducts()
   filteredProducts.value = allProducts.value // Initialement, tous les produits sont affichés
-  brands.value = await getBrands()
+  brands.value = await BrandService.getAllBrands()
 })
 
 function getBrandName(brandId: string): string {
-  const brand = brands.value.find((b) => b.id === brandId)
+  const brand = brands.value.find((b) => b._id === brandId)
   return brand ? brand.name : 'Unknown'
 }
 
@@ -33,9 +33,8 @@ const applyFilters = (filters: {
   stock: boolean
 }) => {
   filteredProducts.value = allProducts.value.filter((product) => {
-    const matchesBrand = filters.brands.length
-      ? filters.brands.includes(getBrandName(product.brandId))
-      : true
+    const matchesBrand = filters.brands.length ? filters.brands.includes(product.brandId) : true
+    console.log(filters.brands)
     const matchesFamily = filters.families.length
       ? filters.families.includes(product.familyId)
       : true
