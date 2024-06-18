@@ -10,7 +10,7 @@ import DefaultCard from '../../components/back/componentsGeneric/Forms/DefaultCa
 import InputGroup from '../../components/front/Authentification/InputGroup.vue';
 import ConfirmationPopup from '../../components/back/componentsGeneric/Popup/ConfirmationPopup.vue';
 
-const headers = ['Name'];
+const headers = ['name'];
 const brands = ref([]);
 const pageTitle = 'Marques';
 const newBrand = ref({
@@ -26,17 +26,19 @@ const errorMessage = ref('');
 
 const fetchBrands = async () => {
   try {
-    const response = await BrandService.getAllBrands();
-    brands.value = response.data;
+    const response = await BrandService.getAllBrandsAdmin();
+    brands.value = response;
   } catch (error) {
     console.error('Error fetching brands:', error);
+    errorMessage.value = 'Failed to fetch brands.';
   }
 };
 
 onMounted(async () => {
-  brands.value = await BrandService.getAllBrands();
+  await fetchBrands();  
   console.log(brands.value);
-})
+});
+
 const toggleForm = () => {
   showForm.value = !showForm.value;
   errorMessage.value = '';
@@ -53,7 +55,7 @@ const createBrand = async () => {
     await BrandService.createBrand(newBrand.value);
     successMessage.value = 'Marque enregistrée avec succès';
     newBrand.value.name = '';
-    fetchBrands();
+    await fetchBrands();
     toggleForm();
   } catch (error) {
     errorMessage.value = 'Erreur lors de la création de la marque';
@@ -68,9 +70,10 @@ const editBrand = (brand) => {
 
 const updateBrand = async () => {
   try {
+    console.log('Updating brand with new value:', brandToEdit.value);
     await BrandService.updateBrand(brandToEdit.value.id, brandToEdit.value);
     successMessage.value = 'Marque mise à jour avec succès';
-    fetchBrands();
+    await fetchBrands();
     toggleEditForm();
   } catch (error) {
     errorMessage.value = 'Erreur lors de la mise à jour de la marque';
@@ -87,7 +90,7 @@ const deleteBrand = async () => {
   try {
     await BrandService.deleteBrand(brandToDelete.value.id);
     successMessage.value = 'Marque supprimée avec succès';
-    fetchBrands();
+    await fetchBrands();
     showConfirmationPopup.value = false;
   } catch (error) {
     errorMessage.value = 'Erreur lors de la suppression de la marque';
@@ -122,7 +125,7 @@ const cancelDelete = () => {
               <InputGroup
                 label="Nom"
                 type="text"
-                v-model="newBrand.name"
+                @input="newBrand.name=$event.target.value"
                 placeholder="Marque"
                 customClasses="w-full xl:w-1/2"
                 :isRequired="true"
@@ -154,7 +157,7 @@ const cancelDelete = () => {
               <InputGroup
                 label="Nom"
                 type="text"
-                v-model="brandToEdit.name"
+                @input="brandToEdit.name=$event.target.value"
                 placeholder="Marque"
                 customClasses="w-full xl:w-1/2"
                 :isRequired="true"
@@ -176,7 +179,7 @@ const cancelDelete = () => {
       </DefaultCard>
     </div>
 
-    <DataTable :headers="headers" :data="brands" :filterableColumns="['Name']" :editUser="editBrand" :deleteUser="confirmDeleteBrand" />
+    <DataTable :headers="headers" :data="brands" :filterableColumns="['name']" :editUser="editBrand" :deleteUser="confirmDeleteBrand" />
 
     <ConfirmationPopup 
       :isVisible="showConfirmationPopup"

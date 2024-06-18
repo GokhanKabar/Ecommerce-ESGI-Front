@@ -15,6 +15,15 @@ export default {
       }
     })
   },
+  async getAllProductsAdmin() {
+    try {
+      const response = await Api().get('/productsall')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching admin products:', error)
+      throw error
+    }
+  },
   async getAllProducts() {
     try {
       const response = await Api().get('/products')
@@ -64,7 +73,7 @@ export default {
   },
   async getProductsAdmin() {
     try {
-      const response = await Api().get('/products/admin')
+      const response = await Api().get('/productsall')
       return response.data
     } catch (error) {
       console.error('Error fetching admin products:', error)

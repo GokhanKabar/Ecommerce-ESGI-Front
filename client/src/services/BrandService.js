@@ -20,6 +20,15 @@ export default {
       throw error
     }
   },
+  async getAllBrandsAdmin() {
+    try {
+      const response = await Api().get('brandsall')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching brands:', error)
+      throw error
+    }
+  },
   getBrandById(id) {
     return Api().get(`brands/${id}`)
   },

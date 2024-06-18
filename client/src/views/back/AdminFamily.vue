@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useStore } from 'vuex';
 import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
 import FamilyService from '../../services/FamilyService';
 import AlertSuccess from '../../components/back/componentsGeneric/Alerts/AlertSuccess.vue';
@@ -9,35 +10,36 @@ import DataTable from '../../components/back/componentsGeneric/DataTable.vue';
 import DefaultCard from '../../components/back/componentsGeneric/Forms/DefaultCard.vue';
 import InputGroup from '../../components/front/Authentification/InputGroup.vue';
 import ConfirmationPopup from '../../components/back/componentsGeneric/Popup/ConfirmationPopup.vue';
-import { useStore } from 'vuex';
 
-const store = useStore();
 
 const headers = ['Name'];
 const families = ref([]);
 const newFamily = ref({ name: '' });
-const familyToEdit = ref({ id: null, name: '' });
+const familyToEdit = ref(null);
 const familyToDelete = ref(null);
 const showForm = ref(false);
 const showEditForm = ref(false);
 const showConfirmationPopup = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
+const pageTitle = 'Familles';
 
-const isAdmin = computed(() => store.state.user && store.state.user.role === 'ADMIN');
 
 const fetchFamilies = async () => {
   try {
-    const response = await FamilyService.getAllFamilies();
-    families.value = response.data;
+    const response = await FamilyService.getAllFamiliesAdmin();
+    families.value = response;
   } catch (error) {
     console.error('Error fetching families:', error);
+    errorMessage.value = 'Failed to fetch families.';
   }
 };
 
 onMounted(async () => {
-  families.value = await FamilyService.getAllFamilies();
-})
+  await fetchFamilies();
+  console.log('Families:', families.value);
+});
+
 
 const toggleForm = () => {
   showForm.value = !showForm.value;
@@ -51,13 +53,10 @@ const toggleEditForm = () => {
 
 const createFamily = async () => {
   try {
-    if (!isAdmin.value) {
-      throw new Error('Unauthorized');
-    }
     await FamilyService.createFamily(newFamily.value);
     successMessage.value = 'Famille enregistrée avec succès';
     newFamily.value.name = '';
-    fetchFamilies();
+    await fetchFamilies();
     toggleForm();
   } catch (error) {
     errorMessage.value = 'Erreur lors de la création de la famille';
@@ -72,12 +71,10 @@ const editFamily = (family) => {
 
 const updateFamily = async () => {
   try {
-    if (!isAdmin.value) {
-      throw new Error('Unauthorized');
-    }
+    console.log('Updating family with new value:', familyToEdit.value);
     await FamilyService.updateFamily(familyToEdit.value.id, familyToEdit.value);
     successMessage.value = 'Famille mise à jour avec succès';
-    fetchFamilies();
+    await fetchFamilies();
     toggleEditForm();
   } catch (error) {
     errorMessage.value = 'Erreur lors de la mise à jour de la famille';
@@ -92,12 +89,9 @@ const confirmDeleteFamily = (family) => {
 
 const deleteFamily = async () => {
   try {
-    if (!isAdmin.value) {
-      throw new Error('Unauthorized');
-    }
     await FamilyService.deleteFamily(familyToDelete.value.id);
     successMessage.value = 'Famille supprimée avec succès';
-    fetchFamilies();
+    await fetchFamilies();
     showConfirmationPopup.value = false;
   } catch (error) {
     errorMessage.value = 'Erreur lors de la suppression de la famille';
@@ -116,7 +110,7 @@ const cancelDelete = () => {
       <AlertSuccess v-if="successMessage" :message="successMessage" />
     </div>
     <div v-if="showForm || showEditForm" class="overlay"></div>
-    <BreadcrumbDefault :pageTitle="'Familles'" />
+    <BreadcrumbDefault :pageTitle="pageTitle" />
     <div class="flex justify-end py-1 px-5">
       <ButtonDefault @click="toggleForm" label="Ajouter une famille" customClasses="bg-[#D8B775] text-white rounded-md">
       </ButtonDefault>
@@ -132,7 +126,7 @@ const cancelDelete = () => {
               <InputGroup
                 label="Nom"
                 type="text"
-                v-model="newFamily.name"
+                @input="newFamily.name=$event.target.value"
                 placeholder="Famille"
                 customClasses="w-full xl:w-1/2"
                 :isRequired="true"
@@ -164,7 +158,7 @@ const cancelDelete = () => {
               <InputGroup
                 label="Nom"
                 type="text"
-                v-model="familyToEdit.name"
+                @input="familyToEdit.name=$event.target.value"
                 placeholder="Famille"
                 customClasses="w-full xl:w-1/2"
                 :isRequired="true"
@@ -186,7 +180,7 @@ const cancelDelete = () => {
       </DefaultCard>
     </div>
 
-    <DataTable :headers="headers" :data="families" :filterableColumns="['Name']" :editUser="editFamily" :deleteUser="confirmDeleteFamily" />
+    <DataTable :headers="headers" :data="families" :filterableColumns="['name']" :editUser="editFamily" :deleteUser="confirmDeleteFamily" />
 
     <ConfirmationPopup 
       :isVisible="showConfirmationPopup"

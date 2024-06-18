@@ -13,7 +13,16 @@ export default {
   },
   async getAllFamilies() {
     try {
-      const response = await Api().get('families') // This calls the updated controller
+      const response = await Api().get('families')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching families:', error)
+      throw error
+    }
+  },
+  async getAllFamiliesAdmin() {
+    try {
+      const response = await Api().get('familiesall')
       return response.data
     } catch (error) {
       console.error('Error fetching families:', error)

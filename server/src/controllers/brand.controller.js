@@ -58,3 +58,12 @@ exports.deleteBrand = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+exports.getAllBrandsAdmin = async (req, res) => {
+  try {
+    const brands = await Brand.findAll();
+    res.status(200).json(brands);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
