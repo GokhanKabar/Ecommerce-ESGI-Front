@@ -2,13 +2,29 @@
 import { ref, computed, onMounted } from 'vue';
 import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
 import FamilyService from '../../services/FamilyService';
+import AlertSuccess from '../../components/back/componentsGeneric/Alerts/AlertSuccess.vue';
+import BreadcrumbDefault from '../../components/back/componentsGeneric/Breadcrumbs/BreadcrumbDefault.vue';
+import ButtonDefault from '../../components/back/componentsGeneric/Buttons/ButtonDefault.vue';
+import DataTable from '../../components/back/componentsGeneric/DataTable.vue';
+import DefaultCard from '../../components/back/componentsGeneric/Forms/DefaultCard.vue';
+import InputGroup from '../../components/front/Authentification/InputGroup.vue';
+import ConfirmationPopup from '../../components/back/componentsGeneric/Popup/ConfirmationPopup.vue';
 import { useStore } from 'vuex';
 
 const store = useStore();
 
-const newFamily = ref({ name: '' });
+const headers = ['Name'];
 const families = ref([]);
-const isAdmin = computed(() => store.state.user && store.state.user.role === 'admin');
+const newFamily = ref({ name: '' });
+const familyToEdit = ref({ id: null, name: '' });
+const familyToDelete = ref(null);
+const showForm = ref(false);
+const showEditForm = ref(false);
+const showConfirmationPopup = ref(false);
+const successMessage = ref('');
+const errorMessage = ref('');
+
+const isAdmin = computed(() => store.state.user && store.state.user.role === 'ADMIN');
 
 const fetchFamilies = async () => {
   try {
@@ -19,79 +35,176 @@ const fetchFamilies = async () => {
   }
 };
 
-const submitForm = async () => {
+onMounted(async () => {
+  families.value = await FamilyService.getAllFamilies();
+})
+
+const toggleForm = () => {
+  showForm.value = !showForm.value;
+  errorMessage.value = '';
+};
+
+const toggleEditForm = () => {
+  showEditForm.value = !showEditForm.value;
+  errorMessage.value = '';
+};
+
+const createFamily = async () => {
   try {
     if (!isAdmin.value) {
       throw new Error('Unauthorized');
     }
     await FamilyService.createFamily(newFamily.value);
+    successMessage.value = 'Famille enregistrée avec succès';
     newFamily.value.name = '';
     fetchFamilies();
+    toggleForm();
   } catch (error) {
+    errorMessage.value = 'Erreur lors de la création de la famille';
     console.error('Error creating family:', error);
   }
 };
 
-const removeFamily = async (id: number) => {
+const editFamily = (family) => {
+  familyToEdit.value = { ...family };
+  toggleEditForm();
+};
+
+const updateFamily = async () => {
   try {
     if (!isAdmin.value) {
       throw new Error('Unauthorized');
     }
-    await FamilyService.deleteFamily(id);
+    await FamilyService.updateFamily(familyToEdit.value.id, familyToEdit.value);
+    successMessage.value = 'Famille mise à jour avec succès';
     fetchFamilies();
+    toggleEditForm();
   } catch (error) {
+    errorMessage.value = 'Erreur lors de la mise à jour de la famille';
+    console.error('Error updating family:', error);
+  }
+};
+
+const confirmDeleteFamily = (family) => {
+  familyToDelete.value = family;
+  showConfirmationPopup.value = true;
+};
+
+const deleteFamily = async () => {
+  try {
+    if (!isAdmin.value) {
+      throw new Error('Unauthorized');
+    }
+    await FamilyService.deleteFamily(familyToDelete.value.id);
+    successMessage.value = 'Famille supprimée avec succès';
+    fetchFamilies();
+    showConfirmationPopup.value = false;
+  } catch (error) {
+    errorMessage.value = 'Erreur lors de la suppression de la famille';
     console.error('Error deleting family:', error);
   }
 };
 
-onMounted(() => {
-  fetchFamilies();
-});
+const cancelDelete = () => {
+  showConfirmationPopup.value = false;
+};
 </script>
 
 <template>
   <DefaultLayout>
-    <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-      <h1 class="text-3xl font-semibold text-gray-900 mb-6">Gestion des familles</h1>
-      <div v-if="isAdmin" class="mb-10">
-        <h2 class="text-2xl font-medium text-gray-800 mb-4">Création d'une famille</h2>
-        <form @submit.prevent="submitForm" class="space-y-4">
-          <div>
-            <label for="familyName" class="block text-sm font-medium text-gray-700">Nom de la famille</label>
-            <input
-              id="familyName"
-              v-model="newFamily.name"
-              type="text"
-              placeholder="Entrez le nom de la famille"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-50 sm:text-sm"
-            />
-          </div>
-          <button
-            type="submit"
-            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2"
-          >
-            Créer
-          </button>
-        </form>
-      </div>
-      <h2 class="text-2xl font-medium text-gray-800 mb-4">Les familles</h2>
-      <ul class="space-y-4">
-        <li
-          v-for="family in families"
-          :key="family.id"
-          class="flex items-center justify-between p-4 border rounded-lg shadow-sm bg-white"
-        >
-          <span class="text-lg font-medium text-gray-900">{{ family.name }}</span>
-          <button
-            v-if="isAdmin"
-            @click="removeFamily(family.id)"
-            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            Supprimer
-          </button>
-        </li>
-      </ul>
+    <div class="absolute top-17 left-150 w-125">
+      <AlertSuccess v-if="successMessage" :message="successMessage" />
     </div>
+    <div v-if="showForm || showEditForm" class="overlay"></div>
+    <BreadcrumbDefault :pageTitle="'Familles'" />
+    <div class="flex justify-end py-1 px-5">
+      <ButtonDefault @click="toggleForm" label="Ajouter une famille" customClasses="bg-[#D8B775] text-white rounded-md">
+      </ButtonDefault>
+    </div>
+
+    <div v-if="showForm" class="absolute z-1 top-6 left-1/2 transform -translate-x-1/2">
+      <DefaultCard cardTitle="Ajouter une famille">
+        <span class="text-xs text-red mt-2 ml-8">{{ errorMessage }}</span>
+
+        <form @submit.prevent="createFamily">
+          <div class="p-2">
+            <div class="flex flex-col gap-6 xl:flex-row">
+              <InputGroup
+                label="Nom"
+                type="text"
+                v-model="newFamily.name"
+                placeholder="Famille"
+                customClasses="w-full xl:w-1/2"
+                :isRequired="true"
+              />
+            </div>
+            <div class="flex justify-around items-center">
+              <button
+                type="submit"
+                class="flex w-full justify-center rounded bg-[#D8B775] p-3 font-medium m-1 text-gray hover:bg-opacity-90"
+              >
+                Ajouter
+              </button>
+              <button @click="toggleForm" class="flex w-full justify-center rounded bg-red p-3 m-1 font-medium text-gray hover:bg-opacity-90">
+                Annuler
+              </button>
+            </div>
+          </div>
+        </form>
+      </DefaultCard>
+    </div>
+
+    <div v-if="showEditForm" class="absolute z-1 top-6 left-1/2 transform -translate-x-1/2">
+      <DefaultCard cardTitle="Modifier une famille">
+        <span class="text-xs text-red mt-2 ml-8">{{ errorMessage }}</span>
+
+        <form @submit.prevent="updateFamily">
+          <div class="p-2">
+            <div class="flex flex-col gap-6 xl:flex-row">
+              <InputGroup
+                label="Nom"
+                type="text"
+                v-model="familyToEdit.name"
+                placeholder="Famille"
+                customClasses="w-full xl:w-1/2"
+                :isRequired="true"
+              />
+            </div>
+            <div class="flex justify-around items-center">
+              <button
+                type="submit"
+                class="flex w-full justify-center rounded bg-[#D8B775] p-3 font-medium m-1 text-gray hover:bg-opacity-90"
+              >
+                Mettre à jour
+              </button>
+              <button @click="toggleEditForm" class="flex w-full justify-center rounded bg-red p-3 m-1 font-medium text-gray hover:bg-opacity-90">
+                Annuler
+              </button>
+            </div>
+          </div>
+        </form>
+      </DefaultCard>
+    </div>
+
+    <DataTable :headers="headers" :data="families" :filterableColumns="['Name']" :editUser="editFamily" :deleteUser="confirmDeleteFamily" />
+
+    <ConfirmationPopup 
+      :isVisible="showConfirmationPopup"
+      message="Êtes-vous sûr de vouloir supprimer cette famille ?"
+      @confirm="deleteFamily"
+      @cancel="cancelDelete"
+    />
   </DefaultLayout>
 </template>
+
+<style scoped>
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); 
+  pointer-events: auto; 
+}
+</style>

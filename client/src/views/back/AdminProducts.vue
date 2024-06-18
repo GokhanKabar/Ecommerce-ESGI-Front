@@ -23,11 +23,11 @@ const newProduct = ref({
 const products = ref([]);
 const brands = ref([]);
 const families = ref([]);
-const isAdmin = computed(() => store.state.user && store.state.user.role === 'admin');
+const isAdmin = computed(() => store.state.user && store.state.user.role === 'ADMIN');
 
 const fetchProducts = async () => {
   try {
-    const response = await ProductService.getAllProducts();
+    const response = await ProductService.getProductsAdmin();
     products.value = response.data;
   } catch (error) {
     console.error('Error fetching products:', error);

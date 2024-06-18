@@ -3,7 +3,7 @@ import store from '../store/store'
 
 const isAdmin = () => {
   const user = store.state.user
-  return user && user.role === 'admin'
+  return user && user.role === 'ADMIN'
 }
 
 export default {
@@ -59,6 +59,15 @@ export default {
       return response.data
     } catch (error) {
       console.error(`Error fetching products by familyId ${familyId}:`, error)
+      throw error
+    }
+  },
+  async getProductsAdmin() {
+    try {
+      const response = await Api().get('/products/admin')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching admin products:', error)
       throw error
     }
   },

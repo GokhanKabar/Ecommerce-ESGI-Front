@@ -3,7 +3,7 @@ import store from '../store/store'
 
 const isAdmin = () => {
   const user = store.state.user
-  return user && user.role === 'admin'
+  return user && user.role === 'ADMIN'
 }
 
 export default {
