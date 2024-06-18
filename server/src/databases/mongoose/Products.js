@@ -51,13 +51,13 @@ const productSchema = new Schema({
     default: Date.now,
   },
   brandId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Number,
+    required: true,
     ref: "Brand",
     required: true,
   },
   familyId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Family",
+    type: Number,
     required: true,
   },
 });
