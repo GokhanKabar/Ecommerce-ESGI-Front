@@ -119,7 +119,8 @@ const route = useRoute()
           </router-link>
         </div>
         <div class="nav-item">
-          <a href="http://" class="flex flex-row gap-1">
+           <span class="absolute text-white text-xs top-[2rem] right-[6.8rem]">0</span>
+          <a href="#" class="flex flex-row gap-1">
             <svg
               width="17"
               height="17"

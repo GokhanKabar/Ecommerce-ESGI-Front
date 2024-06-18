@@ -8,7 +8,7 @@ const store = useStore();
 
 const newBrand = ref({ name: '' });
 const brands = ref([]);
-const isAdmin = computed(() => store.state.user && store.state.user.role === 'admin');
+const isAdmin = computed(() => store.state.user && store.state.user.role === 'ADMIN');
 
 const fetchBrands = async () => {
   try {

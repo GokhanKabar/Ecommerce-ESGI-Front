@@ -8,7 +8,7 @@ const store = useStore();
 
 const newFamily = ref({ name: '' });
 const families = ref([]);
-const isAdmin = computed(() => store.state.user && store.state.user.role === 'admin');
+const isAdmin = computed(() => store.state.user && store.state.user.role === 'ADMIN');
 
 const fetchFamilies = async () => {
   try {
