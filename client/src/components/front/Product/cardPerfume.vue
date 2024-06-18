@@ -2,7 +2,6 @@
 import { defineProps } from 'vue'
 import { type Product } from '@/types/products.types'
 import getImagePath from '@/utils/getImagePath'
-import { onUpdated } from 'vue'
 
 interface Props {
   products: Product[]

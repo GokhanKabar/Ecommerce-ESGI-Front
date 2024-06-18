@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, defineEmits } from 'vue'
-import BrandService from '../../../services/BrandService.js'
-import { type Brand } from '../../../types/brands.types.js'
-import FamilyService from '../../../services/FamilyService.js'
-import { type Family } from '../../../types/families.types.js'
+import BrandService from '@/services/BrandService.js'
+import { type Brand } from '@/types/brands.types'
+import FamilyService from '@/services/FamilyService'
+import { type Family } from '@/types/families.types'
 import { type Ref } from 'vue'
 
 const brands: Ref<Brand[]> = ref([])

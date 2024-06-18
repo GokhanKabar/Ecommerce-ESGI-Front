@@ -33,21 +33,12 @@ export default {
       throw error
     }
   },
-  async getMenProducts() {
+  async getProductsByCategory(category) {
     try {
-      const response = await Api().get('/products/men')
+      const response = await Api().get(`products/category/${category}`)
       return response.data
     } catch (error) {
-      console.error('Error fetching men products:', error)
-      throw error
-    }
-  },
-  async getWomenProducts() {
-    try {
-      const response = await Api().get('/products/women')
-      return response.data
-    } catch (error) {
-      console.error('Error fetching women products:', error)
+      console.error('Error fetching products by category:', error)
       throw error
     }
   },
@@ -77,6 +68,14 @@ export default {
       return response.data
     } catch (error) {
       console.error('Error fetching admin products:', error)
+    }
+  },
+  async getLastProduct(category) {
+    try {
+      const response = await Api().get(`/products/category/${category}?sort=-createdAt&limit=1`)
+      return response.data[0]
+    } catch (error) {
+      console.error('Error fetching last product:', error)
       throw error
     }
   },

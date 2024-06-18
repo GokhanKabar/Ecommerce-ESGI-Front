@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import ProductService from '../../services/ProductService'
-import BrandService from '../../services/BrandService'
-import FamilyService from '../../services/FamilyService'
-import { type Product } from '../../types/products.types'
-import { type Brand } from '../../types/brands.types'
-import { type Family } from '../../types/families.types'
+import ProductService from '@/services/ProductService'
+import BrandService from '@/services/BrandService'
+import FamilyService from '@/services/FamilyService'
+import { type Product } from '@/types/products.types'
+import { type Brand } from '@/types/brands.types'
+import { type Family } from '@/types/families.types'
 import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
 import SingleCardPerfume from '@/components/front/Product/SingleCardPerfume.vue'
 import getImagePath from '@/utils/getImagePath'
@@ -29,7 +29,6 @@ onMounted(async () => {
     if (productData) {
       const getBrand = await BrandService.getBrandById(productData.brandId)
       brand.value = getBrand.data
-      console.log(brand.value)
       const getFamily = await FamilyService.getFamilyById(productData.familyId)
       family.value = getFamily.data
       const allRelatedProducts = await ProductService.getProductsByFamilyId(productData.familyId, 5)

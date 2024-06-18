@@ -10,27 +10,15 @@ exports.getProducts = async (req, res) => {
   }
 };
 
-exports.getProductsAdmin = async (req, res) => {
+exports.getProductsByCategory = async (req, res) => {
   try {
-    const products = await SequelizeProduct.findAll();
-    res.status(200).json(products);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-exports.getMenProducts = async (req, res) => {
-  try {
-    const products = await Product.find({ category: "homme" });
-    res.status(200).json(products);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-exports.getWomenProducts = async (req, res) => {
-  try {
-    const products = await Product.find({ category: "femme" });
+    const { category } = req.params;
+    const products = await Product.find({ category });
+    if (!products.length) {
+      return res
+        .status(404)
+        .json({ message: "No products found for this category" });
+    }
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -162,8 +150,7 @@ exports.getProductsAdmin = async (req, res) => {
   try {
     const products = await SequelizeProduct.findAll();
     res.status(200).json(products);
-  }
-  catch (error) {
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };

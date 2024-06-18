@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
-import SidebarProduct from '../../components/front/Product/SidebarProduct.vue'
-import CardPerfume from '../../components/front/Product/CardPerfume.vue'
-import CarousselPerfume from '../../components/front/Product/CarousselPerfume.vue'
-import ProductService from '../../services/ProductService'
-import BrandService from '../../services/BrandService'
-import { type Product } from '../../types/products.types'
-import { type Brand } from '../../types/brands.types'
+import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
+import SidebarProduct from '@/components/front/Product/SidebarProduct.vue'
+import CardPerfume from '@/components/front/Product/CardPerfume.vue'
+import CarousselPerfume from '@/components/front/Product/CarousselPerfume.vue'
+import ProductService from '@/services/ProductService'
+import BrandService from '@/services/BrandService'
+import { type Product } from '@/types/products.types'
+import { type Brand } from '@/types/brands.types'
 import { type Ref } from 'vue'
 
 const allProducts: Ref<Product[]> = ref([])
@@ -15,7 +15,7 @@ const filteredProducts: Ref<Product[]> = ref([])
 const brands: Ref<Brand[]> = ref([])
 
 onMounted(async () => {
-  allProducts.value = await ProductService.getMenProducts()
+  allProducts.value = await ProductService.getProductsByCategory('homme')
   filteredProducts.value = allProducts.value // Initialement, tous les produits sont affichés
   brands.value = await BrandService.getAllBrands()
 })
@@ -34,7 +34,6 @@ const applyFilters = (filters: {
 }) => {
   filteredProducts.value = allProducts.value.filter((product) => {
     const matchesBrand = filters.brands.length ? filters.brands.includes(product.brandId) : true
-    console.log(filters.brands)
     const matchesFamily = filters.families.length
       ? filters.families.includes(product.familyId)
       : true
