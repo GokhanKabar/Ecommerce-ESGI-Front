@@ -1,5 +1,5 @@
 const { Brand } = require("../databases/sequelize/models"); // Sequelize model
-const BrandModel = require("../databases/mongoose/Brands"); // Mongoose model
+//const BrandModel = require("../databases/mongoose/Brands"); // Mongoose model
 
 exports.createBrand = async (req, res) => {
   try {
