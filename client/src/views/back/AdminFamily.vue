@@ -12,7 +12,7 @@ import InputGroup from '../../components/front/Authentification/InputGroup.vue';
 import ConfirmationPopup from '../../components/back/componentsGeneric/Popup/ConfirmationPopup.vue';
 
 
-const headers = ['Name'];
+const headers = ['name'];
 const families = ref([]);
 const newFamily = ref({ name: '' });
 const familyToEdit = ref(null);
