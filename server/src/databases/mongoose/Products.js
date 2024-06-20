@@ -34,31 +34,29 @@ const productSchema = new Schema({
     type: String,
     required: false,
   },
-  dateAdded: {
-    type: Date,
-    default: Date.now,
-  },
-  dateUpdated: {
-    type: Date,
-    default: Date.now,
-  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
+  brand: {
+    id: {
+      type: Number,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
   },
-  brandId: {
-    type: Number,
-    required: true,
-    ref: "Brand",
-    required: true,
-  },
-  familyId: {
-    type: Number,
-    required: true,
+  family: {
+    id: {
+      type: Number,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
   },
 });
 

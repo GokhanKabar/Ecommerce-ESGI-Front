@@ -3,28 +3,19 @@ import { ref, onMounted } from 'vue'
 import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
 import CarousselPerfume from '@/components/front/Product/CarousselPerfume.vue'
 import ProductService from '@/services/ProductService'
-import BrandService from '@/services/BrandService'
 import { type Product } from '@/types/products.types'
-import { type Brand } from '@/types/brands.types'
 import getImagePath from '@/utils/getImagePath'
 
 const lastProduct = ref<Product | null>(null)
-const brands = ref<Brand[]>([])
 
 onMounted(async () => {
   try {
     const product = await ProductService.getLastProduct('homme')
     lastProduct.value = product
-    brands.value = await BrandService.getAllBrands()
   } catch (error) {
-    console.error('Failed to fetch last product or brands:', error)
+    console.error('Failed to fetch last product:', error)
   }
 })
-
-const getBrandName = (brandId: string) => {
-  const brand = brands.value.find((b) => b._id === brandId)
-  return brand ? brand.name : 'Unknown'
-}
 </script>
 
 <template>
@@ -39,7 +30,7 @@ const getBrandName = (brandId: string) => {
         </div>
         <div class="text-center">
           <img :src="getImagePath(lastProduct?.image)" alt="Product" class="w-80 h-auto mb-4" />
-          <p class="text-xl text-gray-500">{{ getBrandName(lastProduct?.brandId) }}</p>
+          <p class="text-xl text-gray-500">{{ lastProduct?.brand.name ?? 'Unknown' }}</p>
           <p class="text-2xl font-bold">{{ lastProduct?.name }}</p>
           <p class="text-sm font-semibold">{{ lastProduct?.price }} €</p>
         </div>

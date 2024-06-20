@@ -1,5 +1,5 @@
 const { Family } = require("../databases/sequelize/models"); // Sequelize model
-const FamilyModel = require("../databases/mongoose/Families"); // Mongoose model
+//const FamilyModel = require("../databases/mongoose/Families"); // Mongoose model
 
 exports.createFamily = async (req, res) => {
   try {
