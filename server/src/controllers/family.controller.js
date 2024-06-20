@@ -58,3 +58,12 @@ exports.deleteFamily = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+exports.getAllFamiliesAdmin = async (req, res) => {
+  try {
+    const families = await Family.findAll();
+    res.status(200).json(families);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}

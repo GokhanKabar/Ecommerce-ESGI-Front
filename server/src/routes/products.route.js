@@ -13,5 +13,6 @@ router.get('/products/family/:familyId', productController.getProductsByFamilyId
 router.post('/products', upload.single('image'), productController.createProduct);
 router.put('/products/:id', upload.single('image'), productController.updateProduct);
 router.delete('/products/:id', productController.deleteProduct);
+router.get('/productsall', productController.getProductsAdmin);
 
 module.exports = router;

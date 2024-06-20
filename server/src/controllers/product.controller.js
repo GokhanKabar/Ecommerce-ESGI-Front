@@ -10,6 +10,15 @@ exports.getProducts = async (req, res) => {
   }
 };
 
+exports.getProductsAdmin = async (req, res) => {
+  try {
+    const products = await SequelizeProduct.findAll();
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 exports.getMenProducts = async (req, res) => {
   try {
     const products = await Product.find({ category: "homme" });
@@ -146,5 +155,15 @@ exports.deleteProduct = async (req, res) => {
     res.status(204).send();
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getProductsAdmin = async (req, res) => {
+  try {
+    const products = await SequelizeProduct.findAll();
+    res.status(200).json(products);
+  }
+  catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

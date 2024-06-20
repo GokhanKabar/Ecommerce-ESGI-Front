@@ -7,5 +7,6 @@ router.get("/families", familyController.getAllFamilies);
 router.get("/families/:id", familyController.getFamilyById);
 router.put("/families/:id", familyController.updateFamily);
 router.delete("/families/:id", familyController.deleteFamily);
+router.get("/familiesall", familyController.getAllFamiliesAdmin);
 
 module.exports = router;

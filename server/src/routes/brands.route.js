@@ -7,5 +7,6 @@ router.get('/brands', brandController.getAllBrands);
 router.get('/brands/:id', brandController.getBrandById);
 router.put('/brands/:id', brandController.updateBrand);
 router.delete('/brands/:id', brandController.deleteBrand);
+router.get('/brandsall', brandController.getAllBrandsAdmin);
 
 module.exports = router;

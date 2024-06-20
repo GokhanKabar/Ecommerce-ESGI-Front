@@ -3,7 +3,7 @@ import store from '../store/store'
 
 const isAdmin = () => {
   const user = store.state.user
-  return user && user.role === 'admin'
+  return user && user.role === 'ADMIN'
 }
 
 export default {
@@ -13,7 +13,16 @@ export default {
   },
   async getAllFamilies() {
     try {
-      const response = await Api().get('families') // This calls the updated controller
+      const response = await Api().get('families')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching families:', error)
+      throw error
+    }
+  },
+  async getAllFamiliesAdmin() {
+    try {
+      const response = await Api().get('familiesall')
       return response.data
     } catch (error) {
       console.error('Error fetching families:', error)

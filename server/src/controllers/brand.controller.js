@@ -12,7 +12,7 @@ exports.createBrand = async (req, res) => {
 
 exports.getAllBrands = async (req, res) => {
   try {
-    const brands = await BrandModel.find(); // Use Mongoose to get all brands
+    const brands = await BrandModel.find();
     res.status(200).json(brands);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -54,6 +54,15 @@ exports.deleteBrand = async (req, res) => {
       return res.status(404).json({ error: "Brand not found" });
     }
     res.status(200).json({ message: "Brand deleted" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.getAllBrandsAdmin = async (req, res) => {
+  try {
+    const brands = await Brand.findAll();
+    res.status(200).json(brands);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

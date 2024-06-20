@@ -1,13 +1,24 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
 import ProductService from '../../services/ProductService';
 import BrandService from '../../services/BrandService';
 import FamilyService from '../../services/FamilyService';
 import { useStore } from 'vuex';
+import AlertSuccess from '@/components/back/componentsGeneric/Alerts/AlertSuccess.vue';
+import BreadcrumbDefault from '@/components/back/componentsGeneric/Breadcrumbs/BreadcrumbDefault.vue';
+import ButtonDefault from '@/components/back/componentsGeneric/Buttons/ButtonDefault.vue';
+import DataTable from '@/components/back/componentsGeneric/DataTable.vue';
+import DefaultCard from '@/components/back/componentsGeneric/Forms/DefaultCard.vue';
+import InputGroup from '@/components/front/Authentification/InputGroup.vue';
+import SelectGroupTwo from '@/components/back/componentsGeneric/Forms/SelectGroup/SelectGroupTwo.vue';
+import ConfirmationPopup from '@/components/back/componentsGeneric/Popup/ConfirmationPopup.vue';
 
 const store = useStore();
-
+const headers = ['name', 'category', 'price', 'stock', 'concentration'];
+const products = ref([]);
+const brands = ref([]);
+const families = ref([]);
 const newProduct = ref({
   name: '',
   description: '',
@@ -20,62 +31,131 @@ const newProduct = ref({
   brandId: null,
   familyId: null,
 });
-const products = ref([]);
-const brands = ref([]);
-const families = ref([]);
-const isAdmin = computed(() => store.state.user && store.state.user.role === 'admin');
+const editedProduct = ref({
+  id: null,
+  name: '',
+  description: '',
+  category: '',
+  price: 0,
+  stock: 0,
+  concentration: '',
+  promotion: false,
+  image: null,
+  brandId: null,
+  familyId: null,
+});
+const showForm = ref(false);
+const showEditForm = ref(false);
+const showConfirmationPopup = ref(false);
+const productToDelete = ref(null);
+const successMessage = ref('');
+const errorMessage = ref('');
+const isAdmin = computed(() => store.state.user && store.state.user.role === 'ADMIN');
 
 const fetchProducts = async () => {
   try {
-    const response = await ProductService.getAllProducts();
-    products.value = response.data;
+    const response = await ProductService.getProductsAdmin();
+    products.value = response;
   } catch (error) {
     console.error('Error fetching products:', error);
+    errorMessage.value = 'Failed to fetch products.';
   }
 };
 
 const fetchBrandsAndFamilies = async () => {
   try {
     const [brandsResponse, familiesResponse] = await Promise.all([
-      BrandService.getAllBrands(),
-      FamilyService.getAllFamilies(),
+      BrandService.getAllBrandsAdmin(),
+      FamilyService.getAllFamiliesAdmin(),
     ]);
-    brands.value = brandsResponse.data;
-    families.value = familiesResponse.data;
+    brands.value = brandsResponse;
+    families.value = familiesResponse;
   } catch (error) {
     console.error('Error fetching brands and families:', error);
   }
 };
 
-const submitForm = async () => {
+onMounted(async () => {
+  await fetchProducts();
+  await fetchBrandsAndFamilies();
+});
+
+const toggleForm = () => {
+  showForm.value = !showForm.value;
+  errorMessage.value = '';
+};
+
+const toggleEditForm = () => {
+  showEditForm.value = !showEditForm.value;
+  errorMessage.value = '';
+};
+
+const createProduct = async () => {
   try {
     if (!isAdmin.value) {
       throw new Error('Unauthorized');
     }
-
     const formData = new FormData();
     for (const key in newProduct.value) {
       formData.append(key, newProduct.value[key]);
     }
-
     await ProductService.createProduct(formData);
+    successMessage.value = 'Produit enregistré avec succès';
     resetForm();
-    fetchProducts();
+    await fetchProducts();
+    toggleForm();
   } catch (error) {
+    errorMessage.value = 'Erreur lors de la création du produit';
     console.error('Error creating product:', error);
   }
 };
 
-const removeProduct = async (id: number) => {
+const editProduct = (product) => {
+  editedProduct.value = { ...product };
+  toggleEditForm();
+};
+
+const updateProduct = async () => {
   try {
     if (!isAdmin.value) {
       throw new Error('Unauthorized');
     }
-    await ProductService.deleteProduct(id);
-    fetchProducts();
+    const formData = new FormData();
+    for (const key in editedProduct.value) {
+      formData.append(key, editedProduct.value[key]);
+    }
+    await ProductService.updateProduct(editedProduct.value.id, formData);
+    successMessage.value = 'Produit mis à jour avec succès';
+    await fetchProducts();
+    toggleEditForm();
   } catch (error) {
+    errorMessage.value = 'Erreur lors de la mise à jour du produit';
+    console.error('Error updating product:', error);
+  }
+};
+
+const confirmDeleteProduct = (product) => {
+  productToDelete.value = product;
+  showConfirmationPopup.value = true;
+};
+
+const deleteProduct = async () => {
+  try {
+    if (!isAdmin.value) {
+      throw new Error('Unauthorized');
+    }
+    await ProductService.deleteProduct(productToDelete.value.id);
+    successMessage.value = 'Produit supprimé avec succès';
+    await fetchProducts();
+    showConfirmationPopup.value = false;
+  } catch (error) {
+    errorMessage.value = 'Erreur lors de la suppression du produit';
     console.error('Error deleting product:', error);
   }
+};
+
+const cancelDelete = () => {
+  showConfirmationPopup.value = false;
 };
 
 const resetForm = () => {
@@ -92,170 +172,291 @@ const resetForm = () => {
     familyId: null,
   };
 };
-
-onMounted(() => {
-  fetchProducts();
-  fetchBrandsAndFamilies();
-});
 </script>
 
 <template>
   <DefaultLayout>
-    <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-      <h1 class="text-3xl font-semibold text-gray-900 mb-6">Gestion des produits</h1>
-      <div v-if="isAdmin" class="mb-10">
-        <h2 class="text-2xl font-medium text-gray-800 mb-4">Création d'un produit</h2>
-        <form @submit.prevent="submitForm" class="space-y-4">
-          <div>
-            <label for="productName" class="block text-sm font-medium text-gray-700">Nom du produit</label>
-            <input
-              id="productName"
-              v-model="newProduct.name"
-              type="text"
-              placeholder="Entrez le nom du produit"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label for="productDescription" class="block text-sm font-medium text-gray-700">Description</label>
-            <textarea
-              id="productDescription"
-              v-model="newProduct.description"
-              placeholder="Entrez la description du produit"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label for="productCategory" class="block text-sm font-medium text-gray-700">Catégorie</label>
-            <select
-              id="productCategory"
-              v-model="newProduct.category"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="" disabled selected>Choisissez une catégorie</option>
-              <option value="Homme">Homme</option>
-              <option value="Femme">Femme</option>
-            </select>
-          </div>
-          <div>
-            <label for="productPrice" class="block text-sm font-medium text-gray-700">Prix</label>
-            <input
-              id="productPrice"
-              v-model="newProduct.price"
-              type="number"
-              step="0.01"
-              placeholder="Entrez le prix du produit"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label for="productStock" class="block text-sm font-medium text-gray-700">Stock</label>
-            <input
-              id="productStock"
-              v-model="newProduct.stock"
-              type="number"
-              placeholder="Entrez la quantité en stock"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label for="productConcentration" class="block text-sm font-medium text-gray-700">Concentration</label>
-            <select
-              id="productConcentration"
-              v-model="newProduct.concentration"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="" disabled selected>Choisissez une concentration</option>
-              <option value="Eau de Toilette">Eau de Toilette</option>
-              <option value="Eau de Parfum">Eau de Parfum</option>
-              <option value="Extrait de parfum">Extrait de parfum</option>
-            </select>
-          </div>
-          <div>
-            <label for="productPromotion" class="block text-sm font-medium text-gray-700">Promotion</label>
-            <input
-              id="productPromotion"
-              v-model="newProduct.promotion"
-              type="checkbox"
-              class="mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label for="productImage" class="block text-sm font-medium text-gray-700">Image</label>
-            <input
-              id="productImage"
-              @change="e => newProduct.image = e.target.files[0]"
-              type="file"
-              accept="image/*"
-              class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-gray-700 hover:file:bg-indigo-100"
-            />
-          </div>
-          <div>
-            <label for="productBrand" class="block text-sm font-medium text-gray-700">Marque</label>
-            <select
-              id="productBrand"
-              v-model="newProduct.brandId"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="" disabled selected>Choisissez une marque</option>
-              <option v-for="brand in brands" :key="brand.id" :value="brand.id">{{ brand.name }}</option>
-            </select>
-          </div>
-          <div>
-            <label for="productFamily" class="block text-sm font-medium text-gray-700">Famille</label>
-            <select
-              id="productFamily"
-              v-model="newProduct.familyId"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="" disabled selected>Choisissez une famille</option>
-              <option v-for="family in families" :key="family.id" :value="family.id">{{ family.name }}</option>
-            </select>
-          </div>
-          <div>
-            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-              Ajouter le produit
-            </button>
+    <div class="absolute top-17 left-150 w-125">
+      <AlertSuccess v-if="successMessage" :message="successMessage" />
+    </div>
+    <div v-if="showForm || showEditForm" class="overlay"></div>
+    <BreadcrumbDefault :pageTitle="'Produits'" />
+    <div class="flex justify-end py-1 px-5">
+      <ButtonDefault @click="toggleForm" label="Ajouter un produit" customClasses="bg-[#D8B775] text-white rounded-md">
+      </ButtonDefault>
+    </div>
+
+    <div v-if="showForm" class="absolute z-1 top-6 left-1/2 transform -translate-x-1/2">
+      <DefaultCard cardTitle="Ajouter un produit">
+        <span class="text-xs text-red mt-2 ml-8">{{ errorMessage }}</span>
+        <form @submit.prevent="createProduct">
+          <div class="p-2">
+            <div class="flex flex-col gap-6 xl:flex-row">
+              <InputGroup
+                label="Nom"
+                type="text"
+                @input="newProduct.name=$event.target.value"
+                placeholder="Nom du produit"
+                customClasses="w-full xl:w-1/2"
+                :isRequired="true"
+              />
+              <InputGroup
+                label="Description"
+                type="text"
+                @input="newProduct.description=$event.target.value"
+                placeholder="Description du produit"
+                customClasses="w-full xl:w-1/2"
+                :isRequired="true"
+              />
+            </div>
+            <div class="flex flex-col gap-6 xl:flex-row">
+              <div class="w-full xl:w-1/2">
+                <label for="productCategory" class="block text-sm font-medium text-gray-700">Catégorie</label>
+                <select
+                  id="productCategory"
+                  v-model="newProduct.category"
+                  required
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                >
+                  <option value="" disabled selected>Choisissez une catégorie</option>
+                  <option value="homme">homme</option>
+                  <option value="femme">femme</option>
+                </select>
+              </div>
+              <InputGroup
+                label="Prix"
+                type="number"
+                @input="newProduct.price=$event.target.value"
+                placeholder="Prix"
+                customClasses="w-full xl:w-1/2"
+                :isRequired="true"
+              />
+            </div>
+            <div class="flex flex-col gap-6 xl:flex-row">
+              <InputGroup
+                label="Stock"
+                type="number"
+                @input="newProduct.stock=$event.target.value"
+                placeholder="Stock"
+                customClasses="w-full xl:w-1/2"
+                :isRequired="true"
+              />
+              <div class="w-full xl:w-1/2">
+                <label for="productConcentration" class="block text-sm font-medium text-gray-700">Concentration</label>
+                <select
+                  id="productConcentration"
+                  @input="newProduct.concentration=$event.target.value"
+                  required
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                >
+                  <option value="" disabled selected>Choisissez une concentration</option>
+                  <option value="Eau de Toilette">Eau de Toilette</option>
+                  <option value="Eau de Parfum">Eau de Parfum</option>
+                  <option value="Extrait de parfum">Extrait de parfum</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex flex-col gap-6 xl:flex-row">
+              <InputGroup
+                label="Promotion"
+                type="checkbox"
+                @input="newProduct.promotion=$event.target.value"
+                customClasses="w-full xl:w-1/2"
+              />
+              <InputGroup
+                label="Image"
+                type="file"
+                @change="e => newProduct.image = e.target.files[0]"
+                customClasses="w-full xl:w-1/2"
+              />
+            </div>
+            <div class="flex flex-col gap-6 xl:flex-row">
+              <div class="w-full xl:w-1/2">
+                <label for="productBrand" class="block text-sm font-medium text-gray-700">Marque</label>
+                <select
+                  id="productBrand"
+                  @input="newProduct.brandId=$event.target.value"
+                  required
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                >
+                  <option value="" disabled selected>Choisissez une marque</option>
+                  <option v-for="brand in brands" :key="brand.id" :value="brand.id">{{ brand.name }}</option>
+                </select>
+              </div>
+              <div class="w-full xl:w-1/2">
+                <label for="productFamily" class="block text-sm font-medium text-gray-700">Famille</label>
+                <select
+                  id="productFamily"
+                  @input="newProduct.familyId=$event.target.value"
+                  required
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                >
+                  <option value="" disabled selected>Choisissez une famille</option>
+                  <option v-for="family in families" :key="family.id" :value="family.id">{{ family.name }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex justify-around items-center mt-4">
+              <button
+                type="submit"
+                class="flex w-full justify-center rounded bg-[#D8B775] p-3 font-medium m-1 text-gray hover:bg-opacity-90"
+              >
+                Ajouter
+              </button>
+              <button @click="toggleForm" class="flex w-full justify-center rounded bg-red p-3 m-1 font-medium text-gray hover:bg-opacity-90">
+                Annuler
+              </button>
+            </div>
           </div>
         </form>
-      </div>
-      <div>
-        <h2 class="text-2xl font-medium text-gray-800 mb-4">Liste des produits</h2>
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="product in products" :key="product.id">
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ product.name }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ product.category }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ product.price }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ product.stock }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button @click="removeProduct(product.id)" class="text-indigo-600 hover:text-indigo-900">Supprimer</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      </DefaultCard>
     </div>
+
+    <div v-if="showEditForm" class="absolute z-1 top-6 left-1/2 transform -translate-x-1/2">
+      <DefaultCard cardTitle="Modifier un produit">
+        <span class="text-xs text-red mt-2 ml-8">{{ errorMessage }}</span>
+        <form @submit.prevent="updateProduct">
+          <div class="p-2">
+            <div class="flex flex-col gap-6 xl:flex-row">
+              <InputGroup
+                label="Nom"
+                type="text"
+                @input="editedProduct.name=$event.target.value"
+                placeholder="Nom du produit"
+                customClasses="w-full xl:w-1/2"
+                :isRequired="true"
+              />
+              <InputGroup
+                label="Description"
+                type="text"
+                @input="editedProduct.description=$event.target.value"
+                placeholder="Description du produit"
+                customClasses="w-full xl:w-1/2"
+                :isRequired="true"
+              />
+            </div>
+            <div class="flex flex-col gap-6 xl:flex-row">
+              <div class="w-full xl:w-1/2">
+                <label for="editProductCategory" class="block text-sm font-medium text-gray-700">Catégorie</label>
+                <select
+                  id="editProductCategory"
+                  v-model="editedProduct.category"
+                  required
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                >
+                  <option value="" disabled selected>Choisissez une catégorie</option>
+                  <option value="homme">homme</option>
+                  <option value="femme">femme</option>
+                </select>
+              </div>
+              <InputGroup
+                label="Prix"
+                type="number"
+                @input="editedProduct.price=$event.target.value"
+                placeholder="Prix"
+                customClasses="w-full xl:w-1/2"
+                :isRequired="true"
+              />
+            </div>
+            <div class="flex flex-col gap-6 xl:flex-row">
+              <InputGroup
+                label="Stock"
+                type="number"
+                @input="editedProduct.stock=$event.target.value"
+                placeholder="Stock"
+                customClasses="w-full xl:w-1/2"
+                :isRequired="true"
+              />
+              <div class="w-full xl:w-1/2">
+                <label for="editProductConcentration" class="block text-sm font-medium text-gray-700">Concentration</label>
+                <select
+                  id="editProductConcentration"
+                  @input="editedProduct.concentration=$event.target.value"
+                  required
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                >
+                  <option value="" disabled selected>Choisissez une concentration</option>
+                  <option value="Eau de Toilette">Eau de Toilette</option>
+                  <option value="Eau de Parfum">Eau de Parfum</option>
+                  <option value="Extrait de parfum">Extrait de parfum</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex flex-col gap-6 xl:flex-row">
+              <InputGroup
+                label="Promotion"
+                type="checkbox"
+                @input="editedProduct.promotion=$event.target.value"
+                customClasses="w-full xl:w-1/2"
+              />
+              <InputGroup
+                label="Image"
+                type="file"
+                @change="e => editedProduct.image = e.target.files[0]"
+                customClasses="w-full xl:w-1/2"
+              />
+            </div>
+            <div class="flex flex-col gap-6 xl:flex-row">
+              <div class="w-full xl:w-1/2">
+                <label for="editProductBrand" class="block text-sm font-medium text-gray-700">Marque</label>
+                <select
+                  id="editProductBrand"
+                  @input="editedProduct.brandId=$event.target.value"
+                  required
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                >
+                  <option value="" disabled selected>Choisissez une marque</option>
+                  <option v-for="brand in brands" :key="brand.id" :value="brand.id">{{ brand.name }}</option>
+                </select>
+              </div>
+              <div class="w-full xl:w-1/2">
+                <label for="editProductFamily" class="block text-sm font-medium text-gray-700">Famille</label>
+                <select
+                  id="editProductFamily"
+                  @input="editedProduct.familyId=$event.target.value"
+                  required
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                >
+                  <option value="" disabled selected>Choisissez une famille</option>
+                  <option v-for="family in families" :key="family.id" :value="family.id">{{ family.name }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex justify-around items-center mt-4">
+              <button
+                type="submit"
+                class="flex w-full justify-center rounded bg-[#D8B775] p-3 font-medium m-1 text-gray hover:bg-opacity-90"
+              >
+                Mettre à jour
+              </button>
+              <button @click="toggleEditForm" class="flex w-full justify-center rounded bg-red p-3 m-1 font-medium text-gray hover:bg-opacity-90">
+                Annuler
+              </button>
+            </div>
+          </div>
+        </form>
+      </DefaultCard>
+    </div>
+
+    <DataTable :headers="headers" :data="products" :filterableColumns="headers" :editUser="editProduct" :deleteUser="confirmDeleteProduct" />
+
+    <ConfirmationPopup 
+      :isVisible="showConfirmationPopup"
+      message="Êtes-vous sûr de vouloir supprimer ce produit ?"
+      @confirm="deleteProduct"
+      @cancel="cancelDelete"
+    />
   </DefaultLayout>
 </template>
 
 <style scoped>
-/* Ajoutez ici les styles spécifiques pour ce composant */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); 
+  pointer-events: auto; 
+}
 </style>
