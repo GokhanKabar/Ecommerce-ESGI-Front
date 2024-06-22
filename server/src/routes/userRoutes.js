@@ -1,7 +1,7 @@
 const express = require("express");
 const route = express.Router();
 const userController = require("../controllers/userController");
-
+const checkAuth = require("../middlewares/checkAuthRole")
 route.use(express.json());
 
 // Register a new user
@@ -54,14 +54,14 @@ route.post('/resetPassword', (request, response) => {
 });
 
 // Create a new user (CRUD Create)
-route.post('/users', (request, response) => {
+route.post('/users',checkAuth({ roles: ['ADMIN'] }), (request, response) => {
     userController.createUser(request.body)
         .then(newUser => response.status(201).json(newUser))
         .catch(err => response.status(500).json(err));
 });
 
 // Get all users (CRUD Read All)
-route.get('/users', (request, response) => {
+route.get('/users',checkAuth({ roles: ['ADMIN'] }),(request, response) => {
     userController.getAllUsers()
         .then(users => {
             const filteredUsers = users.filter(user => user.role !== 'ADMIN');
@@ -82,7 +82,7 @@ route.get('/users', (request, response) => {
 
 
 // Get a user by ID (CRUD Read)
-route.get('/users/:userId', (request, response) => {
+route.get('/users/:userId',checkAuth({ roles: ['ADMIN'] }), (request, response) => {
     const userId = request.params.userId;
     userController.getUserById(userId)
         .then(user => response.status(200).json(user))
@@ -90,7 +90,7 @@ route.get('/users/:userId', (request, response) => {
 });
 
 // Update a user by ID (CRUD Update)
-route.put('/users/:userId', (request, response) => {
+route.put('/users/:userId',checkAuth({ roles: ['ADMIN'] }), (request, response) => {
     const userId = request.params.userId;
     const updatedUserData = request.body;
     userController.updateUser(userId, updatedUserData)
@@ -99,7 +99,7 @@ route.put('/users/:userId', (request, response) => {
 });
 
 // Delete a user by ID (CRUD Delete)
-route.delete('/users/:userId', (request, response) => {
+route.delete('/users/:userId',checkAuth({ roles: ['ADMIN'] }), (request, response) => {
     const userId = request.params.userId;
     userController.deleteUser(userId)
         .then(() => response.status(204).end())
