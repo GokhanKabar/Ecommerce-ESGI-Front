@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/config.json");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
-// Définir le schéma de validation pour l'enregistrement d'utilisateur
 const schemaRegister = Joi.object({
   firstName: Joi.string().min(3).max(50).required().messages({
     "string.empty": "Le nom est requis.",
@@ -101,8 +100,8 @@ const schemaUpdateUser = Joi.object({
       "string.pattern.base":
         "Le format de l'adresse est incorrect. Veuillez saisir un numéro de rue, le nom de la rue, la ville et le code postal.",
     }),
-  role: Joi.string().valid("COMTABLE", "USER").required().messages({
-    "any.only": "Le rôle doit être soit 'COMTABLE', soit 'USER'.",
+  role: Joi.string().valid("ROLE_STORE_KEEPER", "USER").required().messages({
+    "any.only": "Le rôle doit être soit 'Magasinier', soit 'USER'.",
     "string.empty": "Le rôle est requis.",
     "any.required": "Le rôle est requis.",
   }),
@@ -917,7 +916,7 @@ exports.login = (email, password) => {
                 // Réinitialiser les tentatives infructueuses après une connexion réussie
                 user.update({ failedLoginAttempts: 0 });
                 resolve({
-                  user: userJson,
+                  user:userJson,
                   token: token,
                 });
               }
@@ -2485,7 +2484,6 @@ exports.createUser = ({
     }
   });
 };
-// Get all users (CRUD Read All)
 exports.getAllUsers = () => {
   return new Promise((resolve, reject) => {
     db.User.findAll()
@@ -2494,7 +2492,6 @@ exports.getAllUsers = () => {
   });
 };
 
-// Get a user by ID (CRUD Read)
 exports.getUserById = (userId) => {
   return new Promise((resolve, reject) => {
     db.User.findByPk(userId)
@@ -2509,7 +2506,6 @@ exports.getUserById = (userId) => {
   });
 };
 
-// Update a user by ID (CRUD Update)
 exports.updateUser = (
   userId,
   { firstName, lastName, email, password, address, phone, role }
@@ -2573,7 +2569,6 @@ exports.updateUser = (
   });
 };
 
-// Delete a user by ID (CRUD Delete)
 exports.deleteUser = (userId) => {
   return new Promise((resolve, reject) => {
     db.User.findByPk(userId)
