@@ -1,8 +1,26 @@
-const FamilyMongo = require('../../../databases/mongoose/Families');
+const { DataTypes, Model } = require('sequelize');
+const FamilyMongo = require("../../denormalization/FamilyMongo"); // Assurez-vous que ce fichier existe et gère la logique de MongoDB
 
+module.exports = (sequelize) => {
+  class Family extends Model {
+    static associate(models) {
+      Family.hasMany(models.Product, { foreignKey: 'familyId' });
+    }
 
-module.exports = (sequelize, DataTypes) => {
-  const Family = sequelize.define("Family", {
+    static addHooks(db) {
+      Family.addHook("afterCreate", async (family) => {
+        console.log("afterCreate hook triggered for family:", family);
+        await FamilyMongo(family.id, db.Family, db.Product);
+      });
+
+      Family.addHook("afterUpdate", async (family) => {
+        console.log("afterUpdate hook triggered for family:", family);
+        await FamilyMongo(family.id, db.Family, db.Product, true);
+      });
+    }
+  }
+
+  Family.init({
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -23,50 +41,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.NOW,
     },
   }, {
-    hooks: {
-      afterCreate: async (family, options) => {
-        console.log('afterCreate hook called for family:', family.id);
-        try {
-          await FamilyMongo.create({
-            sequelizeId: family.id,
-            name: family.name,
-            createdAt: family.createdAt,
-            updatedAt: family.updatedAt,
-          });
-          console.log('Family synced with MongoDB after creation.');
-        } catch (error) {
-          console.error('Erreur lors de la synchronisation avec MongoDB après création:', error);
-        }
-      },
-      afterUpdate: async (family, options) => {
-        console.log('afterUpdate hook called for family:', family.id);
-        try {
-          const familyMongo = await FamilyMongo.findOne({ sequelizeId: family.id });
-          if (familyMongo) {
-            familyMongo.name = family.name;
-            familyMongo.updatedAt = family.updatedAt;
-            await familyMongo.save();
-            console.log('Family synced with MongoDB after update.');
-          }
-        } catch (error) {
-          console.error('Erreur lors de la synchronisation avec MongoDB après mise à jour:', error);
-        }
-      },
-      afterDestroy: async (family, options) => {
-        console.log('afterDestroy hook called for family:', family.id);
-        try {
-          await FamilyMongo.findOneAndDelete({ sequelizeId: family.id });
-          console.log('Family deleted from MongoDB after destruction.');
-        } catch (error) {
-          console.error('Erreur lors de la synchronisation avec MongoDB après suppression:', error);
-        }
-      },
-    },
+    sequelize,
+    modelName: 'Family',
   });
-
-  Family.associate = (models) => {
-    Family.hasMany(models.Product, { foreignKey: "familyId" });
-  };
 
   return Family;
 };

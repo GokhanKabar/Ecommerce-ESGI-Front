@@ -1,9 +1,6 @@
-"use strict";
-
 const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
-const process = require("process");
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
 const config = require("../../../config/config.json")[env];
@@ -31,18 +28,23 @@ fs.readdirSync(__dirname)
     );
   })
   .forEach((file) => {
-    const model = require(path.join(__dirname, file))(
-      sequelize,
-      Sequelize.DataTypes
-    );
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
     db[model.name] = model;
+    console.log(`Model ${model.name} loaded successfully.`);
   });
 
-Object.keys(db).forEach((modelName) => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
+  Object.keys(db).forEach(modelName => {
+    if (db[modelName].associate) {
+      db[modelName].associate(db);
+    }
+  });
+  
+  Object.keys(db).forEach(modelName => {
+    if (db[modelName].addHooks) {
+      console.log(`Adding hooks for model: ${modelName}`);
+      db[modelName].addHooks(db);
+    }
+  });
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

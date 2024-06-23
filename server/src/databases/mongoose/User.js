@@ -1,3 +1,4 @@
+const { number } = require("joi");
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
@@ -22,48 +23,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  password: {
-    type: String,
-    required: true,
-  },
   phone: {
     type: String,
-    required: false,
-  },
-  role: {
-    type: String,
-    required: false,
-  },
-  accountConfirmation: {
-    type: Boolean,
-    default: false,
-  },
-  emailToken: {
-    type: String,
-    required: false,
-  },
-  emailTokenExpiration: {
-    type: Date,
-    required: false,
-  },
-  resetToken: {
-    type: String,
-    required: false,
-  },
-  resetTokenExpiration: {
-    type: Date,
-    required: false,
-  },
-  failedLoginAttempts: {
-    type: Number,
-    default: 0,
-  },
-  lastPasswordChange: {
-    type: Date,
-    required: false,
-  },
-  lockedUntil: {
-    type: Date,
     required: false,
   },
   createdAt: {
@@ -73,6 +34,10 @@ const userSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now,
+  },
+  orders: {
+    type: Array,
+    default: [],
   },
 });
 

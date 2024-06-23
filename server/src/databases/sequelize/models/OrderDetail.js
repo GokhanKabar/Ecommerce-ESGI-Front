@@ -1,19 +1,33 @@
-// models/orderDetail.js
-module.exports = (sequelize, DataTypes) => {
-    const OrderDetail = sequelize.define('OrderDetail', {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      quantity: DataTypes.INTEGER,
-      unitPrice: DataTypes.FLOAT
-    });
-  
-    OrderDetail.associate = models => {
+const { Model, DataTypes } = require('sequelize');
+
+module.exports = (sequelize) => {
+  class OrderDetail extends Model {
+    static associate(models) {
       OrderDetail.belongsTo(models.Order, { foreignKey: 'orderId' });
-    };
-  
-    return OrderDetail;
-  };
-  
+    }
+  }
+
+  OrderDetail.init({
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    unitPrice: {
+      type: DataTypes.FLOAT,
+      allowNull: false
+    }
+  }, {
+    sequelize,
+    modelName: 'OrderDetail',
+    timestamps: false, 
+    underscored: true,
+    tableName: 'order_details' 
+  });
+
+  return OrderDetail;
+};

@@ -1,72 +1,71 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
 
-const productSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
+const productSchema = new mongoose.Schema(
+  {
+    sequelizeId: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    description: String,
+    category: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    stock: {
+      type: Number,
+      required: true,
+    },
+    concentration: {
+      type: String,
+      required: true,
+    },
+    promotion: {
+      type: Boolean,
+      required: true,
+    },
+    image: String,
+    dateAdded: Date,
+    dateUpdated: Date,
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    },
+    brand: {
+      type: new mongoose.Schema(
+        {
+          id: Number,
+          name: String,
+        },
+        { _id: false }
+      ),
+      default: null,
+    },
+    family: {
+      type: new mongoose.Schema(
+        {
+          id: Number,
+          name: String,
+        },
+        { _id: false }
+      ),
+      default: null,
+    },
   },
-  description: {
-    type: String,
-    required: false,
-  },
-  category: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  stock: {
-    type: Number,
-    required: true,
-  },
-  concentration: {
-    type: String,
-    required: true,
-  },
-  promotion: {
-    type: Number,
-    required: true,
-  },
-  image: {
-    type: String,
-    required: false,
-  },
-  dateAdded: {
-    type: Date,
-    default: Date.now,
-  },
-  dateUpdated: {
-    type: Date,
-    default: Date.now,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-  brandId: {
-    type: Number,
-    required: true,
-    ref: "Brand",
-    required: true,
-  },
-  familyId: {
-    type: Number,
-    required: true,
-  },
-});
+  { timestamps: true }
+);
 
-productSchema.pre("save", function (next) {
-  this.updatedAt = Date.now();
-  next();
-});
-
-const Product = mongoose.model("Product", productSchema);
-
-module.exports = Product;
+const ProductMongo = mongoose.model("Product", productSchema);
+module.exports = ProductMongo;
