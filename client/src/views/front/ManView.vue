@@ -1,29 +1,20 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
-import SidebarProduct from '../../components/front/Product/SidebarProduct.vue'
-import CardPerfume from '../../components/front/Product/CardPerfume.vue'
-import CarousselPerfume from '../../components/front/Product/CarousselPerfume.vue'
-import ProductService from '../../services/ProductService'
-import BrandService from '../../services/BrandService'
-import { type Product } from '../../types/products.types'
-import { type Brand } from '../../types/brands.types'
+import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
+import SidebarProduct from '@/components/front/Product/SidebarProduct.vue'
+import CardPerfume from '@/components/front/Product/CardPerfume.vue'
+import CarousselPerfume from '@/components/front/Product/CarousselPerfume.vue'
+import ProductService from '@/services/ProductService'
+import { type Product } from '@/types/products.types'
 import { type Ref } from 'vue'
 
 const allProducts: Ref<Product[]> = ref([])
 const filteredProducts: Ref<Product[]> = ref([])
-const brands: Ref<Brand[]> = ref([])
 
 onMounted(async () => {
-  allProducts.value = await ProductService.getMenProducts()
+  allProducts.value = await ProductService.getProductsByCategory('homme')
   filteredProducts.value = allProducts.value // Initialement, tous les produits sont affichés
-  brands.value = await BrandService.getAllBrands()
 })
-
-function getBrandName(brandId: string): string {
-  const brand = brands.value.find((b) => b._id === brandId)
-  return brand ? brand.name : 'Unknown'
-}
 
 const applyFilters = (filters: {
   brands: string[]
@@ -33,10 +24,9 @@ const applyFilters = (filters: {
   stock: boolean
 }) => {
   filteredProducts.value = allProducts.value.filter((product) => {
-    const matchesBrand = filters.brands.length ? filters.brands.includes(product.brandId) : true
-    console.log(filters.brands)
+    const matchesBrand = filters.brands.length ? filters.brands.includes(product.brand.name) : true
     const matchesFamily = filters.families.length
-      ? filters.families.includes(product.familyId)
+      ? filters.families.includes(product.family.name)
       : true
     const matchesPrice =
       product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
@@ -56,7 +46,7 @@ const applyFilters = (filters: {
         <div class="text-center text-black text-3xl p-12">
           <h1>NOS PRODUITS PARFUM HOMME</h1>
         </div>
-        <CardPerfume :products="filteredProducts" :getBrandName="getBrandName" />
+        <CardPerfume :products="filteredProducts" />
       </div>
     </div>
   </DefaultLayout>

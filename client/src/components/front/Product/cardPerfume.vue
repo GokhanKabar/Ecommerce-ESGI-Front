@@ -2,11 +2,9 @@
 import { defineProps } from 'vue'
 import { type Product } from '@/types/products.types'
 import getImagePath from '@/utils/getImagePath'
-import { onUpdated } from 'vue'
 
 interface Props {
   products: Product[]
-  getBrandName: (brandId: string) => string
 }
 
 const props = defineProps<Props>()
@@ -32,8 +30,8 @@ function calculateDiscountedPrice(price: number, promotion: number): string {
         <img :src="getImagePath(perfume.image)" :alt="perfume.name" class="w-full cursor-pointer" />
       </a>
       <div class="px-4 py-2 text-center">
-        <p class="text-black text-lg">{{ props.getBrandName(perfume.brandId) }}</p>
-        <div class="text-lg">{{ perfume.name }}</div>
+        <p class="text-gray-500 text-lg">{{ perfume.brand.name }}</p>
+        <div class="text-xl font-bold">{{ perfume.name }}</div>
         <p class="text-gray-500 text-xs pb-2">{{ perfume.concentration }}</p>
         <div>
           <p v-if="perfume.promotion > 0" class="font-bold text-xl text-[#d8b775]">
@@ -42,7 +40,7 @@ function calculateDiscountedPrice(price: number, promotion: number): string {
           <p v-if="perfume.promotion > 0" class="line-through text-gray-500">
             {{ formatPrice(perfume.price) }}
           </p>
-          <p v-else class="font-bold text-xl">{{ formatPrice(perfume.price) }}</p>
+          <p v-else class="text-xl">{{ formatPrice(perfume.price) }}</p>
         </div>
       </div>
     </div>

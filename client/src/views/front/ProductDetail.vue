@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import ProductService from '../../services/ProductService'
-import BrandService from '../../services/BrandService'
-import FamilyService from '../../services/FamilyService'
-import { type Product } from '../../types/products.types'
-import { type Brand } from '../../types/brands.types'
-import { type Family } from '../../types/families.types'
+import ProductService from '@/services/ProductService'
+import { type Product } from '@/types/products.types'
 import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
 import SingleCardPerfume from '@/components/front/Product/SingleCardPerfume.vue'
 import getImagePath from '@/utils/getImagePath'
@@ -16,8 +12,6 @@ const router = useRouter()
 const productId = route.params.id as string
 
 const product = ref<Product | null>(null)
-const brand = ref<Brand | null>(null)
-const family = ref<Family | null>(null)
 const relatedProducts = ref<Product[]>([])
 const isLoading = ref(true)
 const errorMessage = ref('')
@@ -27,12 +21,10 @@ onMounted(async () => {
     const productData = await ProductService.getProductById(productId)
     product.value = productData
     if (productData) {
-      const getBrand = await BrandService.getBrandById(productData.brandId)
-      brand.value = getBrand.data
-      console.log(brand.value)
-      const getFamily = await FamilyService.getFamilyById(productData.familyId)
-      family.value = getFamily.data
-      const allRelatedProducts = await ProductService.getProductsByFamilyId(productData.familyId, 5)
+      const allRelatedProducts = await ProductService.getProductsByFamilyId(
+        productData.family.id,
+        5
+      )
       // Filtre pour exclure le produit actuellement affiché
       relatedProducts.value = allRelatedProducts.filter((p: Product) => p._id !== productData._id)
     }
@@ -69,7 +61,7 @@ function goBack() {
         </router-link>
         <span class="text-black"> / </span>
         <span class="text-black">
-          {{ brand?.name || 'Marque inconnue' }} {{ product?.name || 'Nom du parfum' }}
+          {{ product?.brand.name || 'Marque inconnue' }} {{ product?.name || 'Nom du parfum' }}
         </span>
       </nav>
     </div>
@@ -87,7 +79,7 @@ function goBack() {
         </div>
         <!-- Division du texte à droite -->
         <div class="w-full md:w-1/2 px-4">
-          <h1 class="text-3xl font-bold">{{ brand?.name || 'Marque inconnue' }}</h1>
+          <h1 class="text-3xl font-bold">{{ product.brand.name || 'Marque inconnue' }}</h1>
           <h2 class="text-xl font-semibold">{{ product.name }}</h2>
           <div class="mt-4">
             <p v-if="product.promotion > 0" class="font-bold text-xl text-[#d8b775]">
@@ -101,7 +93,7 @@ function goBack() {
           <p class="text-gray-500 mt-4">{{ product.description }}</p>
           <div class="flex items-center mt-4">
             <p class="text-l font-bold mr-2">Famille :</p>
-            <p class="text-l">{{ family?.name || 'Famille inconnue' }}</p>
+            <p class="text-l">{{ product.family.name || 'Famille inconnue' }}</p>
           </div>
           <div class="flex items-center mt-4">
             <p class="text-l font-bold mr-2">Concentration :</p>
