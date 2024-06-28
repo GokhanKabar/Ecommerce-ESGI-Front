@@ -1,12 +1,13 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const familyController = require("../controllers/family.controller");
+const familyController = require('../controllers/family.controller');
+const checkAuthRole = require('../middlewares/checkAuthRole');
 
-router.post("/families", familyController.createFamily);
-router.get("/families", familyController.getAllFamilies);
-router.get("/families/:id", familyController.getFamilyById);
-router.put("/families/:id", familyController.updateFamily);
-router.delete("/families/:id", familyController.deleteFamily);
-router.get("/familiesall", familyController.getAllFamiliesAdmin);
+router.post('/', checkAuthRole({ roles: ['ADMIN'] }), familyController.createFamily);
+router.get('/', familyController.getAllFamilies);
+router.get('/:id', familyController.getFamilyById);
+router.put('/:id', checkAuthRole({ roles: ['ADMIN'] }), familyController.updateFamily);
+router.delete('/:id', checkAuthRole({ roles: ['ADMIN'] }), familyController.deleteFamily);
+router.get('/admin', checkAuthRole({ roles: ['ADMIN'] }), familyController.getAllFamiliesAdmin);
 
 module.exports = router;

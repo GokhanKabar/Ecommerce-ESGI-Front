@@ -20,7 +20,7 @@ app.use(
 );
 
 // Configuration des routes
-app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use("/", indexRouter);
 app.use(userRoute);
 app.use(productsRoutes);

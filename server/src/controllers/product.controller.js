@@ -1,5 +1,19 @@
 const { Product: SequelizeProduct } = require("../databases/sequelize/models");
 const Product = require("../databases/mongoose/Products"); // Mongoose model
+const Joi = require('joi');
+
+const productSchema = Joi.object({
+  name: Joi.string().min(3).max(50).required(),
+  description: Joi.string().min(10).max(500).required(),
+  category: Joi.string().required(),
+  price: Joi.number().positive().required(),
+  stock: Joi.number().integer().min(0).required(),
+  concentration: Joi.string().optional(),
+  promotion: Joi.string().optional(),
+  brandId: Joi.number().integer().required(),
+  familyId: Joi.number().integer().required(),
+  image: Joi.string().optional(),
+});
 
 exports.getProducts = async (req, res) => {
   try {
@@ -52,6 +66,12 @@ exports.getProductsByFamilyId = async (req, res) => {
 };
 
 exports.createProduct = async (req, res) => {
+  const { error, value } = productSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
   try {
     const {
       name,
@@ -63,7 +83,7 @@ exports.createProduct = async (req, res) => {
       promotion,
       brandId,
       familyId,
-    } = req.body;
+    } = value;
     const image = req.file ? req.file.path : null;
 
     const product = await SequelizeProduct.create({
@@ -88,6 +108,12 @@ exports.createProduct = async (req, res) => {
 };
 
 exports.updateProduct = async (req, res) => {
+  const { error, value } = productSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
   try {
     const { id } = req.params;
     const {
@@ -100,7 +126,7 @@ exports.updateProduct = async (req, res) => {
       promotion,
       brandId,
       familyId,
-    } = req.body;
+    } = value;
     const image = req.file ? req.file.path : null;
 
     const product = await SequelizeProduct.findByPk(id);
