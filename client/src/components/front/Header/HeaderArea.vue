@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import LogoIcon from '@/components/front/icons/LogoIcon.vue'
+import Basket from '@/components/front/Header/Basket.vue'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -118,38 +119,9 @@ const route = useRoute()
             >
           </router-link>
         </div>
-        <div class="nav-item">
-           <span class="absolute text-white text-xs top-[2rem] right-[6.8rem]">0</span>
-          <a href="#" class="flex flex-row gap-1">
-            <svg
-              width="17"
-              height="17"
-              viewBox="0 0 17 17"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <g clip-path="url(#clip0_2_479)">
-                <path
-                  d="M13.578 5.734C13.578 3.19 11.514 1.126 8.96998 1.126C6.42598 1.126 4.36198 3.19 4.36198 5.734H1.28998L3.33798 15.974H14.602L16.65 5.734H13.578ZM6.40998 5.734C6.40998 4.3228 7.55878 3.174 8.96998 3.174C10.3812 3.174 11.53 4.3228 11.53 5.734H6.40998Z"
-                  fill="#D8B775"
-                />
-              </g>
-              <defs>
-                <clipPath id="clip0_2_479">
-                  <rect
-                    width="16"
-                    height="16"
-                    fill="white"
-                    transform="translate(0.969971 0.549999)"
-                  />
-                </clipPath>
-              </defs>
-            </svg>
-            <span class="hidden md:inline-block text-white hover:text-[#D8B775] font-semibold"
-              >MON PANIER</span
-            >
-          </a>
-        </div>
+       
+
+        <Basket/>
       </div>
     </div>
     <nav
@@ -193,5 +165,7 @@ const route = useRoute()
         ></router-link
       >
     </nav>
+
+    
   </header>
 </template>
