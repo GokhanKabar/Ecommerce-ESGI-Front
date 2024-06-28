@@ -2,7 +2,13 @@ const { Brand } = require("../databases/sequelize/models"); // Sequelize model
 const Joi = require('joi');
 
 const brandSchema = Joi.object({
-  name: Joi.string().min(3).max(30).required(),
+  name: Joi.string().min(3).max(30).required().messages({
+    "string.base": "Le nom doit être une chaîne de caractères",
+    "string.empty": "Le nom ne doit pas être vide",
+    "string.min": "Le nom doit avoir une longueur minimale de {#limit}",
+    "string.max": "Le nom doit avoir une longueur maximale de {#limit}",
+    "any.required": "Le nom est requis",
+  }),
   description: Joi.string().min(10).max(100),
 });
 

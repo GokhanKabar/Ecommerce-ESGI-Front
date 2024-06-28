@@ -3,12 +3,33 @@ const Product = require("../databases/mongoose/Products"); // Mongoose model
 const Joi = require('joi');
 
 const productSchema = Joi.object({
-  name: Joi.string().min(3).max(50).required(),
-  description: Joi.string().min(10).max(500).required(),
+  name: Joi.string().min(3).max(50).required().messages({
+    "string.base": "Le nom doit être une chaîne de caractères",
+    "string.empty": "Le nom ne doit pas être vide",
+    "string.min": "Le nom doit avoir une longueur minimale de {#limit}",
+    "string.max": "Le nom doit avoir une longueur maximale de {#limit}",
+    "any.required": "Le nom est requis",
+  }),
+  description: Joi.string().min(10).max(500).required().messages({
+    "string.base": "La description doit être une chaîne de caractères",
+    "string.empty": "La description ne doit pas être vide",
+    "string.min": "La description doit avoir une longueur minimale de {#limit}",
+    "string.max": "La description doit avoir une longueur maximale de {#limit}",
+    "any.required": "La description est requise",
+  }),
   category: Joi.string().required(),
-  price: Joi.number().positive().required(),
-  stock: Joi.number().integer().min(0).required(),
-  concentration: Joi.string().optional(),
+  price: Joi.number().positive().required().messages({
+    "number.base": "Le prix doit être un nombre",
+    "number.positive": "Le prix doit être un nombre positif",
+    "any.required": "Le prix est requis",
+  }),
+  stock: Joi.number().integer().min(0).required().messages({
+    "number.base": "Le stock doit être un nombre",
+    "number.integer": "Le stock doit être un nombre entier",
+    "number.min": "Le stock doit être supérieur ou égal à {#limit}",
+    "any.required": "Le stock est requis",
+  }),
+  concentration: Joi.string().required(),
   promotion: Joi.string().optional(),
   brandId: Joi.number().integer().required(),
   familyId: Joi.number().integer().required(),
