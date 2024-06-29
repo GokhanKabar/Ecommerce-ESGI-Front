@@ -29,7 +29,7 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     promotion: {
-      type: Boolean,
+      type: Number,
       required: true,
     },
     image: String,
