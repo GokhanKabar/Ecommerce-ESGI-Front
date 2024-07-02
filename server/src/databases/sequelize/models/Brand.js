@@ -1,5 +1,5 @@
 const { DataTypes, Model } = require('sequelize');
-//const BrandMongo = require('../../denormalization/BrandMongo');
+const BrandMongo = require('../../denormalization/BrandMongo');
 
 module.exports = (sequelize) => {
   class Brand extends Model {
