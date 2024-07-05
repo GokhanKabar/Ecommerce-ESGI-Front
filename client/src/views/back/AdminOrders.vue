@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
+import ProgressLine from '@/components/back/componentsGeneric/order/ProgressLine.vue';
+import ButtonDefault from '@/components/back/componentsGeneric/Buttons/ButtonDefault.vue';
 
 const orders = ref([
   { 
@@ -50,8 +52,12 @@ const deleteOrder = (orderId: number) => {
 
 </script>
 <template>
+
+  
   <DefaultLayout>
     <div class="container mx-auto">
+<ProgressLine/>
+
       <div class="flex justify-between items-center border-b pb-4 mb-8">
         <h1 class="text-3xl font-bold text-white mt-5">Gestion des Commandes</h1>
       </div>
