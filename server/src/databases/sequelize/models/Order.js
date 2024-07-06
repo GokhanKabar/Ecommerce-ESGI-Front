@@ -3,8 +3,9 @@ const { Model, DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
   class Order extends Model {
     static associate(models) {
-      Order.belongsTo(models.User, { foreignKey: 'userId' });
-      Order.hasMany(models.OrderDetail, { foreignKey: 'orderId' });
+      // Assuming foreign keys map to 'user_id' and 'payment_id' in the database
+      Order.belongsTo(models.User, { foreignKey: 'user_id' });
+      Order.belongsTo(models.Payment, { foreignKey: 'payment_id' });      // Consider using hasMany or belongsToMany for product_orders
     }
   }
 
@@ -14,27 +15,74 @@ module.exports = (sequelize) => {
       primaryKey: true,
       autoIncrement: true
     },
-    status: DataTypes.STRING,
-    totalAmount: DataTypes.FLOAT,
-    createdAt: {
-      type: DataTypes.DATE,
+    delivery_status: {
+      type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: DataTypes.NOW
+      validate: {
+        notEmpty: true,
+        len: [1, 50]
+      }
     },
-    updatedAt: {
+    payment_status: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        len: [1, 50]
+      }
+    },
+    date_order: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW
+      validate: {
+        isDate: true
+      }
+    },
+    date_creation: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      validate: {
+        isDate: true
+      }
+    },
+    date_update: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      validate: {
+        isDate: true
+      }
+    },
+    order_status: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        len: [1, 50]
+      }
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'User', // Assuming 'User' table exists for foreign key
+        key: 'id'
+      }
+    },
+    payment_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Payment', // Assuming 'Payment' table exists for foreign key
+        key: 'id'
+      }
     }
   }, {
     sequelize,
-    modelName: 'Order',
-    timestamps: false, 
-    underscored: true, 
-    tableName: 'orders' 
+    modelName: "Order",
+    timestamps: true,
+    underscored: true,
+    tableName: "Order",
   });
 
   return Order;
 };
-
-  
