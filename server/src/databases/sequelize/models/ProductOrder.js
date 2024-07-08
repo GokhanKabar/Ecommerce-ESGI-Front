@@ -1,19 +1,24 @@
 const { Model, DataTypes } = require('sequelize');
+const Product = require('./Product');
+const Order = require('./Order');
 
 module.exports = (sequelize) => {
   class ProductOrder extends Model {
     static associate(models) {
-      ProductOrder.belongsTo(models.Product, { foreignKey: 'product_id' });
-      ProductOrder.belongsTo(models.Order, { foreignKey: 'order_id' });
-    }
+        // Assuming foreign keys map to 'user_id' and 'payment_id' in the database
+        ProductOrder.belongsTo(models.Product);
+        ProductOrder.belongsTo(models.Order);
+  
+        
+      }
   }
 
-  OrderProduct.init({
+  ProductOrder.init({
     product_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Product', // Assuming 'Product' table exists for foreign key
+        model: 'products', // Assuming 'Product' table exists for foreign key
         key: 'id'
       },
       validate: {
@@ -58,7 +63,7 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'User', // Assuming 'User' table exists for foreign key
+        model: 'Users', // Assuming 'User' table exists for foreign key
         key: 'id'
       }
     },
@@ -66,7 +71,7 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'User', // Assuming 'User' table exists for foreign key
+        model: 'Users', // Assuming 'User' table exists for foreign key
         key: 'id'
       }
     }
@@ -78,5 +83,8 @@ module.exports = (sequelize) => {
     tableName: 'product_orders'
   });
 
-  return OrderProduct;
+
+  // Associations
+   
+  return ProductOrder;
 };

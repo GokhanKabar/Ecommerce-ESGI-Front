@@ -6,6 +6,7 @@ module.exports = (sequelize) => {
     static associate(models) {
       Product.belongsTo(models.Brand, { foreignKey: "brandId" });
       Product.belongsTo(models.Family, { foreignKey: "familyId" });
+      Product.belongsToMany(models.Order, { through: models.ProductOrder });
     }
 
     static addHooks(db) {

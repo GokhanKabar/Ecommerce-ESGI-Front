@@ -6,9 +6,10 @@ const orderController = require('../controllers/order.controller');
 router.post('/addOrder',orderController.createOrder);
 router.get('/getAllOrders',orderController.getAllOrders);
 router.get('/getOrder/:id', orderController.getOrderById);
-router.put('/updateOrder/:id', brandController.updateBrand);
-router.delete('/deleteOrder/:id', brandController.deleteBrand);
-router.get('/OrderClient/:id', brandController.getAllBrandsAdmin);
+router.put('/updateOrder/:id', orderController.updateOrder);
+router.delete('/deleteOrder/:id', orderController.deleteOrder);
+router.get('/getOrderByClient/:id', orderController.getOrdersByUser);
+router.get('/getOrderDetails/:id', orderController.getOrderDetails);
 
 
 module.exports = router;
