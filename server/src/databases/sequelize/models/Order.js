@@ -1,11 +1,12 @@
 const { Model, DataTypes } = require('sequelize');
 
+
 module.exports = (sequelize) => {
   class Order extends Model {
     static associate(models) {
-      // Assuming foreign keys map to 'user_id' and 'payment_id' in the database
-      Order.belongsTo(models.User, { foreignKey: 'user_id' });
-      Order.belongsTo(models.Payment, { foreignKey: 'payment_id' });      // Consider using hasMany or belongsToMany for product_orders
+      
+      Order.belongsToMany(models.Product, { through: models.ProductOrder });
+      Order.belongsTo(models.User);
     }
   }
 
@@ -67,14 +68,6 @@ module.exports = (sequelize) => {
         model: 'User', // Assuming 'User' table exists for foreign key
         key: 'id'
       }
-    },
-    payment_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Payment', // Assuming 'Payment' table exists for foreign key
-        key: 'id'
-      }
     }
   }, {
     sequelize,
@@ -83,6 +76,8 @@ module.exports = (sequelize) => {
     underscored: true,
     tableName: "Order",
   });
+
+  // Associations
 
   return Order;
 };

@@ -4,6 +4,7 @@ const path = require("path");
 const productsRoutes = require("./routes/products.route.js");
 const brandsRoutes = require("./routes/brands.route.js");
 const familiesRoutes = require("./routes/families.route.js");
+const orderRoutes = require("./routes/order.route.js");
 const { indexRouter } = require("./routes/index.js");
 const userRoute = require("./routes/userRoutes.js");
 const db = require("./databases/sequelize/models");
@@ -28,6 +29,7 @@ app.use(productsRoutes);
 app.use(brandsRoutes);
 app.use(familiesRoutes);
 app.use("/stripe", stripeRoutes);
+app.use(orderRoutes);
 
 // Connexion à MongoDB
 connectDB();
