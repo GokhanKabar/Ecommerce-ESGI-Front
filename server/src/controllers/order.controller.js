@@ -77,8 +77,36 @@ exports.deleteOrder = async (req, res) => {
             return res.status(200).json({ orders: [] });
         }
 
-        //res.status(200).json({ orders: formattedOrders });
-        res.status(200).json({ orders: orders });
+        const formattedOrders = orders.map(order => ({
+          orderId: order.id,
+          deliveryStatus: order.delivery_status,
+          paymentStatus: order.payment_status,
+          dateOrder: order.date_order,
+          dateCreation: order.date_creation,
+          dateUpdate: order.date_update,
+          orderStatus: order.order_status,
+          userId: order.user_id,
+          products: order.Products.map(product => ({
+              id: product.id,
+              name: product.name,
+              description: product.description,
+              category: product.category,
+              price: product.price,
+              stock: product.stock,
+              concentration: product.concentration,
+              promotion: product.promotion,
+              image: product.image,
+              dateAdded: product.dateAdded,
+              dateUpdated: product.dateUpdated,
+              createdAt: product.createdAt,
+              updatedAt: product.updatedAt,
+              brandId: product.brandId,
+              familyId: product.familyId,
+              quantity: product.ProductOrder.quantity,
+              totalPrice: product.ProductOrder.quantity * product.price
+          }))
+      }));
+        res.status(200).json({  formattedOrders });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: error.message });
@@ -104,27 +132,32 @@ exports.getOrderDetails= async (req, res) => {
         return res.status(200).json({ order: [] }); // Retourne un tableau vide
     }
 
+      //calculate the total of this Order
+      
       // Format and return the order details
       const orderDetails = {
         orderId: order.id,
-        //deliveryStatus: order.delivery_status,
-        //paymentStatus: order.payment_status,
-        //dateOrder: order.date_order,
-        //dateCreation: order.date_creation,
-        //dateUpdate: order.date_update,
-       // orderStatus: order.order_status,
-        //userId: order.user_id,
-        //user: order.user, // User details
-        //products: order.productOrders.map((productOrder) => {
-          //return {
-           // productId: productOrder.product_id,
-            //quantity: productOrder.quantity,
-            //product: productOrder.product // Product details
-          //};
-        //})
+        deliveryStatus: order.delivery_status,
+        paymentStatus: order.payment_status,
+        dateOrder: order.date_order,
+        dateCreation: order.date_creation,
+        dateUpdate: order.date_update,
+        orderStatus: order.order_status,
+        userId: order.user_id,
+        user: order.user, // User details
+        products: order.productOrders.map((productOrder) => {
+          return {
+            productId: productOrder.product_id,
+            quantity: productOrder.quantity,
+            product: productOrder.product // Product details
+          };
+        }),
+        totalAmount 
       };
 
-      res.status(200).json({ order: order });
+      res.status(200).json({ 
+        order: order
+      });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: error.message });

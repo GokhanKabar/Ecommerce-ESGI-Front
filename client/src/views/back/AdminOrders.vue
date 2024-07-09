@@ -1,54 +1,29 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
-import ProgressLine from '@/components/back/componentsGeneric/order/ProgressLine.vue';
+import OrderCard from '@/components/back/componentsGeneric/order/ProgressLine.vue';
 import ButtonDefault from '@/components/back/componentsGeneric/Buttons/ButtonDefault.vue';
+import OrderService from '../../services/OrderService';
+import store from '../../store/store.js';
 
-const orders = ref([
-  { 
-    id: 1, 
-    userName: 'Utilisateur 1', 
-    date: '2024-05-01', 
-    status: 'En attente', 
-    price: 50.99, 
-    deliveryType: 'Livraison express', 
-    products: [
-      { id: 1, name: 'Produit 1', quantity: 2 },
-      { id: 2, name: 'Produit 2', quantity: 1 },
-    ] 
-  },
-  { 
-    id: 2, 
-    userName: 'Utilisateur 2', 
-    date: '2024-04-28', 
-    status: 'Livré', 
-    price: 99.99, 
-    deliveryType: 'Livraison standard', 
-    products: [
-      { id: 2, name: 'Produit 2', quantity: 3 },
-    ] 
-  },
-  { 
-    id: 3, 
-    userName: 'Utilisateur 3', 
-    date: '2024-04-25', 
-    status: 'En cours', 
-    price: 25.99, 
-    deliveryType: 'Livraison express', 
-    products: [
-      { id: 1, name: 'Produit 1', quantity: 1 },
-      { id: 3, name: 'Produit 3', quantity: 2 },
-    ] 
-  },
-]);
+const Orders =ref([]);
+const user_id = store.state.user.id;
 
-
-const deleteOrder = (orderId: number) => {
-  const index = orders.value.findIndex((order) => order.id === orderId);
-  if (index !== -1) {
-    orders.value.splice(index, 1);
+const fetchOrdersForUser = async () => {
+  try {
+    const response = await OrderService.getOrderByUser(user_id);
+    Orders.value = response.formattedOrders;
+  } catch (error) {
+    console.error('Error fetching families:', error);
+    
   }
 };
+
+
+onMounted(async () => {
+  await fetchOrdersForUser();  
+  console.log('here'+Orders);
+});
 
 </script>
 <template>
@@ -56,7 +31,8 @@ const deleteOrder = (orderId: number) => {
   
   <DefaultLayout>
     <div class="container mx-auto">
-<ProgressLine/>
+<OrderCard :orders="Orders"/>
+
 
       <div class="flex justify-between items-center border-b pb-4 mb-8">
         <h1 class="text-3xl font-bold text-white mt-5">Gestion des Commandes</h1>

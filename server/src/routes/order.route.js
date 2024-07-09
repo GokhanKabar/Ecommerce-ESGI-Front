@@ -8,7 +8,7 @@ router.get('/getAllOrders',orderController.getAllOrders);
 router.get('/getOrder/:id', orderController.getOrderById);
 router.put('/updateOrder/:id', orderController.updateOrder);
 router.delete('/deleteOrder/:id', orderController.deleteOrder);
-router.get('/getOrderByClient/:id', orderController.getOrdersByUser);
+router.get('/getOrderByUser/:id', orderController.getOrdersByUser);
 router.get('/getOrderDetails/:id', orderController.getOrderDetails);
 
 
