@@ -5,6 +5,7 @@ const productController = require("../controllers/product.controller");
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 
+router.get("/search", productController.searchProducts);
 router.get("/products", productController.getProducts);
 router.get("/products/:id", productController.getProductById);
 router.get(

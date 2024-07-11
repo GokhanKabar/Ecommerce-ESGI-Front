@@ -18,6 +18,9 @@ import ResetPassword from '@/views/front/ResetPassword.vue'
 import ForgatPassword from '@/views/front/ForgatPassword.vue'
 import store from '@/store/store'
 import ProductDetail from '@/views/front/ProductDetail.vue'
+import Success from '@/views/front/Success.vue'
+import Cancel from '@/views/front/Cancel.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -128,6 +131,18 @@ const router = createRouter({
       name: 'product',
       component: ProductDetail,
       meta: { title: 'Parfum | Tendance Parfums' }
+    },
+    {
+      path: '/success',
+      name: 'Success',
+      component: Success,
+      meta: { title: 'Success | Tendance Parfums' }
+    },
+    {
+      path: '/cancel',
+      name: 'Cancel',
+      component: Cancel,
+      meta: { title: 'Cancel | Tendance Parfums' }
     }
   ]
 })

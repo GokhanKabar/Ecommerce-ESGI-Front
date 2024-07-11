@@ -90,5 +90,14 @@ export default {
   deleteProduct(id) {
     if (!isAdmin()) throw new Error('Unauthorized')
     return Api().delete(`products/${id}`)
+  },
+  async searchProducts(query) {
+    try {
+      const response = await Api().get(`/products/search?q=${query}`)
+      return response.data
+    } catch (error) {
+      console.error('Error searching products:', error)
+      throw error
+    }
   }
 }
