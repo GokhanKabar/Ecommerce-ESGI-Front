@@ -34,6 +34,14 @@ const handleSearch = async () => {
 const goToProductPage = (id) => {
   router.push(`/product/${id}`)
 }
+
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price)
+}
+
+const calculateDiscountedPrice = (price, promotion) => {
+  return price - (price * promotion) / 100
+}
 </script>
 
 <template>
@@ -105,21 +113,30 @@ const goToProductPage = (id) => {
         </div>
         <div
           v-if="searchResults.length"
-          class="absolute left-0 right-0 bg-white shadow-lg rounded-lg mt-2 z-10"
+          class="absolute left-0 right-0 bg-white shadow-lg rounded-lg mt-2 z-10 lg:w-[30rem] max-h-65 overflow-y-scroll scrollbar-visible"
         >
           <ul>
             <li
               v-for="result in searchResults"
               :key="result._id"
-              class="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+              class="px-4 py-2 hover:bg-gray-200 cursor-pointer flex items-center"
               @click="goToProductPage(result._id)"
             >
-              <img
-                :src="getImagePath(result.image)"
-                alt="result.name"
-                class="w-10 h-10 inline-block"
-              />
-              <span class="ml-2">{{ result.name }}</span>
+              <img :src="getImagePath(result.image)" alt="result.name" class="w-10 h-10" />
+              <div class="ml-2">
+                <span>{{ result.name }}</span>
+                <div v-if="result.promotion > 0" class="flex flex-col">
+                  <span class="line-through text-gray-500 text-sm">{{
+                    formatPrice(result.price)
+                  }}</span>
+                  <span class="text-[#D8B775] text-sm mt-1">{{
+                    formatPrice(calculateDiscountedPrice(result.price, result.promotion))
+                  }}</span>
+                </div>
+                <div v-else>
+                  <span class="text-sm">{{ formatPrice(result.price) }}</span>
+                </div>
+              </div>
             </li>
           </ul>
         </div>
@@ -210,3 +227,23 @@ const goToProductPage = (id) => {
     </nav>
   </header>
 </template>
+
+<style scoped>
+.scrollbar-visible::-webkit-scrollbar {
+  width: 12px;
+}
+
+.scrollbar-visible::-webkit-scrollbar-thumb {
+  background-color: #d8b775;
+  border-radius: 6px;
+}
+
+.scrollbar-visible::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.scrollbar-visible {
+  scrollbar-color: #d8b775 #f1f1f1;
+  scrollbar-width: thin;
+}
+</style>
