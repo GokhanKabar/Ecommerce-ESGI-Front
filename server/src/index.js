@@ -8,6 +8,7 @@ const { indexRouter } = require("./routes/index.js");
 const userRoute = require("./routes/userRoutes.js");
 const db = require("./databases/sequelize/models");
 const connectDB = require("./databases/mongoose/mongo.connection.js"); // Importez le fichier de connexion MongoDB
+const stripeRoutes = require("./routes/stripe.route.js");
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use(userRoute);
 app.use(productsRoutes);
 app.use(brandsRoutes);
 app.use(familiesRoutes);
+app.use("/stripe", stripeRoutes);
 
 // Connexion à MongoDB
 connectDB();
