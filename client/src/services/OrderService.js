@@ -1,7 +1,7 @@
 import Api from '@/services/Api'
 import store from '../store/store'
 
-const user_id=store.state.user.id;
+
 const isAdmin = () => {
   const user = store.state.user
   return user && user.role === 'ADMIN'
@@ -17,4 +17,13 @@ async getOrderByUser(user_id) {
       throw error
     }
   },
+  async getAllOrders() {
+    try {
+      const response = await Api().get(`getAllOrders`)
+      return response.data
+    } catch (error) {
+      console.error('Error fetching Orders by user:', error)
+      throw error
+    }
+  }
 }

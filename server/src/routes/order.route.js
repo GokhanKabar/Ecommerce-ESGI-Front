@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const orderController = require('../controllers/order.controller');
+//const checkUserPermissions = require('../middlewares/checkUserPermissionOrder');
+
 
 
 router.post('/addOrder',orderController.createOrder);

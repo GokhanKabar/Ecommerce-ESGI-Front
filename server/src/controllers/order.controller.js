@@ -34,7 +34,7 @@ exports.getOrderById=async(req, res)=>{
 
 exports.deleteOrder = async (req, res) => {
     try {
-      const orderId = req.params.id; // Get order ID from request params
+      const orderId = req.params.id; 
   
       // Check order status before deleting
       const order = await Order.findByPk(orderId);
@@ -42,8 +42,8 @@ exports.deleteOrder = async (req, res) => {
         return res.status(404).json({ message: 'Order not found' });
       }
   
-      if (order.delivery_status === 'delivered' || order.delivery_status === 'in delivery') {
-        return res.status(400).json({ message: 'Cannot delete order in delivered or in delivery status' });
+      if (order.delivery_status === 'delivered' || order.delivery_status === 'in_delivery') {
+        return res.status(400).json({ message: 'Cannot delete order delivered or in delivery status' });
       }
   
       // Update order status to 'canceled'
@@ -106,6 +106,7 @@ exports.deleteOrder = async (req, res) => {
               totalPrice: product.ProductOrder.quantity * product.price
           }))
       }));
+      
         res.status(200).json({  formattedOrders });
     } catch (error) {
         console.error(error);
@@ -116,26 +117,22 @@ exports.deleteOrder = async (req, res) => {
 
 
 exports.getOrderDetails= async (req, res) => {
-    try {
-      // Find the order with the specified ID
-      const order = await Order.findByPk( req.params.id, {
-        
-        include: [
-          { // Include associated products
-            model: Product,
-          }
-        ]
+  const  orderId  = req.params.id;
+  try {
+      const orders = await Order.findAll({
+          where: { id: orderId },
+          include: [
+              {
+                  model: Product,
+              }
+          ]
       });
 
-      if (!order) {
-        console.log(`Order with ID: ${orderId} not found`);
-        return res.status(200).json({ order: [] }); // Retourne un tableau vide
-    }
+      if (!orders) {
+          return res.status(200).json({ orders: [] });
+      }
 
-      //calculate the total of this Order
-      
-      // Format and return the order details
-      const orderDetails = {
+      const OrderDetails = orders.map(order => ({
         orderId: order.id,
         deliveryStatus: order.delivery_status,
         paymentStatus: order.payment_status,
@@ -144,24 +141,32 @@ exports.getOrderDetails= async (req, res) => {
         dateUpdate: order.date_update,
         orderStatus: order.order_status,
         userId: order.user_id,
-        user: order.user, // User details
-        products: order.productOrders.map((productOrder) => {
-          return {
-            productId: productOrder.product_id,
-            quantity: productOrder.quantity,
-            product: productOrder.product // Product details
-          };
-        }),
-        totalAmount 
-      };
-
-      res.status(200).json({ 
-        order: order
-      });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: error.message });
-    }
+        products: order.Products.map(product => ({
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            category: product.category,
+            price: product.price,
+            stock: product.stock,
+            concentration: product.concentration,
+            promotion: product.promotion,
+            image: product.image,
+            dateAdded: product.dateAdded,
+            dateUpdated: product.dateUpdated,
+            createdAt: product.createdAt,
+            updatedAt: product.updatedAt,
+            brandId: product.brandId,
+            familyId: product.familyId,
+            quantity: product.ProductOrder.quantity,
+            totalPrice: product.ProductOrder.quantity * product.price
+        }))
+    }));
+    
+      res.status(200).json({  OrderDetails });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: error.message });
+  }
   };
 
 
