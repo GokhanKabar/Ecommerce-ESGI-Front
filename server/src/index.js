@@ -30,6 +30,7 @@ app.use(brandsRoutes);
 app.use(familiesRoutes);
 app.use("/stripe", stripeRoutes);
 app.use(orderRoutes);
+app.use(orderRoutes);
 
 // Connexion à MongoDB
 connectDB();
