@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { onMounted, ref } from 'vue';
 import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
 import OrderCard from '@/components/back/componentsGeneric/order/ProductCard.vue';
 import ButtonDefault from '@/components/back/componentsGeneric/Buttons/ButtonDefault.vue';
