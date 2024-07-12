@@ -1,10 +1,12 @@
 const { Model, DataTypes } = require('sequelize');
 
+
 module.exports = (sequelize) => {
   class Order extends Model {
     static associate(models) {
-      Order.belongsTo(models.User, { foreignKey: 'userId' });
-      Order.hasMany(models.OrderDetail, { foreignKey: 'orderId' });
+      
+      Order.belongsToMany(models.Product, { through: models.ProductOrder });
+      Order.belongsTo(models.User);
     }
   }
 
@@ -14,27 +16,68 @@ module.exports = (sequelize) => {
       primaryKey: true,
       autoIncrement: true
     },
-    status: DataTypes.STRING,
-    totalAmount: DataTypes.FLOAT,
-    createdAt: {
-      type: DataTypes.DATE,
+    delivery_status: {
+      type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: DataTypes.NOW
+      validate: {
+        notEmpty: true,
+        len: [1, 50]
+      }
     },
-    updatedAt: {
+    payment_status: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        len: [1, 50]
+      }
+    },
+    date_order: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW
+      validate: {
+        isDate: true
+      }
+    },
+    date_creation: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      validate: {
+        isDate: true
+      }
+    },
+    date_update: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      validate: {
+        isDate: true
+      }
+    },
+    order_status: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        len: [1, 50]
+      }
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'User', // Assuming 'User' table exists for foreign key
+        key: 'id'
+      }
     }
   }, {
     sequelize,
-    modelName: 'Order',
-    timestamps: false, 
-    underscored: true, 
-    tableName: 'orders' 
+    modelName: "Order",
+    timestamps: true,
+    underscored: true,
+    tableName: "Order",
   });
+
+  // Associations
 
   return Order;
 };
-
-  

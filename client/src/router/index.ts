@@ -5,6 +5,7 @@ import AdminProducts from '@/views/back/AdminProducts.vue'
 import AdminBrand from '@/views/back/AdminBrand.vue'
 import AdminFamily from '@/views/back/AdminFamily.vue'
 import AdminOrders from '@/views/back/AdminOrders.vue'
+import ClientOrders from '@/views/back/ClientOrders.vue'
 import HomeView from '@/views/front/HomeView.vue'
 import BrandView from '@/views/front/BrandView.vue'
 import ContactView from '@/views/front/ContactView.vue'
@@ -59,6 +60,12 @@ const router = createRouter({
       name: 'adminOrders',
       component: AdminOrders,
       meta: { title: 'Admin' }
+    },
+    {
+      path: '/admin/myorders',
+      name: 'clientOrders',
+      component: ClientOrders,
+      meta: { title: 'Client Orders' }
     },
     {
       path: '/',

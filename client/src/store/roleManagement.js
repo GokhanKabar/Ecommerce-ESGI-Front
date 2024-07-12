@@ -2,8 +2,8 @@ import store from './store';
 
 // Définir la hiérarchie des rôles
 const roleHierarchy = {
-  'ADMIN': ['ROLE_STORE_KEEPER', 'USER'],
-  'ROLE_STORE_KEEPER': ['USER'],
+  'ADMIN': ['ROLE_STORE_KEEPER'],
+  'ROLE_STORE_KEEPER': [],
   'USER': []
 };
 

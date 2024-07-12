@@ -8,14 +8,14 @@ import OrderService from '../../services/OrderService';
 import store from '../../store/store.js';
 
 
-const pageTitle = ref('Commandes');
+const pageTitle = ref('Mes Commandes');
 const Orders =ref([]);
 const user_id = store.state.user.id;
 
-const fetchOrdersForAdmin = async () => {
+const fetchOrdersForUser = async () => {
   try {
-    const response = await OrderService.getAllOrders();
-    Orders.value = response;
+    const response = await OrderService.getOrderByUser(user_id);
+    Orders.value = response.formattedOrders;
   } catch (error) {
     console.error('Error fetching families:', error);
     
@@ -24,8 +24,8 @@ const fetchOrdersForAdmin = async () => {
 
 
 onMounted(async () => {
-  await fetchOrdersForAdmin();  
-  
+  await fetchOrdersForUser();  
+  console.log('here'+Orders);
 });
 
 </script>
@@ -35,7 +35,7 @@ onMounted(async () => {
   <DefaultLayout>
     <BreadcrumbDefault :pageTitle="pageTitle" />
     <div class="container mx-auto">
-<div> {{ Orders }}</div>
+<OrderCard :orders="Orders"/>
 
 
       

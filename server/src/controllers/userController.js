@@ -18,10 +18,10 @@ const schemaRegister = Joi.object({
     "string.max": "Le prénom ne peut pas dépasser {#limit} caractères.",
   }),
   address: Joi.string()
-    .pattern(new RegExp("^[0-9]+\\s+[a-zA-Z]+\\s+[a-zA-Z\\s]+\\s+[0-9]{5}$"))
+   //.pattern(new RegExp("^[0-9]+\\s+[a-zA-Z]+\\s+[a-zA-Z\\s]+\\s+[0-9]{5}$"))
     .required()
     .messages({
-      "string.empty": "L'adresse est requis.",
+      //"string.empty": "L'adresse est requis.",
       "string.pattern.base":
         "Le format de l'adresse est incorrect. Veuillez saisir un numéro de rue, le nom de la rue, la ville et le code postal.",
     }),
