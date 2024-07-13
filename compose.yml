@@ -7,7 +7,7 @@ services:
     working_dir: /home/node
     command: sh -c "npm install && npm run dev"
     ports:
-      - "5173:5173"
+      - "80:80"
     volumes:
       - ./client:/home/node
 
@@ -63,6 +63,16 @@ services:
       - db-data:/data/db
       - ./mongo/data:/home/data
     working_dir: /home/data
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - client
+      - server
 
 volumes:
   mysql-data: {}
