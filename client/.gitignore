@@ -1,6 +1,5 @@
 # Dossiers
 node_modules/
-dist/
 .cache/
 out/
 
@@ -68,9 +67,6 @@ yarn.lock
 
 # Tailwind CSS
 .cache/
-
-# Build de production
-/dist/
 
 # Configurations de Webpack
 node_modules/
