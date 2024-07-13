@@ -7,7 +7,7 @@ services:
     working_dir: /home/node
     command: sh -c "npm install && npm run dev"
     ports:
-      - "80:80"
+      - "5173:5173"
     volumes:
       - ./client:/home/node
 
