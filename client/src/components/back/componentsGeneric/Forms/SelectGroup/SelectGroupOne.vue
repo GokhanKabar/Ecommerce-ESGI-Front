@@ -12,7 +12,7 @@ const changeTextColor = () => {
 <template>
   <div>
     <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-      Select Country
+      Sujet du message
     </label>
     <div class="relative z-20 bg-white dark:bg-form-input">
       <span class="absolute top-1/2 left-4 z-30 -translate-y-1/2">
@@ -51,10 +51,11 @@ const changeTextColor = () => {
         @change="changeTextColor"
         class="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
       >
-        <option value="" disabled selected>Select Country</option>
-        <option value="USA" class="text-body dark:text-bodydark">USA</option>
-        <option value="UK" class="text-body dark:text-bodydark">UK</option>
-        <option value="Canada" class="text-body dark:text-bodydark">Canada</option>
+      <option value="" disabled>Sélectionner un sujet</option>
+          <option value="Question générale" class="text-body dark:text-bodydark">Question générale</option>
+          <option value="Support technique" class="text-body dark:text-bodydark">Support technique</option>
+          <option value="Demande de partenariat" class="text-body dark:text-bodydark">Demande de partenariat</option>
+          <option value="Autre" class="text-body dark:text-bodydark">Autre</option>
       </select>
       <span class="absolute top-1/2 right-4 z-10 -translate-y-1/2">
         <svg
