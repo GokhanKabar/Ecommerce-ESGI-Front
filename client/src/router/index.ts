@@ -5,6 +5,7 @@ import AdminProducts from '@/views/back/AdminProducts.vue'
 import AdminBrand from '@/views/back/AdminBrand.vue'
 import AdminFamily from '@/views/back/AdminFamily.vue'
 import AdminOrders from '@/views/back/AdminOrders.vue'
+import ClientOrders from '@/views/back/ClientOrders.vue'
 import HomeView from '@/views/front/HomeView.vue'
 import BrandView from '@/views/front/BrandView.vue'
 import ContactView from '@/views/front/ContactView.vue'
@@ -18,6 +19,9 @@ import ResetPassword from '@/views/front/ResetPassword.vue'
 import ForgatPassword from '@/views/front/ForgatPassword.vue'
 import store from '@/store/store'
 import ProductDetail from '@/views/front/ProductDetail.vue'
+import Success from '@/views/front/Success.vue'
+import Cancel from '@/views/front/Cancel.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -56,6 +60,12 @@ const router = createRouter({
       name: 'adminOrders',
       component: AdminOrders,
       meta: { title: 'Admin' }
+    },
+    {
+      path: '/admin/myorders',
+      name: 'clientOrders',
+      component: ClientOrders,
+      meta: { title: 'Client Orders' }
     },
     {
       path: '/',
@@ -128,6 +138,18 @@ const router = createRouter({
       name: 'product',
       component: ProductDetail,
       meta: { title: 'Parfum | Tendance Parfums' }
+    },
+    {
+      path: '/success',
+      name: 'Success',
+      component: Success,
+      meta: { title: 'Success | Tendance Parfums' }
+    },
+    {
+      path: '/cancel',
+      name: 'Cancel',
+      component: Cancel,
+      meta: { title: 'Cancel | Tendance Parfums' }
     }
   ]
 })

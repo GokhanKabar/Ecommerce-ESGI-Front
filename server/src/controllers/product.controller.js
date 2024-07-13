@@ -154,3 +154,20 @@ exports.getProductsAdmin = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.searchProducts = async (req, res) => {
+  try {
+    const query = req.query.q;
+    const products = await Product.find({
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { "brand.name": { $regex: query, $options: "i" } },
+        { "family.name": { $regex: query, $options: "i" } },
+      ],
+    });
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error fetching search results:", error);
+    res.status(500).json({ error: error.message });
+  }
+};

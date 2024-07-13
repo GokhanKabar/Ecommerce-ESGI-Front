@@ -26,7 +26,7 @@ const newProduct = ref({
   price: 0,
   stock: 0,
   concentration: '',
-  promotion: false,
+  promotion: 0,
   image: null,
   brandId: null,
   familyId: null,
@@ -39,7 +39,7 @@ const editedProduct = ref({
   price: 0,
   stock: 0,
   concentration: '',
-  promotion: false,
+  promotion: 0,
   image: null,
   brandId: null,
   familyId: null,
@@ -166,7 +166,7 @@ const resetForm = () => {
     price: 0,
     stock: 0,
     concentration: '',
-    promotion: false,
+    promotion: 0,
     image: null,
     brandId: null,
     familyId: null,
@@ -259,7 +259,7 @@ const resetForm = () => {
             <div class="flex flex-col gap-6 xl:flex-row">
               <InputGroup
                 label="Promotion"
-                type="checkbox"
+                type="text"
                 @input="newProduct.promotion=$event.target.value"
                 customClasses="w-full xl:w-1/2"
               />
@@ -385,7 +385,7 @@ const resetForm = () => {
             <div class="flex flex-col gap-6 xl:flex-row">
               <InputGroup
                 label="Promotion"
-                type="checkbox"
+                type="text"
                 @input="editedProduct.promotion=$event.target.value"
                 customClasses="w-full xl:w-1/2"
               />
