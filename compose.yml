@@ -5,7 +5,7 @@ services:
     image: node:21.0.0-alpine
     user: node
     working_dir: /home/node
-    command: sh -c "npm install && npm run dev"
+    command: sh -c "npm install && npm run start"
     ports:
       - "5173:5173"
     volumes:
@@ -18,11 +18,12 @@ services:
     stdin_open: true
     working_dir: /home/node
     entrypoint: sh -c
-    command: '"npm install && npm run dev"'
+    command: sh -c "chmod +x /init.sh && /init.sh"
     ports:
       - 8000:8000
     volumes:
       - ./server:/home/node
+      - ./backend.sh:/init.sh
     environment:
       - HOST=0.0.0.0
       - MONGO_URL=mongodb://root:password@mongodb:27017/app?authSource=admin
@@ -44,6 +45,14 @@ services:
       - mysql-data:/var/lib/mysql
     command: --pid-file=/var/lib/mysql/mysql.pid
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: alikhelifa147
+
   mongodb:
     image: mongo
     ports:
@@ -55,7 +64,7 @@ services:
       - db-data:/data/db
       - ./mongo/data:/home/data
     working_dir: /home/data
-
+    
   nginx:
     image: nginx:latest
     ports:
@@ -67,7 +76,6 @@ services:
     depends_on:
       - client
       - server
-
 volumes:
   mysql-data: {}
   db-data: {}
