@@ -87,7 +87,7 @@ const createCheckoutSession = async () => {
 </script>
 
 <template>
-  <div class="nav-item mt-2">
+  <div :class="['nav-item ', sideBarType === 'back' ? 'mt-2' :'' ]" >
     <a href="#" class="flex flex-row gap-1">
       <svg
         :width="sideBarType === 'back' ? 27 : 17" :height="sideBarType === 'back' ? 27 : 17"
