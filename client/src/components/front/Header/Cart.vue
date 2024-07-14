@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import store from '@/store/store';
 import { onClickOutside } from '@vueuse/core'
-import { ref, computed } from 'vue'
+import { ref, computed,defineProps } from 'vue'
 
 // Assuming your store has a `cart` state with products
 const target = ref(null)
 const dropdownOpen = ref(false)
 
+
+defineProps({
+  sideBarType: String
+})
 
 onClickOutside(target, () => {
   dropdownOpen.value = false
@@ -49,9 +53,9 @@ const totalProducts=computed(() =>
 </script>
 
 <template>
-  <div class="nav-item">
+  <div :class="['nav-item', sideBarType === 'back' ? 'm-2' : '']" >
     <a href="#" class="flex flex-row gap-1">
-      <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg :width="sideBarType === 'back' ? 27 : 17" :height="sideBarType === 'back' ? 27 : 17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clip-path="url(#clip0_2_479)">
           <path
             d="M13.578 5.734C13.578 3.19 11.514 1.126 8.96998 1.126C6.42598 1.126 4.36198 3.19 4.36198 5.734H1.28998L3.33798 15.974H14.602L16.65 5.734H13.578ZM6.40998 5.734C6.40998 4.3228 7.55878 3.174 8.96998 3.174C10.3812 3.174 11.53 4.3228 11.53 5.734H6.40998Z"
@@ -68,7 +72,7 @@ const totalProducts=computed(() =>
         <!-- Dropdown Start -->
         <span
           @click.prevent="dropdownOpen = !dropdownOpen"
-          class="hidden md:inline-block text-white hover:text-[#D8B775] font-semibold"
+          :class="['hidden md:inline-block hover:text-[#D8B775] font-semibold', sideBarType === 'back' ? 'text-black mt-1' : 'text-white']"
         >
           MON PANIER ({{ totalProducts }})
         </span>
@@ -76,7 +80,8 @@ const totalProducts=computed(() =>
           v-show="dropdownOpen"
           class="absolute right-0 mt-4 flex w-80 flex-col rounded-sm border border-stroke bg-white shadow-default z-50"
         >
-          <ul class="flex flex-col gap-5 border-b border-stroke px-4 py-4">
+
+          <ul v-if="totalProducts > 0" class="flex flex-col gap-5 border-b border-stroke px-4 py-4">
             <li v-for="item in cartProducts" :key="item.product.id" class="flex items-center gap-3.5">
               <img :src="item.product.image" alt="Product Image" class="h-12 w-12 object-cover rounded" />
               <div class="flex flex-col">
@@ -90,7 +95,12 @@ const totalProducts=computed(() =>
                 <button @click="incrementQuantity(item.product.id)" class="w-6 h-6 px-2 mx-3.5 bg-[#D8B775] text-white rounded-full">+</button>
               </div>
             </li>
+            
           </ul>
+          <div v-else class="px-4 py-4 text-center text-sm font-medium text-gray-600">
+            Votre panier est vide.
+            </div>
+          <hr class="text-slate-200">
           <div class="flex justify-between px-6 py-4">
             <span class="text-sm font-semibold text-xl">Total:</span>
             <span class="text-sm font-semibold text-xl">{{ totalPrice }} €</span>

@@ -2,6 +2,9 @@
 <script setup lang="ts">
 import DropdownUser from './DropdownUser.vue'
 import DropdownNotification from './DropdownNotification.vue'
+import Cart from '@/components/front/Header/Cart.vue';
+import { isAdmin, isStoreKeeper, isUser } from '../../../store/roleManagement.js';
+
 // Importez les dépendances nécessaires ici
 const props = defineProps({
   showSidebar: Boolean,
@@ -27,10 +30,11 @@ const props = defineProps({
                 </button>
 
             </div>
-            <div class="flex flex-row gap-5 items-center mr-10 lg:mt-2 ">
-            <DropdownNotification/>
+            <div class="flex flex-row gap-5 justify-end mr-10 lg:mt-2 ">
+              <Cart v-if="isUser()" :sideBarType="'back'"/> 
+              <DropdownNotification/>
               <DropdownUser/>
-
+              
             </div>
         </div>
     </header>

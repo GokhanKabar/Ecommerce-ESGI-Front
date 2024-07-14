@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import LogoIcon from '@/components/front/icons/LogoIcon.vue'
-import Basket from '@/components/front/Header/Basket.vue'
+import Cart from '@/components/front/Header/Cart.vue'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import getImagePath from '@/utils/getImagePath'
@@ -181,7 +181,7 @@ const calculateDiscountedPrice = (price, promotion) => {
             >
           </router-link>
         </div>
-        <Basket />
+        <Cart :sideBarType="'front'" />
       </div>
     </div>
     <nav
