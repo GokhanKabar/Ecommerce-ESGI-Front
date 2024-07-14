@@ -5,10 +5,6 @@ import createPersistedState from 'vuex-persistedstate';
 const app = createApp({});
 app.use(Vuex);
 
-const saveCartToLocalStorage = (cart) => {
-  localStorage.setItem('cart', JSON.stringify(cart));
-};
-
 export default new Vuex.Store({
   strict: true,
   plugins: [
@@ -18,9 +14,7 @@ export default new Vuex.Store({
     token: null,
     user: null,
     isUserLoggedIn: false,
-    cart: {
-      products: JSON.parse(localStorage.getItem('cart'))?.products || []
-    }
+    cart: [],
   },
   mutations: {
     setToken(state, token) {
@@ -30,33 +24,46 @@ export default new Vuex.Store({
     setUser(state, user) {
       state.user = user;
     },
+    CLEAR_CART(state) {
+      state.cart= [];
+    },
     ADD_PRODUCT_TO_CART(state, product) {
-      const item = state.cart.products.find(p => p.id === product.id);
+      const item = state.cart.find(p => p.product.id === product.id);
       if (item) {
-        item.quantity++;
+        console.log('new quantity'+product.quantity)
+        item.product.quantity+=product.quantity ;
       } else {
-        state.cart.products.push({ ...product, quantity: 1 });
+        console.log('new productId  '+product.id);
+        state.cart.push({ product });
       }
-      saveCartToLocalStorage(state.cart);
     },
-    INCREMENT_PRODUCT_QUANTITY(state, product) {
-      const item = state.cart.products.find(p => p.id === product.id);
+    INCREMENT_PRODUCT_QUANTITY(state, id_product) {
+      const item = state.cart.find(p => p.product.id === id_product);
       if (item) {
-        item.quantity++;
-        saveCartToLocalStorage(state.cart);
+        console.log('asked product'+id_product)
+        item.product.quantity++;
       }
     },
-    DECREMENT_PRODUCT_QUANTITY(state, product) {
-      const item = state.cart.products.find(p => p.id === product.id);
-      if (item && item.quantity > 0) {
-        item.quantity--;
-        saveCartToLocalStorage(state.cart);
+    DECREMENT_PRODUCT_QUANTITY(state, id_product) {
+      const item = state.cart.find(p => p.product.id === id_product);
+      if (item && item.product.quantity > 0) {
+        console.log('asked product'+id_product)
+        item.product.quantity--;
+        if(item.product.quantity==0){
+          state.cart = state.cart.filter(p => p.product.id !== id_product);
+        }
+      }
+      if (item && item.product.quantity == 0) {
+        state.cart = state.cart.filter(p => p.product.id !== id_product);
       }
     }
   },
   actions: {
     setToken({ commit }, token) {
       commit('setToken', token);
+    },
+    clearCart({ commit }) {
+      commit('CLEAR_CART');
     },
     setUser({ commit }, user) {
       commit('setUser', user);
