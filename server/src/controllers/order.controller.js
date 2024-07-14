@@ -11,15 +11,38 @@ exports.createOrder= async (req, res) =>{
 
 }
 
-exports.getAllOrders=async(req, res)=>{
-    try {
-        const allOrders=await Order.findAll();
-        res.status(200).json(allOrders);
-        console.log('allOrdersHere');
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-}
+exports.getAllOrders = async (req, res) => {
+  try {
+      const allOrders = await Order.findAll({
+          attributes: {
+              include: [
+                  [
+                      Sequelize.fn('COUNT', Sequelize.col('Products.id')), 'productCount'
+                  ]
+              ]
+          },
+          include: [
+              {
+                  model: Product,
+                  attributes: ['name'], // Include only the product name
+                  through: {
+                      attributes: [] // Exclude join table attributes
+                  }
+              },
+              {
+                  model: User,
+                  attributes: ['name', 'prenom', 'telephone', 'email'] // Include specific user attributes
+              }
+          ],
+          group: ['Order.id', 'User.id', 'Products.id'] // Group by Order, User, and Product to get the correct counts
+      });
+
+      res.status(200).json(allOrders);
+      console.log('allOrdersHere');
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+};
 
 
 exports.getOrderById=async(req, res)=>{
