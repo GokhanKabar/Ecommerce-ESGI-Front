@@ -10,6 +10,7 @@ const userRoute = require("./routes/userRoutes.js");
 const db = require("./databases/sequelize/models");
 const connectDB = require("./databases/mongoose/mongo.connection.js"); // Importez le fichier de connexion MongoDB
 const stripeRoutes = require("./routes/stripe.route.js");
+const stripeWebhook = require("./routes/stripeWebhook.route.js");
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(
 );
 
 // Configuration des routes
+app.use("/stripe-webhook", stripeWebhook);
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 app.use("/", indexRouter);
 app.use(userRoute);

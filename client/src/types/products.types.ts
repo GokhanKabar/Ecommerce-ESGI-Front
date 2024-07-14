@@ -1,5 +1,6 @@
 export type Product = {
   _id: string
+  sequelizeId: number
   name: string
   description: string
   price: number
