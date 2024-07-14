@@ -62,7 +62,7 @@ const router = createRouter({
       meta: { title: 'Admin' }
     },
     {
-      path: '/admin/myorders',
+      path: '/myorders',
       name: 'clientOrders',
       component: ClientOrders,
       meta: { title: 'Client Orders' }

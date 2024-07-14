@@ -11,17 +11,12 @@ import getImagePath from '@/utils/getImagePath'
 const route = useRoute()
 const router = useRouter()
 
-const productId = route.params.id as string
-
-
 const productId = route.params.id as string;
 
 const product = ref<Product | null>(null);
 const relatedProducts = ref<Product[]>([]);
 const isLoading = ref(true);
 const errorMessage = ref('');
-
-const quantity = ref(1); // Quantité du produit à ajouter
 
 const quantity = ref(1)
 
