@@ -1,74 +1,85 @@
-import { createApp } from 'vue';
-import Vuex from 'vuex';
-import createPersistedState from 'vuex-persistedstate';
+import { createApp } from 'vue'
+import Vuex from 'vuex'
+import createPersistedState from 'vuex-persistedstate'
 
-const app = createApp({});
-app.use(Vuex);
-
-const saveCartToLocalStorage = (cart) => {
-  localStorage.setItem('cart', JSON.stringify(cart));
-};
+const app = createApp({})
+app.use(Vuex)
 
 export default new Vuex.Store({
   strict: true,
-  plugins: [
-    createPersistedState()
-  ],
+  plugins: [createPersistedState()],
   state: {
     token: null,
     user: null,
     isUserLoggedIn: false,
-    cart: {
-      products: JSON.parse(localStorage.getItem('cart'))?.products || []
-    }
+    cart: []
   },
   mutations: {
     setToken(state, token) {
-      state.token = token;
-      state.isUserLoggedIn = !!token;
+      state.token = token
+      state.isUserLoggedIn = !!token
     },
     setUser(state, user) {
-      state.user = user;
+      state.user = user
+    },
+    CLEAR_CART(state) {
+      state.cart = []
+    },
+    CLEAR_CART(state) {
+      state.cart= [];
     },
     ADD_PRODUCT_TO_CART(state, product) {
-      const item = state.cart.products.find(p => p.id === product.id);
+      console.log(product)
+      if (product.stock < product.quantity) {
+        return alert('Stock insuffisant')
+      }
+      const item = state.cart.find((p) => p.product.id === product.id)
       if (item) {
-        item.quantity++;
+        item.product.quantity += product.quantity
       } else {
-        state.cart.products.push({ ...product, quantity: 1 });
+        state.cart.push({ product: { ...product, quantity: product.quantity } })
       }
-      saveCartToLocalStorage(state.cart);
     },
-    INCREMENT_PRODUCT_QUANTITY(state, product) {
-      const item = state.cart.products.find(p => p.id === product.id);
+    INCREMENT_PRODUCT_QUANTITY(state, id_product) {
+      const item = state.cart.find((p) => p.product.id === id_product)
+      if (item.product.stock < item.product.quantity + 1) {
+        return alert('Stock insuffisant')
+      }
       if (item) {
-        item.quantity++;
-        saveCartToLocalStorage(state.cart);
+        item.product.quantity++
       }
     },
-    DECREMENT_PRODUCT_QUANTITY(state, product) {
-      const item = state.cart.products.find(p => p.id === product.id);
-      if (item && item.quantity > 0) {
-        item.quantity--;
-        saveCartToLocalStorage(state.cart);
+    DECREMENT_PRODUCT_QUANTITY(state, id_product) {
+      const item = state.cart.find((p) => p.product.id === id_product)
+      if (item && item.product.quantity > 0) {
+        item.product.quantity--
+        if (item.product.quantity == 0) {
+          state.cart = state.cart.filter((p) => p.product.id !== id_product)
+        }
       }
     }
   },
   actions: {
     setToken({ commit }, token) {
-      commit('setToken', token);
+      commit('setToken', token)
+    },
+    clearCart({ commit }) {
+      commit('CLEAR_CART')
+    },
+    clearCart({ commit }) {
+      commit('CLEAR_CART');
     },
     setUser({ commit }, user) {
-      commit('setUser', user);
+      commit('setUser', user)
     },
     addProductToCart({ commit }, product) {
-      commit('ADD_PRODUCT_TO_CART', product);
+      commit('ADD_PRODUCT_TO_CART', product)
     },
-    incrementProductQuantity({ commit }, product) {
-      commit('INCREMENT_PRODUCT_QUANTITY', product);
+    incrementProductQuantity({ commit }, productId) {
+      commit('INCREMENT_PRODUCT_QUANTITY', productId)
     },
-    decrementProductQuantity({ commit }, product) {
-      commit('DECREMENT_PRODUCT_QUANTITY', product);
+    decrementProductQuantity({ commit }, productId) {
+      commit('DECREMENT_PRODUCT_QUANTITY', productId)
     }
   }
-});
+})

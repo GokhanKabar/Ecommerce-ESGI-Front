@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import store from '@/store/store'
 import ProductService from '@/services/ProductService'
 import { type Product } from '@/types/products.types'
 import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
@@ -9,48 +10,67 @@ import getImagePath from '@/utils/getImagePath'
 
 const route = useRoute()
 const router = useRouter()
-const productId = route.params.id as string
 
-const product = ref<Product | null>(null)
-const relatedProducts = ref<Product[]>([])
-const isLoading = ref(true)
-const errorMessage = ref('')
+const productId = route.params.id as string;
+
+const product = ref<Product | null>(null);
+const relatedProducts = ref<Product[]>([]);
+const isLoading = ref(true);
+const errorMessage = ref('');
+
+const quantity = ref(1)
 
 onMounted(async () => {
   try {
-    const productData = await ProductService.getProductById(productId)
-    product.value = productData
+    const productData = await ProductService.getProductById(productId);
+    product.value = productData;
     if (productData) {
       const allRelatedProducts = await ProductService.getProductsByFamilyId(
         productData.family.id,
         5
       )
-      // Filtre pour exclure le produit actuellement affiché
       relatedProducts.value = allRelatedProducts.filter((p: Product) => p._id !== productData._id)
     }
-    isLoading.value = false
+    isLoading.value = false;
   } catch (error) {
-    errorMessage.value = 'Erreur lors du chargement du produit'
-    isLoading.value = false
+    errorMessage.value = 'Erreur lors du chargement du produit';
+    isLoading.value = false;
   }
-})
+});
 
 function formatPrice(price: number): string {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price)
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price);
 }
 
 function calculateDiscountedPrice(price: number, promotion: number): string {
-  const discountedPrice = price - (price * promotion) / 100
-  return formatPrice(discountedPrice)
+  const discountedPrice = price - (price * promotion) / 100;
+  return formatPrice(discountedPrice);
 }
 
 function goBack() {
-  router.back()
+  router.back();
+}
+
+function addToCart() {
+  console.log('product.value', product.value, product.value?.sequelizeId)
+  store.dispatch('addProductToCart', {
+    id: product.value?.sequelizeId,
+    name: product.value?.name,
+    price: product.value?.promotion
+      ? calculateDiscountedPrice(product.value?.price, product.value?.promotion)
+      : product.value?.price,
+    promo: product.value?.promotion,
+    image: product.value?.image,
+    quantity: quantity.value,
+    stock: product.value?.stock
+  })
 }
 </script>
 
 <template>
+
   <DefaultLayout>
+    
     <div class="container mx-auto py-4">
       <nav class="text-sm text-gray-500 mb-4">
         <router-link
@@ -69,7 +89,6 @@ function goBack() {
     <div v-else-if="errorMessage" class="text-center py-8 text-red-500">{{ errorMessage }}</div>
     <div v-else-if="product" class="container mx-auto py-12">
       <div class="flex flex-wrap -mx-4">
-        <!-- Division de l'image à gauche -->
         <div class="w-full md:w-1/2 px-4">
           <img
             :src="getImagePath(product.image)"
@@ -77,7 +96,6 @@ function goBack() {
             class="w-full object-cover h-auto"
           />
         </div>
-        <!-- Division du texte à droite -->
         <div class="w-full md:w-1/2 px-4">
           <h1 class="text-3xl font-bold">{{ product.brand.name || 'Marque inconnue' }}</h1>
           <h2 class="text-xl font-semibold">{{ product.name }}</h2>
@@ -109,11 +127,12 @@ function goBack() {
             <input
               type="number"
               min="1"
-              value="1"
+              v-model="quantity"
               class="border border-gray-300 p-2 w-16 text-center"
               :disabled="product.stock === 0"
             />
             <button
+              @click="addToCart"
               class="bg-[#d8b775] text-white px-4 py-2 w-50 hover:bg-[#b59461] disabled:bg-gray-300 disabled:cursor-not-allowed"
               :disabled="product.stock === 0"
             >
@@ -122,7 +141,6 @@ function goBack() {
           </div>
         </div>
       </div>
-      <!-- Section pour afficher les produits de la même famille -->
       <div class="mt-12 flex flex-col items-center">
         <h2 class="text-2xl font-bold mb-4">Cette sélection devrait vous plaire</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
