@@ -5,7 +5,7 @@ import createPersistedState from 'vuex-persistedstate'
 const app = createApp({})
 app.use(Vuex)
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
   strict: true,
   plugins: [createPersistedState()],
   state: {
@@ -25,13 +25,12 @@ export default new Vuex.Store({
     CLEAR_CART(state) {
       state.cart = []
     },
-    CLEAR_CART(state) {
-      state.cart= [];
-    },
     ADD_PRODUCT_TO_CART(state, product) {
-      console.log(product)
       if (product.stock < product.quantity) {
         return alert('Stock insuffisant')
+      }
+      if (!Array.isArray(state.cart)) {
+        state.cart = []
       }
       const item = state.cart.find((p) => p.product.id === product.id)
       if (item) {
@@ -41,15 +40,20 @@ export default new Vuex.Store({
       }
     },
     INCREMENT_PRODUCT_QUANTITY(state, id_product) {
-      const item = state.cart.find((p) => p.product.id === id_product)
-      if (item.product.stock < item.product.quantity + 1) {
-        return alert('Stock insuffisant')
+      if (!Array.isArray(state.cart)) {
+        state.cart = []
       }
-      if (item) {
+      const item = state.cart.find((p) => p.product.id === id_product)
+      if (item && item.product.stock >= item.product.quantity + 1) {
         item.product.quantity++
+      } else {
+        alert('Stock insuffisant')
       }
     },
     DECREMENT_PRODUCT_QUANTITY(state, id_product) {
+      if (!Array.isArray(state.cart)) {
+        state.cart = []
+      }
       const item = state.cart.find((p) => p.product.id === id_product)
       if (item && item.product.quantity > 0) {
         item.product.quantity--
@@ -66,9 +70,6 @@ export default new Vuex.Store({
     clearCart({ commit }) {
       commit('CLEAR_CART')
     },
-    clearCart({ commit }) {
-      commit('CLEAR_CART');
-    },
     setUser({ commit }, user) {
       commit('setUser', user)
     },
@@ -83,3 +84,5 @@ export default new Vuex.Store({
     }
   }
 })
+
+export default store

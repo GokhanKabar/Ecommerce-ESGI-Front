@@ -84,6 +84,7 @@ const createCheckoutSession = async () => {
     console.error(result.error.message)
   }
 }
+console.log('cartProducts', cartProducts.value)
 </script>
 
 <template>
@@ -118,7 +119,7 @@ const createCheckoutSession = async () => {
           v-show="dropdownOpen"
           class="absolute right-0 mt-4 flex w-80 flex-col rounded-sm border border-stroke bg-white shadow-default z-50"
         >
-          <ul class="flex flex-col gap-5 border-b border-stroke px-4 py-4 max-h-64 overflow-y-auto">
+          <ul v-if="cartProducts.length" class="flex flex-col gap-5 border-b border-stroke px-4 py-4 max-h-64 overflow-y-auto">
             <li
               v-for="item in cartProducts"
               :key="item.product.id"
@@ -150,13 +151,17 @@ const createCheckoutSession = async () => {
               </div>
             </li>
           </ul>
-          <div class="flex justify-between px-6 py-4">
+          <div v-else class="px-6 py-4 text-center text-gray-500">
+            Votre panier est vide.
+          </div>
+          <div v-if="cartProducts.length" class="flex justify-between px-6 py-4">
             <span class="text-sm font-semibold text-xl">Total:</span>
             <span class="text-sm font-semibold text-xl">{{ totalPrice }} €</span>
           </div>
           <div class="px-6 py-4">
             <button
               @click="createCheckoutSession"
+              :disabled="!cartProducts.length"
               class="w-full py-2 bg-[#D8B775] text-white font-semibold rounded"
             >
               Commander
