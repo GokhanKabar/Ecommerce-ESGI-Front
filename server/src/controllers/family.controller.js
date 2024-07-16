@@ -1,9 +1,26 @@
 const { Family } = require("../databases/sequelize/models"); // Sequelize model
-//const FamilyModel = require("../databases/mongoose/Families"); // Mongoose model
+const Joi = require('joi');
+
+const familySchema = Joi.object({
+  name: Joi.string().min(3).max(30).required().messages({
+    "string.base": "Le nom doit être une chaîne de caractères",
+    "string.empty": "Le nom ne doit pas être vide",
+    "string.min": "Le nom doit avoir une longueur minimale de {#limit}",
+    "string.max": "Le nom doit avoir une longueur maximale de {#limit}",
+    "any.required": "Le nom est requis",
+  }),
+  description: Joi.string().min(10).max(100),
+});
 
 exports.createFamily = async (req, res) => {
+  const { error, value } = familySchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
   try {
-    const family = await Family.create(req.body);
+    const family = await Family.create(value);
     res.status(201).json(family);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -12,7 +29,7 @@ exports.createFamily = async (req, res) => {
 
 exports.getAllFamilies = async (req, res) => {
   try {
-    const families = await FamilyModel.find(); // Use Mongoose to get all families
+    const families = await Family.findAll(); // Use Sequelize to get all families
     res.status(200).json(families);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -21,7 +38,7 @@ exports.getAllFamilies = async (req, res) => {
 
 exports.getFamilyById = async (req, res) => {
   try {
-    const family = await FamilyModel.findById(req.params.id);
+    const family = await Family.findByPk(req.params.id);
     if (!family) {
       return res.status(404).json({ error: "Family not found" });
     }
@@ -32,8 +49,14 @@ exports.getFamilyById = async (req, res) => {
 };
 
 exports.updateFamily = async (req, res) => {
+  const { error, value } = familySchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
   try {
-    const [updated] = await Family.update(req.body, {
+    const [updated] = await Family.update(value, {
       where: { id: req.params.id },
     });
     if (!updated) {
@@ -66,4 +89,4 @@ exports.getAllFamiliesAdmin = async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
-}
+};
