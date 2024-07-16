@@ -13,7 +13,7 @@ const props = defineProps(['pageTitle'])
         <li>
           <router-link class="font-medium" to="/admin"> Dashboard / </router-link>
         </li>
-        <li class="font-medium text-primary">{{ props.pageTitle }}</li>
+        <li class="font-medium  !text-primary  ">{{ props.pageTitle }}</li>
       </ol>
     </nav>
   </div>

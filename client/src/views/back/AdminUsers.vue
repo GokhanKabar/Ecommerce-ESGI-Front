@@ -202,7 +202,7 @@ const cancelDelete = () => {
       </ButtonDefault>
     </div>
 
-    <div v-if="showForm" class="absolute z-1 top-6 left-1/2 transform -translate-x-1/2">
+    <div v-if="showForm" class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white shadow z-40">
       <DefaultCard cardTitle="Ajouter un utilisateur">
         <span  class=" text-xs text-red mt-2 ml-8">{{ Errors }}</span>
 

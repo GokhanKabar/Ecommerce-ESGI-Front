@@ -1,4 +1,3 @@
-const { response } = require("express");
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
 const db = require("../databases/sequelize/models");
@@ -2508,15 +2507,9 @@ exports.getUserById = (userId) => {
 
 exports.updateUser = (
   userId,
-  { firstName, lastName, email, password, address, phone, role }
+  { firstName, lastName, email, password, address, phone, role ,token}
 ) => {
-  console.log(
-    { firstName, lastName, email, password, address, phone, role },
-    userId
-  );
-
   return new Promise((resolve, reject) => {
-    // Valider les données de l'utilisateur
     const { error } = schemaUpdateUser.validate({
       firstName,
       lastName,
@@ -2529,17 +2522,25 @@ exports.updateUser = (
     if (error) {
       return reject(error.details[0].message);
     }
-
+     if (role === "USER" || role === "ROLE_STORE_KEEPER") {
+        if (token) {
+            const decoded = jwt.verify(token, config.development.privateKey);
+            if (parseInt(userId, 10) !== parseInt(decoded.id, 10)) {
+                return reject(new Error("Access denied: Forbidden"));
+            }
+        }
+       
+    }
+    
+ 
     db.User.findByPk(userId)
       .then((user) => {
         if (!user) {
           return reject("User not found");
         }
 
-        // Si un mot de passe est fourni, le hacher
         if (password) {
           return bcrypt.hash(password, 10).then((hashedPassword) => {
-            console.log("success update");
             return user.update({
               firstName,
               lastName,
@@ -2551,8 +2552,6 @@ exports.updateUser = (
             });
           });
         } else {
-          console.log("success update");
-          // Mettre à jour sans le mot de passe
           return user.update({
             firstName,
             lastName,
