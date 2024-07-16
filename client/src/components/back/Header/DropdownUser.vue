@@ -69,9 +69,9 @@ const getRoleLabel = (role: string) => {
     <!-- Dropdown Start -->
     <div
       v-show="dropdownOpen"
-      class="absolute right-0 mt-4 flex w-56 flex-col rounded-sm border border-stroke bg-white shadow-default"
+      class="absolute right-0 mt-4 flex w-56 flex-col rounded-sm border border-stroke bg-white shadow-default z-40"
     >
-      <ul class="flex flex-col gap-5 border-b border-stroke px-6 py-4 ">
+      <ul class="flex flex-col gap-5 border-b border-stroke px-6 py-4  ">
         <li>
           <router-link
             to="/profile"

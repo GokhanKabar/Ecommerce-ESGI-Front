@@ -90,7 +90,7 @@ route.get('/users/:userId',checkAuth({ roles: ['ADMIN'] }), (request, response) 
 });
 
 // Update a user by ID (CRUD Update)
-route.put('/users/:userId',checkAuth({ roles: ['ADMIN'] }), (request, response) => {
+route.put('/users/:userId',checkAuth({ roles: ['ADMIN','USER','ROLE_STORE_KEEPER'] }), (request, response) => {
     const userId = request.params.userId;
     const updatedUserData = request.body;
     userController.updateUser(userId, updatedUserData)
