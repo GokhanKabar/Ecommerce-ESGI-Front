@@ -33,14 +33,16 @@ export default {
       throw error
     }
   },
-  async getProductsByCategory(category) {
+  async getProductsByCategory(category){
     try {
-      const response = await Api().get(`products/category/${category}`)
-      console.log(response.data)
-      return response.data
+      const response = await Api().get(`/products/category/${category}`);
+      return response.data.map((product) => ({
+        ...product,
+        image: product.image ? `${product.image}` : null,
+      }));
     } catch (error) {
-      console.error('Error fetching products by category:', error)
-      throw error
+      console.error('Error fetching products by category', error);
+      throw error;
     }
   },
   async getProductById(id) {

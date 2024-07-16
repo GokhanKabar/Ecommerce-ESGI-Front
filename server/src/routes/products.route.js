@@ -1,10 +1,35 @@
 const express = require("express");
 const multer = require("multer");
+const path = require("path");
 const productController = require("../controllers/product.controller");
 const checkAuth = require("../middlewares/checkAuthRole");
 
 const router = express.Router();
-const upload = multer({ dest: "uploads/" });
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + Date.now() + ext);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpeg|jpg|png|gif/;
+  const ext = path.extname(file.originalname).toLowerCase();
+  if (allowedTypes.test(ext)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Seuls les fichiers image sont autorisés'), false);
+  }
+};
+
+const upload = multer({ 
+  storage: storage,
+  fileFilter: fileFilter
+});
 
 router.get("/search", productController.searchProducts);
 router.get("/products", productController.getProducts);
