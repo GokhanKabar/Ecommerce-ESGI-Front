@@ -1,4 +1,4 @@
-const { Order, ProductOrder, Product, User } = require('../databases/sequelize/models');
+const { Order, ProductOrder, Product, User,sequelize } = require('../databases/sequelize/models');
 
 
 exports.createOrder= async (req, res) =>{
@@ -11,15 +11,21 @@ exports.createOrder= async (req, res) =>{
 
 }
 
-exports.getAllOrders=async(req, res)=>{
-    try {
-        const allOrders=await Order.findAll();
-        res.status(200).json(allOrders);
-        console.log('allOrdersHere');
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-}
+exports.getAllOrders = async (req, res) => {
+  try {
+    const orders = await sequelize.query(`
+      SELECT ord.id ,CONCAT(u.lastName,' ',u.firstName) as lastName,u.email, ord.delivery_status , ord.payment_status , ord.date_order 
+      FROM \`Order\` as ord 
+      JOIN product_orders as po on po.order_id = ord.id 
+      JOIN products as p on p.id = po.product_id 
+      JOIN Users as u ON u.id = ord.user_id
+      GROUP BY ord.id, u.id
+    `, { type: sequelize.QueryTypes.SELECT });
+    res.status(201).json(orders);
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+};
 
 
 exports.getOrderById=async(req, res)=>{
@@ -137,8 +143,6 @@ exports.getOrderDetails= async (req, res) => {
         deliveryStatus: order.delivery_status,
         paymentStatus: order.payment_status,
         dateOrder: order.date_order,
-        dateCreation: order.date_creation,
-        dateUpdate: order.date_update,
         orderStatus: order.order_status,
         userId: order.user_id,
         products: order.Products.map(product => ({
@@ -147,22 +151,15 @@ exports.getOrderDetails= async (req, res) => {
             description: product.description,
             category: product.category,
             price: product.price,
-            stock: product.stock,
             concentration: product.concentration,
             promotion: product.promotion,
             image: product.image,
-            dateAdded: product.dateAdded,
-            dateUpdated: product.dateUpdated,
-            createdAt: product.createdAt,
-            updatedAt: product.updatedAt,
-            brandId: product.brandId,
-            familyId: product.familyId,
             quantity: product.ProductOrder.quantity,
             totalPrice: product.ProductOrder.quantity * product.price
         }))
     }));
     
-      res.status(200).json({  OrderDetails });
+      res.status(200).json( OrderDetails );
   } catch (error) {
       console.error(error);
       res.status(500).json({ message: error.message });
