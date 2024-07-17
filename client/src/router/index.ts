@@ -22,6 +22,10 @@ import Success from '@/views/front/Success.vue'
 import Cancel from '@/views/front/Cancel.vue'
 import ProfilView from '@/views/back/ProfilView.vue'
 import NotFound from '@/errors/NotFound.vue'
+import MentionLegal from '@/views/front/MentionLegal.vue'
+import CGV from '@/views/front/CGV.vue'
+import PaiementSecurise from '@/views/front/PaiementSecurise.vue'
+import ProtectionDonnees from '@/views/front/ProtectionDonnees.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,37 +34,37 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       component: AdminView,
-      meta: { title: 'Admin', needsAuth: true ,roles: ['ADMIN', 'ROLE_STORE_KEEPER']}
+      meta: { title: 'Admin', needsAuth: true, roles: ['ADMIN', 'ROLE_STORE_KEEPER'] }
     },
     {
       path: '/admin/users',
       name: 'adminUsers',
       component: AdminUsers,
-      meta: { title: 'Admin',needsAuth: true ,roles: ['ADMIN'] }
+      meta: { title: 'Admin', needsAuth: true, roles: ['ADMIN'] }
     },
     {
       path: '/admin/products',
       name: 'adminProducts',
       component: AdminProducts,
-      meta: { title: 'Admin',needsAuth: true,roles: ['ADMIN', 'ROLE_STORE_KEEPER']  }
+      meta: { title: 'Admin', needsAuth: true, roles: ['ADMIN', 'ROLE_STORE_KEEPER'] }
     },
     {
       path: '/admin/brand',
       name: 'adminBrand',
       component: AdminBrand,
-      meta: { title: 'Admin',needsAuth: true ,roles: ['ADMIN', 'ROLE_STORE_KEEPER'] }
+      meta: { title: 'Admin', needsAuth: true, roles: ['ADMIN', 'ROLE_STORE_KEEPER'] }
     },
     {
       path: '/admin/family',
       name: 'adminFamily',
       component: AdminFamily,
-      meta: { title: 'Admin',needsAuth: true ,roles: ['ADMIN', 'ROLE_STORE_KEEPER'] }
+      meta: { title: 'Admin', needsAuth: true, roles: ['ADMIN', 'ROLE_STORE_KEEPER'] }
     },
     {
       path: '/myorders',
       name: 'clientOrders',
       component: ClientOrders,
-      meta: { title: 'Client Orders',needsAuth: true ,roles: ['USER'] }
+      meta: { title: 'Client Orders', needsAuth: true, roles: ['USER'] }
     },
     {
       path: '/profile',
@@ -157,6 +161,30 @@ const router = createRouter({
       name: 'NotFound',
       component: NotFound,
       meta: { title: '404 Not Found', needsAuth: true }
+    },
+    {
+      path: '/mention-legale',
+      name: 'MentionLegale',
+      component: MentionLegal,
+      meta: { title: 'Mention Legale | Tendance Parfums' }
+    },
+    {
+      path: '/cgu-cgv',
+      name: 'CguCgv',
+      component: CGV,
+      meta: { title: 'CGU-CGV | Tendance Parfums' }
+    },
+    {
+      path: '/paiement-securise',
+      name: 'PaiementSecurise',
+      component: PaiementSecurise,
+      meta: { title: 'Paiement Securise | Tendance Parfums' }
+    },
+    {
+      path: '/protection-donnees',
+      name: 'ProtectionDonnees',
+      component: ProtectionDonnees,
+      meta: { title: 'Protection Donnees | Tendance Parfums' }
     }
   ]
 })
@@ -168,9 +196,9 @@ router.beforeEach((to, from, next) => {
     if (!store.state.isUserLoggedIn) {
       next('/connexion')
     } else {
-      const Role = store.state.user.role 
+      const Role = store.state.user.role
       if (to.meta.roles && !to.meta.roles.includes(Role)) {
-        next('/NotFound') 
+        next('/NotFound')
       } else {
         next()
       }
