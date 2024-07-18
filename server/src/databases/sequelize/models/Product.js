@@ -19,6 +19,31 @@ module.exports = (sequelize) => {
         console.log("afterUpdate hook triggered for product:", product);
         await ProductMongo(product.id, db.Product, db.Brand, db.Family);
       });
+
+      Product.addHook("beforeDestroy", async (product) => {
+        console.log("afterDestroy hook triggered for product:", product);
+        try {
+          const result = await ProductMongo(
+            product.id,
+            db.Product,
+            db.Brand,
+            db.Family,
+            true
+          );
+
+          if (result.deletedCount === 1) {
+            console.log("MongoDB document deleted for product:", product.id);
+          } else {
+            console.log("No MongoDB document found for product:", product.id);
+          }
+        } catch (error) {
+          console.error(
+            "Error deleting MongoDB document for product:",
+            product.id,
+            error
+          );
+        }
+      });
     }
   }
 
