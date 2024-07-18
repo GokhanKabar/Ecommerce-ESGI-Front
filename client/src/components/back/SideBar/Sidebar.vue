@@ -21,6 +21,8 @@ onMounted(() => {
   const path = window.location.pathname;
   if (path.includes('/admin/users')) {
     activeItem.value = 'users';
+  } else if (path.includes('/admin/orders')) {
+    activeItem.value = 'orders';
   }else if (path.includes('/myorders')) {
     activeItem.value = 'myorders';
   } else if (path.includes('/admin/brand')) {
@@ -54,6 +56,12 @@ onMounted(() => {
           <TeamIcon />
           <span class="text-white font-normal ml-2">Utilisateurs</span>
         </RouterLink> 
+
+        <RouterLink v-if="isAdmin()  " to="/admin/orders" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#f9d896] rounded" :class="{'bg-[#D8B775]': activeItem === 'orders'}">
+          <ProjectsIcon />
+          <span class="text-white font-normal ml-2">Commandes</span>
+        </RouterLink>
+
         <RouterLink v-if="isUser()" to="/myorders" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#f9d896] rounded" :class="{'bg-[#D8B775]': activeItem === 'myorders'}">
           <ProjectsIcon />
           <span class="text-white font-normal ml-2">Mes Commandes</span>

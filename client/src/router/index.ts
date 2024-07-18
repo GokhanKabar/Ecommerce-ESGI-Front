@@ -4,6 +4,7 @@ import AdminUsers from '@/views/back/AdminUsers.vue'
 import AdminProducts from '@/views/back/AdminProducts.vue'
 import AdminBrand from '@/views/back/AdminBrand.vue'
 import AdminFamily from '@/views/back/AdminFamily.vue'
+import AdminOrders from '@/views/back/AdminOrders.vue'
 import ClientOrders from '@/views/back/ClientOrders.vue'
 import HomeView from '@/views/front/HomeView.vue'
 import BrandView from '@/views/front/BrandView.vue'
@@ -59,6 +60,12 @@ const router = createRouter({
       name: 'adminFamily',
       component: AdminFamily,
       meta: { title: 'Admin', needsAuth: true, roles: ['ADMIN', 'ROLE_STORE_KEEPER'] }
+    },
+    {
+      path: '/admin/orders',
+      name: 'adminOrders',
+      component: AdminOrders,
+      meta: { title: 'Admin', needsAuth: true, roles: ['ADMIN']  }
     },
     {
       path: '/myorders',

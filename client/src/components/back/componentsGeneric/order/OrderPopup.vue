@@ -37,8 +37,8 @@ const close = () => {
 
                 <!-- Informations du client -->
                 <div class="flex justify-between items-center p-4 rounded ">
-                    <span class="font-semibold">Nom du client :  {{ order.customerName }}</span>
-                    <span class="font-semibold">Email :  {{  order.customerEmail}}</span>
+                    <span class="font-bold">Client :  <span class="font-semibold">{{ order.customerName }}</span></span>
+                    <span class="font-bold">Email :  <span class="font-semibold" >{{  order.customerEmail}}</span></span>
                 </div>
 
                 <div class="flex justify-between items-center p-4 rounded bg-slate-200">
