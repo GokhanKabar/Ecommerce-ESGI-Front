@@ -130,6 +130,10 @@ exports.getOrderDetails= async (req, res) => {
           include: [
               {
                   model: Product,
+              },
+              {
+                model: User,
+                attributes: ['firstName','lastName', 'email'], // Sélectionnez les champs que vous voulez récupérer
               }
           ]
       });
@@ -145,17 +149,21 @@ exports.getOrderDetails= async (req, res) => {
         dateOrder: order.date_order,
         orderStatus: order.order_status,
         userId: order.user_id,
+        customerName: `${order.User.firstName} ${order.User.lastName}`, 
+        customerEmail: order.User.email,
         products: order.Products.map(product => ({
+            orderId: order.id,
             id: product.id,
             name: product.name,
             description: product.description,
             category: product.category,
-            price: product.price,
+            price:product.price ,
+            discountedPrice : (product.price - (product.price * product.promotion)).toFixed(2),
             concentration: product.concentration,
             promotion: product.promotion,
             image: product.image,
             quantity: product.ProductOrder.quantity,
-            totalPrice: product.ProductOrder.quantity * product.price
+            totalPrice: (product.ProductOrder.quantity * ((product.price - (product.price * product.promotion)).toFixed(2))).toFixed(2)
         }))
     }));
     

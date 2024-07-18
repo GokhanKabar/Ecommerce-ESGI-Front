@@ -11,9 +11,9 @@ import store from '../../store/store.js';
 
 
 const pageTitle = ref('Commandes');
-const Orders =ref([]);
+const Orders = ref([]);
 const user_id = store.state.user.id;
-const headers = ['id', 'lastName' ,'email', 'delivery_status','payment_status', 'date_order'];
+const headers = ['id', 'lastName', 'email', 'delivery_status', 'payment_status', 'date_order'];
 const showOrderDetailsPopup = ref(false);
 
 const fetchOrdersForAdmin = async () => {
@@ -22,7 +22,7 @@ const fetchOrdersForAdmin = async () => {
     Orders.value = response;
   } catch (error) {
     console.error('Error fetching families:', error);
-    
+
   }
 };
 
@@ -44,76 +44,41 @@ const closePopup = () => {
 };
 
 onMounted(async () => {
-  await fetchOrdersForAdmin();  
-  
+  await fetchOrdersForAdmin();
+
 });
 
 </script>
 <template>
 
-  
+
   <DefaultLayout>
     <BreadcrumbDefault :pageTitle="pageTitle" />
-    <div class="container mx-auto">
-    <div> {{ Orders }}</div>
-    <div> {{ orderDetails }}</div>
-    </div>
+    
 
-    <DataTable :headers="headers" :data="Orders" :filterableColumns="headers" :editUser="editProduct" :deleteUser="confirmDeleteProduct" />
-  <div>
-    <table>
-      <thead>
-        <tr>
-          <th>N° Commande</th>
-          <th>Livraison</th>
-          <th>Paiement</th>
-          <th>Date</th>
-          <th>Produits</th>
-          <th>Quantité</th>
-          <th>Client</th>
-          <th>Email</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="order in Orders" :key="order.id">
-          <td>{{ order.id }}</td>
-          <td>{{ order.delivery_status }}</td>
-          <td>{{ order.payment_status }}</td>
-          <td>{{ order.date_order }}</td>
-          <td>{{ order.products }}</td>
-          <td>{{ order.quantity }}</td>
-          <td>{{ order.client }}</td>
-          <td>{{ order.email }}</td>
-          <td>
-            <button @click="showOrderDetails(order.id)">Détails</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <OrderPopup :isVisible="showPopup" :orderDetails="orderDetails"/>
-        <!-- Popup de détails de commande -->
-        <!-- <div v-if="showPopup" class="popup">
-          <div class="popup-content">
-            <span class="close" @click="closePopup">&times;</span>
-            <h2>Détails de la commande</h2>
-            <p><strong>N° Commande:</strong> {{ orderDetails}}</p>
-            
-          </div>
-        </div> -->
-</div>
+    <DataTable :headers="headers" :data="Orders" :filterableColumns="headers" :editUser="showOrderDetails"
+      :deleteUser="confirmDeleteProduct" />
+   
+      <OrderPopup :isVisible="showPopup" :orderDetails="orderDetails" @delete="" @close="closePopup" />
 
     
+
+
 
   </DefaultLayout>
 </template>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+
+.fade-enter,
+.fade-leave-to
+
+/* .fade-leave-active in <2.1.8 */
+  {
   opacity: 0;
 }
 
@@ -129,6 +94,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
 }
+
 .popup-content {
   background: white;
   padding: 20px;
@@ -136,20 +102,21 @@ onMounted(async () => {
   width: 400px;
   max-width: 90%;
 }
+
 .close {
   position: absolute;
   top: 10px;
   right: 10px;
   cursor: pointer;
 }
-.fade-enter-active, .fade-leave-active {
+
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to {
+
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
-
-
-
-
 </style>
