@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
-import SidebarProduct from '@/components/front/Product/SidebarProduct.vue'
-import CardPerfume from '@/components/front/Product/CardPerfume.vue'
-import CarousselPerfume from '@/components/front/Product/CarousselPerfume.vue'
-import ProductService from '@/services/ProductService'
-import { type Product } from '@/types/products.types'
+import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
+import SidebarProduct from '../../components/front/Product/SidebarProduct.vue'
+import CardPerfume from '../../components/front/Product/CardPerfume.vue'
+import CarousselPerfume from '../../components/front/Product/CarousselPerfume.vue'
+import ProductService from '../../services/ProductService'
+import { type Product } from '../../types/products.types'
 import { type Ref } from 'vue'
 
 const allProducts: Ref<Product[]> = ref([])

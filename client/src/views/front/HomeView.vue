@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
-import CarousselPerfume from '@/components/front/Product/CarousselPerfume.vue'
-import ProductService from '@/services/ProductService'
-import { type Product } from '@/types/products.types'
-import getImagePath from '@/utils/getImagePath'
+import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
+import CarousselPerfume from '../../components/front/Product/CarousselPerfume.vue'
+import ProductService from '../../services/ProductService'
+import { type Product } from '../../types/products.types'
+import getImagePath from '../../utils/getImagePath'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()

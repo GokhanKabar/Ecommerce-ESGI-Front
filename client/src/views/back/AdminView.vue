@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
-import DataStatsOne from "@/components/back/componentsGeneric/DataStats/DataStatsOne.vue";
-import ChartOne from "@/components/back/componentsGeneric/Charts/ChartOne.vue";
-import ChartTwo from "@/components/back/componentsGeneric/Charts/ChartTwo.vue";
-import ChartThree from "@/components/back/componentsGeneric/Charts/ChartThree.vue";
+import DataStatsOne from "../../components/back/componentsGeneric/DataStats/DataStatsOne.vue";
+import ChartOne from "../../components/back/componentsGeneric/Charts/ChartOne.vue";
+import ChartTwo from "../../components/back/componentsGeneric/Charts/ChartTwo.vue";
+import ChartThree from "../../components/back/componentsGeneric/Charts/ChartThree.vue";
 </script>
 
 <template>

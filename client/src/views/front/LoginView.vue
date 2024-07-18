@@ -3,10 +3,10 @@ import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 const router = useRouter();
 const store = useStore();
-import DefaultAuthCard from '@/components/front/Authentification/DefaultAuthCard.vue'
-import InputGroup from '@/components/front/Authentification/InputGroup.vue'
-import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
-import AuthenticationService from '@/services/AuthenticationService';
+import DefaultAuthCard from '../../components/front/Authentification/DefaultAuthCard.vue'
+import InputGroup from '../../components/front/Authentification/InputGroup.vue'
+import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
+import AuthenticationService from '../../services/AuthenticationService';
 import { ref } from 'vue';
 const email = ref('');
 const password = ref('');

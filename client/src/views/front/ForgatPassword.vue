@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 const router = useRouter();
-import DefaultAuthCard from '@/components/front/Authentification/DefaultAuthCard.vue'
-import InputGroup from '@/components/front/Authentification/InputGroup.vue'
-import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
-import AuthenticationService from '@/services/AuthenticationService';
+import DefaultAuthCard from '../../components/front/Authentification/DefaultAuthCard.vue'
+import InputGroup from '../../components/front/Authentification/InputGroup.vue'
+import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
+import AuthenticationService from '../../services/AuthenticationService';
 import { ref } from 'vue';
 const email = ref('');
 const SendEmailRestpassword = async () => {

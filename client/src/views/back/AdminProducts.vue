@@ -6,12 +6,12 @@ import BrandService from '../../services/BrandService';
 import FamilyService from '../../services/FamilyService';
 import { useStore } from 'vuex';
 import AlertSuccess from '@/components/back/componentsGeneric/Alerts/AlertSuccess.vue';
-import BreadcrumbDefault from '@/components/back/componentsGeneric/Breadcrumbs/BreadcrumbDefault.vue';
-import ButtonDefault from '@/components/back/componentsGeneric/Buttons/ButtonDefault.vue';
-import DataTable from '@/components/back/componentsGeneric/DataTable.vue';
-import DefaultCard from '@/components/back/componentsGeneric/Forms/DefaultCard.vue';
-import InputGroup from '@/components/front/Authentification/InputGroup.vue';
-import ConfirmationPopup from '@/components/back/componentsGeneric/Popup/ConfirmationPopup.vue';
+import BreadcrumbDefault from '../../components/back/componentsGeneric/Breadcrumbs/BreadcrumbDefault.vue';
+import ButtonDefault from '../../components/back/componentsGeneric/Buttons/ButtonDefault.vue';
+import DataTable from '../../components/back/componentsGeneric/DataTable.vue';
+import DefaultCard from '../../components/back/componentsGeneric/Forms/DefaultCard.vue';
+import InputGroup from '../../components/front/Authentification/InputGroup.vue';
+import ConfirmationPopup from '../../components/back/componentsGeneric/Popup/ConfirmationPopup.vue';
 
 const store = useStore();
 const headers = ['name', 'category', 'price', 'stock', 'concentration'];

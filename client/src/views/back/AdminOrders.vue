@@ -2,12 +2,12 @@
 import { onMounted, ref } from 'vue';
 import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
 
-import DataTable from '@/components/back/componentsGeneric/DataTable.vue';
-import OrderPopup from '@/components/back/componentsGeneric/order/OrderPopup.vue';
+import DataTable from '../../components/back/componentsGeneric/DataTable.vue';
+import OrderPopup from '../../components/back/componentsGeneric/order/OrderPopup.vue';
 import OrderCard from '@/components/back/componentsGeneric/order/ProductCard.vue';
 import ButtonDefault from '@/components/back/componentsGeneric/Buttons/ButtonDefault.vue';
 
-import BreadcrumbDefault from '@/components/back/componentsGeneric/Breadcrumbs/BreadcrumbDefault.vue';
+import BreadcrumbDefault from '../../components/back/componentsGeneric/Breadcrumbs/BreadcrumbDefault.vue';
 import OrderService from '../../services/OrderService';
 import store from '../../store/store.js';
 

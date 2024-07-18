@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineProps } from 'vue'
-import { type Product } from '@/types/products.types'
-import getImagePath from '@/utils/getImagePath'
+import { type Product } from '../../../types/products.types'
+import getImagePath from '../../../utils/getImagePath'
 
 interface Props {
   product: Product

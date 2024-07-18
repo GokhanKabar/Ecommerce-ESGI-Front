@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, defineEmits, computed } from 'vue'
-import ProductService from '@/services/ProductService.js'
-import { type Product } from '@/types/products.types'
+import ProductService from '../../../services/ProductService.js'
+import { type Product } from '../../../types/products.types'
 import { type Ref } from 'vue'
 
 const products: Ref<Product[]> = ref([])

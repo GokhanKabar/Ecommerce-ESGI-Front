@@ -2,7 +2,7 @@
 import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue';
 import CarousselBrand from '../../components/front/Brand/CarousselBrand.vue';
 import { computed, onMounted, ref } from 'vue';
-import BrandService from '@/services/BrandService';
+import BrandService from '../../services/BrandService';
 
 const brands = ref<string[]>([]);
 onMounted(async () => {

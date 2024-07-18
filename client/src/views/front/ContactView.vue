@@ -1,9 +1,9 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue';
-import DefaultContactCard from '@/components/front/Authentification/DefaultContactCard.vue';
-import InputGroup from '@/components/front/Authentification/InputGroup.vue';
-import ContactService from '@/services/ContactService';
+import DefaultContactCard from '../../components/front/Authentification/DefaultContactCard.vue';
+import InputGroup from '../../components/front/Authentification/InputGroup.vue';
+import ContactService from '../../services/ContactService';
 import { z, ZodError } from 'zod';
 
 const formSchema = z.object({

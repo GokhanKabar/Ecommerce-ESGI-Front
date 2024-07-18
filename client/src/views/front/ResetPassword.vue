@@ -3,10 +3,10 @@ import { useRouter,useRoute } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute()
-import DefaultAuthCard from '@/components/front/Authentification/DefaultAuthCard.vue'
-import InputGroup from '@/components/front/Authentification/InputGroup.vue'
-import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
-import AuthenticationService from '@/services/AuthenticationService';
+import DefaultAuthCard from '../../components/front/Authentification/DefaultAuthCard.vue'
+import InputGroup from '../../components/front/Authentification/InputGroup.vue'
+import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
+import AuthenticationService from '../../services/AuthenticationService';
 import { ref } from 'vue';
 const password = ref('');
 const repeatedPassword  = ref('');

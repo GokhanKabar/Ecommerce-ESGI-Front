@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import store from '@/store/store'
-import ProductService from '@/services/ProductService'
-import { type Product } from '@/types/products.types'
-import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
-import SingleCardPerfume from '@/components/front/Product/SingleCardPerfume.vue'
-import getImagePath from '@/utils/getImagePath'
+import store from '../../store/store'
+import ProductService from '../../services/ProductService'
+import { type Product } from '../../types/products.types'
+import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
+import SingleCardPerfume from '../../components/front/Product/SingleCardPerfume.vue'
+import getImagePath from '../../utils/getImagePath'
 
 const route = useRoute()
 const router = useRouter()

@@ -1,7 +1,7 @@
 <script setup>
 import store from '@/store/store'
 import { onMounted } from 'vue'
-import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
+import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
 
 onMounted(() => {
   store.dispatch('clearCart')
