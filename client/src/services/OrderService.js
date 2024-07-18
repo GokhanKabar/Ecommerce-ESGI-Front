@@ -25,6 +25,15 @@ async getOrderByUser(user_id) {
       console.error('Error fetching Orders by user:', error)
       throw error
     }
+  },
+  async getOrderDetails(user_id) {
+    try {
+      const response = await Api().get(`getOrderDetails/${user_id}`)
+      return response.data
+    } catch (error) {
+      console.error('Error fetching Orders by user:', error)
+      throw error
+    }
   }
 }
 
