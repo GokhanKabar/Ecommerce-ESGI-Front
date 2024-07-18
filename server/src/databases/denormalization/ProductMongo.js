@@ -1,19 +1,25 @@
 const ProductMongo = require("../mongoose/Products");
 
-module.exports = async function(productId, Product, Brand, Family, onlyRemove = false) {
+module.exports = async function (
+  productId,
+  Product,
+  Brand,
+  Family,
+  onlyRemove = false
+) {
   try {
     console.log(productId, Product);
     const product = await Product.findByPk(productId, {
       include: [
         {
           model: Brand,
-          attributes: ["id", "name"]
+          attributes: ["id", "name"],
         },
         {
           model: Family,
-          attributes: ["id", "name"]
-        }
-      ]
+          attributes: ["id", "name"],
+        },
+      ],
     });
 
     console.log("Product found:", product);
