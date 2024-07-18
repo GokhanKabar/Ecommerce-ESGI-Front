@@ -84,7 +84,7 @@ const createCheckoutSession = async () => {
     console.error(result.error.message)
   }
 }
-console.log('cartProducts', cartProducts.value)
+
 </script>
 
 <template>

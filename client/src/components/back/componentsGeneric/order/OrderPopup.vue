@@ -217,7 +217,7 @@ const close = () => {
                             <tr v-for="(product, index) in order.products" :key="index">
                                 <td class="border p-2">{{ product.name }}</td>
                                 <td class="border p-2">{{ product.quantity }}</td>
-                                <td class="border p-2">{{ product.price }} €</td>
+                                <td class="border p-2">{{ product.discountedPrice }} €</td>
                                 <td class="border p-2">{{ product.concentration }}</td>
                             </tr>
                         </tbody>

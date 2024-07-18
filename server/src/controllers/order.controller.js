@@ -158,12 +158,12 @@ exports.getOrderDetails= async (req, res) => {
             description: product.description,
             category: product.category,
             price:product.price ,
-            discountedPrice : (product.price - (product.price * product.promotion)).toFixed(2),
+            discountedPrice : (product.price - (product.price * product.promotion/100)).toFixed(2),
             concentration: product.concentration,
             promotion: product.promotion,
             image: product.image,
             quantity: product.ProductOrder.quantity,
-            totalPrice: (product.ProductOrder.quantity * ((product.price - (product.price * product.promotion)).toFixed(2))).toFixed(2)
+            totalPrice: (product.ProductOrder.quantity * ((product.price - (product.price * product.promotion/100)).toFixed(2))).toFixed(2)
         }))
     }));
     
