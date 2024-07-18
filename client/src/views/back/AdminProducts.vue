@@ -11,7 +11,6 @@ import ButtonDefault from '@/components/back/componentsGeneric/Buttons/ButtonDef
 import DataTable from '@/components/back/componentsGeneric/DataTable.vue';
 import DefaultCard from '@/components/back/componentsGeneric/Forms/DefaultCard.vue';
 import InputGroup from '@/components/front/Authentification/InputGroup.vue';
-import SelectGroupTwo from '@/components/back/componentsGeneric/Forms/SelectGroup/SelectGroupTwo.vue';
 import ConfirmationPopup from '@/components/back/componentsGeneric/Popup/ConfirmationPopup.vue';
 
 const store = useStore();

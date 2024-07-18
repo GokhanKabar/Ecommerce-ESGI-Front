@@ -17,13 +17,19 @@ const login = async () => {
       email: email.value,
       password: password.value,
     });
-    store.dispatch('setToken', response.data.token)
-    store.dispatch('setUser', response.data.user)
-    router.push('/admin');
+    store.dispatch('setToken', response.data.token);
+    store.dispatch('setUser', response.data.user);
+
+    if (response.data.user.role === "USER") {
+      router.push('/myorders');
+    } else if (response.data.user.role === "ADMIN" || response.data.user.role === "ROLE_STORE_KEEPER") {
+      router.push('/admin');
+    }
   } catch (error) {
     errorMessage.value = error.response.data;
   }
 };
+
 </script>
 
 <template>

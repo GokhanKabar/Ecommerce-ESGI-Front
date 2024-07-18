@@ -1,5 +1,5 @@
 import Api from '@/services/Api';
-import { isAdmin } from '../store/roleManagement';
+import { isAdmin,isUser,isStoreKeeper } from '../store/roleManagement';
 
 export default {
   getUsers() {
@@ -21,7 +21,7 @@ export default {
   },
   
   updateUser(userId, updatedUserData) {
-    if (!isAdmin()) throw new Error('Access denied:Unauthorized ');
+    if (!isAdmin() && !isUser() && !isStoreKeeper()) throw new Error('Access denied:Unauthorized ');
      return Api().put(`users/${userId}`, updatedUserData);
   },
   

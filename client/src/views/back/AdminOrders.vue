@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
+
 import DataTable from '@/components/back/componentsGeneric/DataTable.vue';
 import OrderPopup from '@/components/back/componentsGeneric/order/OrderPopup.vue';
 import OrderCard from '@/components/back/componentsGeneric/order/ProductCard.vue';
 import ButtonDefault from '@/components/back/componentsGeneric/Buttons/ButtonDefault.vue';
+
 import BreadcrumbDefault from '@/components/back/componentsGeneric/Breadcrumbs/BreadcrumbDefault.vue';
 import OrderService from '../../services/OrderService';
 import store from '../../store/store.js';
@@ -74,6 +76,7 @@ onMounted(async () => {
   transition: opacity 0.5s;
 }
 
+
 .fade-enter,
 .fade-leave-to
 
@@ -115,8 +118,9 @@ onMounted(async () => {
   transition: opacity 0.5s;
 }
 
-.fade-enter,
-.fade-leave-to {
+
+.fade-enter, .fade-leave-to {
+
   opacity: 0;
 }
 </style>

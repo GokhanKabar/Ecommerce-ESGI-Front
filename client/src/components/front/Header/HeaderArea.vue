@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import LogoIcon from '@/components/front/icons/LogoIcon.vue'
 import Cart from '@/components/front/Header/Cart.vue'
-import { ref } from 'vue'
+import { ref,computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import getImagePath from '@/utils/getImagePath'
+import store from '../../../store/store'
 
 const showNav = ref(false)
 const searchQuery = ref('')
@@ -42,6 +43,10 @@ const formatPrice = (price) => {
 const calculateDiscountedPrice = (price, promotion) => {
   return price - (price * promotion) / 100
 }
+const userLink = computed(() => {
+  return store.state.isUserLoggedIn ? '/admin' : '/connexion'
+})
+
 </script>
 
 <template>
@@ -143,7 +148,7 @@ const calculateDiscountedPrice = (price, promotion) => {
       </div>
       <div class="flex flex-row gap-5">
         <div class="nav-item">
-          <router-link to="/connexion" class="flex flex-row gap-1">
+          <router-link :to="userLink" class="flex flex-row gap-1">
             <svg
               width="17"
               height="17"

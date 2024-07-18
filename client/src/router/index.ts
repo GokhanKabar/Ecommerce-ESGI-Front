@@ -4,7 +4,6 @@ import AdminUsers from '@/views/back/AdminUsers.vue'
 import AdminProducts from '@/views/back/AdminProducts.vue'
 import AdminBrand from '@/views/back/AdminBrand.vue'
 import AdminFamily from '@/views/back/AdminFamily.vue'
-import AdminOrders from '@/views/back/AdminOrders.vue'
 import ClientOrders from '@/views/back/ClientOrders.vue'
 import HomeView from '@/views/front/HomeView.vue'
 import BrandView from '@/views/front/BrandView.vue'
@@ -21,6 +20,12 @@ import store from '@/store/store'
 import ProductDetail from '@/views/front/ProductDetail.vue'
 import Success from '@/views/front/Success.vue'
 import Cancel from '@/views/front/Cancel.vue'
+import ProfilView from '@/views/back/ProfilView.vue'
+import NotFound from '@/errors/NotFound.vue'
+import MentionLegal from '@/views/front/MentionLegal.vue'
+import CGV from '@/views/front/CGV.vue'
+import PaiementSecurise from '@/views/front/PaiementSecurise.vue'
+import ProtectionDonnees from '@/views/front/ProtectionDonnees.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,43 +34,43 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       component: AdminView,
-      meta: { title: 'Admin', needsAuth: true }
+      meta: { title: 'Admin', needsAuth: true, roles: ['ADMIN', 'ROLE_STORE_KEEPER'] }
     },
     {
       path: '/admin/users',
       name: 'adminUsers',
       component: AdminUsers,
-      meta: { title: 'Admin' }
+      meta: { title: 'Admin', needsAuth: true, roles: ['ADMIN'] }
     },
     {
       path: '/admin/products',
       name: 'adminProducts',
       component: AdminProducts,
-      meta: { title: 'Admin' }
+      meta: { title: 'Admin', needsAuth: true, roles: ['ADMIN', 'ROLE_STORE_KEEPER'] }
     },
     {
       path: '/admin/brand',
       name: 'adminBrand',
       component: AdminBrand,
-      meta: { title: 'Admin' }
+      meta: { title: 'Admin', needsAuth: true, roles: ['ADMIN', 'ROLE_STORE_KEEPER'] }
     },
     {
       path: '/admin/family',
       name: 'adminFamily',
       component: AdminFamily,
-      meta: { title: 'Admin' }
-    },
-    {
-      path: '/admin/orders',
-      name: 'adminOrders',
-      component: AdminOrders,
-      meta: { title: 'Admin' }
+      meta: { title: 'Admin', needsAuth: true, roles: ['ADMIN', 'ROLE_STORE_KEEPER'] }
     },
     {
       path: '/myorders',
       name: 'clientOrders',
       component: ClientOrders,
-      meta: { title: 'Client Orders' }
+      meta: { title: 'Client Orders', needsAuth: true, roles: ['USER'] }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfilView,
+      meta: { title: 'profile', needsAuth: true }
     },
     {
       path: '/',
@@ -123,13 +128,13 @@ const router = createRouter({
     },
     {
       path: '/mot-passe-oublie',
-      name: 'MotPasseOublie', // Renommé le nom de la route
+      name: 'MotPasseOublie',
       component: ForgatPassword,
       meta: { title: 'Mot de passe oublié | Tendance Parfums' }
     },
     {
       path: '/renitialisation-mot-de-passe',
-      name: 'RéinitialisationDeMotPasse', // Renommé le nom de la route
+      name: 'RéinitialisationDeMotPasse',
       component: ResetPassword,
       meta: { title: 'réinitialisation de mot de passe | Tendance Parfums' }
     },
@@ -150,6 +155,36 @@ const router = createRouter({
       name: 'Cancel',
       component: Cancel,
       meta: { title: 'Cancel | Tendance Parfums' }
+    },
+    {
+      path: '/NotFound',
+      name: 'NotFound',
+      component: NotFound,
+      meta: { title: '404 Not Found', needsAuth: true }
+    },
+    {
+      path: '/mention-legale',
+      name: 'MentionLegale',
+      component: MentionLegal,
+      meta: { title: 'Mention Legale | Tendance Parfums' }
+    },
+    {
+      path: '/cgu-cgv',
+      name: 'CguCgv',
+      component: CGV,
+      meta: { title: 'CGU-CGV | Tendance Parfums' }
+    },
+    {
+      path: '/paiement-securise',
+      name: 'PaiementSecurise',
+      component: PaiementSecurise,
+      meta: { title: 'Paiement Securise | Tendance Parfums' }
+    },
+    {
+      path: '/protection-donnees',
+      name: 'ProtectionDonnees',
+      component: ProtectionDonnees,
+      meta: { title: 'Protection Donnees | Tendance Parfums' }
     }
   ]
 })
@@ -157,12 +192,16 @@ router.beforeEach((to) => {
   document.title = to.meta?.title ?? 'Default page'
 })
 router.beforeEach((to, from, next) => {
-  console.log(store.state.isUserLoggedIn)
   if (to.meta.needsAuth) {
     if (!store.state.isUserLoggedIn) {
       next('/connexion')
     } else {
-      next()
+      const Role = store.state.user.role
+      if (to.meta.roles && !to.meta.roles.includes(Role)) {
+        next('/NotFound')
+      } else {
+        next()
+      }
     }
   } else {
     next()

@@ -11,6 +11,7 @@ const db = require("./databases/sequelize/models");
 const connectDB = require("./databases/mongoose/mongo.connection.js"); // Importez le fichier de connexion MongoDB
 const stripeRoutes = require("./routes/stripe.route.js");
 const stripeWebhook = require("./routes/stripeWebhook.route.js");
+const contactRoutes = require("./routes/contact.route.js");
 
 const app = express();
 
@@ -33,7 +34,7 @@ app.use(familiesRoutes);
 app.use("/stripe", stripeRoutes);
 app.use(orderRoutes);
 app.use(orderRoutes);
-
+app.use('/contact', contactRoutes);
 // Connexion à MongoDB
 connectDB();
 
