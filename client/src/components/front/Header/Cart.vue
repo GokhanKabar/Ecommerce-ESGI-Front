@@ -32,7 +32,7 @@ const cartProducts = computed(() => store.state.cart)
 const isUserLoggedIn = computed(() => store.state.isUserLoggedIn)
 
 const totalPrice = computed(() => {
-  console.log('store.state.cart', store.state.cart)
+ 
   return store.state.cart
     .reduce((total, item) => {
       const { product } = item

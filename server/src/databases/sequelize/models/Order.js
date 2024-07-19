@@ -32,6 +32,13 @@ module.exports = (sequelize) => {
         len: [1, 50]
       }
     },
+    total: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+      validate: {
+        notEmpty: true
+      }
+    },
     date_order: {
       type: DataTypes.DATE,
       allowNull: false,
