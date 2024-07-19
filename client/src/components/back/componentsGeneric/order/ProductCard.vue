@@ -217,7 +217,7 @@ const nextPage = () => {
       <div class="col-span-2 flex flex-col space-y-2 m-12">
         <button class="bg-gray-200 text-gray-700 px-2 py-1 rounded">Suivre</button>
         <button class="bg-gray-200 text-gray-700 px-2 py-1 rounded">Renvoyer l'article</button>
-        <ButtonDefault @click="" label="Passer à la caisse" customClasses="bg-[#D8B775] text-white rounded-md">
+        <ButtonDefault @click="" label="Commander à nouveau" customClasses="bg-[#D8B775] text-white rounded-md">
         </ButtonDefault>
       </div>
     </div>
@@ -250,5 +250,5 @@ const nextPage = () => {
 </template>
 
 <style scoped>
-/* Vous pouvez ajouter des styles pour le message ici si nécessaire */
+
 </style>

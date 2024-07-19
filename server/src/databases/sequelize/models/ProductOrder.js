@@ -17,7 +17,9 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'products', 
+
+        model: Product, // Assuming 'Product' table exists for foreign key
+
         key: 'id'
       },
       validate: {
@@ -28,7 +30,9 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Order',
+
+        model: Order, // Assuming 'Order' table exists for foreign key
+
         key: 'id'
       },
       validate: {

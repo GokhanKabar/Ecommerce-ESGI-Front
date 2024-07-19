@@ -8,7 +8,16 @@ const isAdmin = () => {
 }
 
 export default {
-async getOrderByUser(user_id) {
+  async createOrder(orderData) {
+    try {
+      const response = await Api().post(`createOrder`, orderData)
+      return response.data
+    } catch (error) {
+      console.error('Error creating Order:', error)
+      throw error
+    }
+  },
+  async getOrderByUser(user_id) {
     try {
       const response = await Api().get(`getOrderByUser/${user_id}`)
       return response.data

@@ -21,7 +21,7 @@ router.post("/create-checkout-session", async (req, res) => {
         quantity: item.quantity,
       })),
       mode: "payment",
-      success_url: "http://localhost:5173/success",
+      success_url: "http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "http://localhost:5173/cancel",
       metadata: {
         items: JSON.stringify(
@@ -41,5 +41,20 @@ router.post("/create-checkout-session", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+
+// Nouvelle route pour récupérer les détails de la session de paiement Stripe
+router.get("/checkout-session/:sessionId", async (req, res) => {
+  const { sessionId } = req.params;
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    res.json(session);
+  } catch (error) {
+    console.error("Failed to retrieve checkout session:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 module.exports = router;

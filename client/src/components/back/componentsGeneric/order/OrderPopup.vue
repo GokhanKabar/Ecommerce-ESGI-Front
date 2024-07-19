@@ -12,11 +12,11 @@ const props = defineProps<{
 const emit = defineEmits(['delete', 'close']);
 
 const confirm = () => {
-  emit('delete');
+    emit('delete');
 };
 
 const close = () => {
-  emit('close');
+    emit('close');
 };
 
 </script>
@@ -37,8 +37,8 @@ const close = () => {
 
                 <!-- Informations du client -->
                 <div class="flex justify-between items-center p-4 rounded ">
-                    <span class="font-bold">Client :  <span class="font-semibold">{{ order.customerName }}</span></span>
-                    <span class="font-bold">Email :  <span class="font-semibold" >{{  order.customerEmail}}</span></span>
+                    <span class="font-bold">Client : <span class="font-semibold">{{ order.customerName }}</span></span>
+                    <span class="font-bold">Email : <span class="font-semibold">{{ order.customerEmail }}</span></span>
                 </div>
 
                 <div class="flex justify-between items-center p-4 rounded bg-slate-200">
@@ -115,45 +115,11 @@ const close = () => {
                                 </defs>
                             </svg>
 
-
-                            <svg v-else-if="order.deliveryStatus === 'delivered'" width="26" height="29"
-                                viewBox="0 0 26 29" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M8.3688 19.855C3.89155 19.2644 0.518066 15.4147 0.518066 10.8967C0.518066 5.91233 4.57039 1.8606 9.55547 1.8606C14.5406 1.8606 18.5929 5.91233 18.5929 10.8967C18.5929 11.1402 18.5825 11.3837 18.567 11.6221L17.686 11.5495C17.7016 11.3319 17.7119 11.1143 17.7119 10.8967C17.7119 6.39936 14.0535 2.74659 9.56066 2.74659C5.06268 2.74659 1.40937 6.40454 1.40937 10.8967C1.40937 14.9743 4.4512 18.4457 8.48798 18.9794L8.3688 19.855Z"
-                                    fill="#D8B775" />
-                                <path d="M17.1473 26.399L9.30688 24.5597V14.7153L17.1473 16.736V26.399Z"
-                                    fill="#D8B775" />
-                                <path d="M17.3907 26.3989L24.9927 24.7876V14.6531L17.3907 16.7359V26.3989Z"
-                                    fill="#D8B775" />
-                                <path
-                                    d="M17.0436 12.3682L9.30688 14.4977L17.1473 16.4821L24.9928 14.4251L17.0436 12.3682Z"
-                                    fill="#D8B775" />
-                                <path
-                                    d="M9.66444 11.6895L6.56042 8.58595L7.18745 7.95902L9.66444 10.4357L13.9396 6.16113L14.5666 6.78806L9.66444 11.6895Z"
-                                    fill="#D8B775" />
-                                <path d="M9.33276 4.18188H9.77317V5.06788H9.33276V4.18188Z" fill="#D8B775" />
-                                <path d="M2.69983 10.814H3.58582V11.2544H2.69983V10.814Z" fill="#D8B775" />
-                                <path d="M15.5253 10.814H16.4113V11.2544H15.5253V10.814Z" fill="#D8B775" />
-                                <path
-                                    d="M5.93896 5.21094L6.32037 4.99076L6.76341 5.758L6.38201 5.97818L5.93896 5.21094Z"
-                                    fill="#D8B775" />
-                                <path
-                                    d="M3.50952 14.2722L4.27691 13.8294L4.49709 14.2108L3.7297 14.6536L3.50952 14.2722Z"
-                                    fill="#D8B775" />
-                                <path
-                                    d="M14.6134 7.85864L15.3808 7.41578L15.601 7.79721L14.8336 8.24006L14.6134 7.85864Z"
-                                    fill="#D8B775" />
-                                <path
-                                    d="M3.51123 7.79956L3.73146 7.41818L4.49875 7.86113L4.27853 8.24251L3.51123 7.79956Z"
-                                    fill="#D8B775" />
-                                <path
-                                    d="M5.93933 16.8601L6.38229 16.0928L6.76374 16.3129L6.32078 17.0802L5.93933 16.8601Z"
-                                    fill="#D8B775" />
-                                <path
-                                    d="M12.3461 5.75513L12.789 4.9878L13.1705 5.20793L12.7275 5.97526L12.3461 5.75513Z"
-                                    fill="#D8B775" />
+                            <svg v-else-if="order.deliveryStatus === 'delivered'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26"
+                                fill="blue">
+                                <circle cx="12" cy="12" r="10" stroke="green" stroke-width="2" fill="none" />
+                                <path d="M9 12.5l2 2l5-5" stroke="green" stroke-width="2" fill="none" />
                             </svg>
-
 
                             <svg v-else class="w-6 h-6 text-red-500" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
@@ -178,7 +144,7 @@ const close = () => {
                     <!-- Section du paiement -->
                     <div>
                         <div class="font-semibold">
-                            Total : <span>{{ order.totalPrice }}</span> €
+                            Total : <span>{{ order.total }}</span> €
                         </div>
                         <div>
                             <span v-if="order.paymentStatus === 'not payed'" class="inline-flex items-center">
@@ -232,7 +198,7 @@ const close = () => {
                 <button @click="close" class="bg-[#D8B775] text-white rounded px-5 py-2">Fermer</button>
 
             </div>
-            
+
         </div>
 
 

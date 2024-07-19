@@ -5,7 +5,7 @@ const orderController = require('../controllers/order.controller');
 
 
 
-router.post('/addOrder',orderController.createOrder);
+router.post('/createOrder',orderController.createOrder);
 router.get('/getAllOrders',orderController.getAllOrders);
 router.get('/getOrder/:id', orderController.getOrderById);
 router.put('/updateOrder/:id', orderController.updateOrder);
