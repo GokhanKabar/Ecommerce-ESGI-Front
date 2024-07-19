@@ -9,12 +9,10 @@ module.exports = (sequelize) => {
 
     static addHooks(db) {
       Brand.addHook("afterCreate", async (brand) => {
-        console.log("afterCreate hook triggered for brand:", brand);
         await BrandMongo(brand.id, db.Brand, db.Product);
       });
 
       Brand.addHook("afterUpdate", async (brand) => {
-        console.log("afterUpdate hook triggered for brand:", brand);
         await BrandMongo(brand.id, db.Brand, db.Product);
       });
     }

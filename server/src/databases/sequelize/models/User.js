@@ -4,18 +4,15 @@ const userMongo = require('../../denormalization/UserMongo');
 module.exports = (sequelize) => {
   class User extends Model {
     static associate(models) {
-      console.log('Associating User');
       User.hasMany(models.Order, { foreignKey: 'userId' });
     }
 
     static addHooks(db) {
       User.addHook("afterCreate", async (user) => {
-        console.log("afterCreate hook triggered for user:", user);
         await userMongo(user.id, db.User, db.Order);
       });
 
       User.addHook("afterUpdate", async (user) => {
-        console.log("afterUpdate hook triggered for user:", user);
         await userMongo(user.id, db.User, db.Order);
       });
     }
@@ -69,6 +66,14 @@ module.exports = (sequelize) => {
     lockedUntil: {
       type: DataTypes.DATE,
       allowNull: true,
+    },
+     deleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    }, rgpdChecked: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,

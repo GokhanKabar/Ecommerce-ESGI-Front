@@ -33,7 +33,7 @@ onMounted(async () => {
 
   
   <DefaultLayout>
-    <BreadcrumbDefault :pageTitle="pageTitle" />
+    <BreadcrumbDefault :pageTitle="pageTitle"  linkText="Accueil" linkTo="/"  />
     <div class="container mx-auto">
 <OrderCard :orders="Orders"/>
 

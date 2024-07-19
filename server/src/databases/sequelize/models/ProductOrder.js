@@ -5,7 +5,6 @@ const Order = require('./Order');
 module.exports = (sequelize) => {
   class ProductOrder extends Model {
     static associate(models) {
-        // Assuming foreign keys map to 'user_id' and 'payment_id' in the database
         ProductOrder.belongsTo(models.Product);
         ProductOrder.belongsTo(models.Order);
   
@@ -18,30 +17,34 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
+
         model: Product, // Assuming 'Product' table exists for foreign key
+
         key: 'id'
       },
       validate: {
-        notEmpty: true // Ensure a product is selected
+        notEmpty: true 
       }
     },
     order_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
+
         model: Order, // Assuming 'Order' table exists for foreign key
+
         key: 'id'
       },
       validate: {
-        notEmpty: true // Ensure an order is associated
+        notEmpty: true 
       }
     },
     quantity: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
-        isInt: true, // Ensure quantity is an integer
-        min: 1 // Optional: Set a minimum quantity (adjust as needed)
+        isInt: true, 
+        min: 1 
       }
     },
     date_create: {
@@ -49,21 +52,21 @@ module.exports = (sequelize) => {
       allowNull: false,
       defaultValue: DataTypes.NOW,
       validate: {
-        isDate: true // Ensure a valid date is provided
+        isDate: true 
       }
     },
     date_update: {
       type: DataTypes.DATE,
       allowNull: true,
       validate: {
-        isDate: true // Ensure a valid date is provided (if applicable)
+        isDate: true 
       }
     },
     user_create: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Users', // Assuming 'User' table exists for foreign key
+        model: 'Users', 
         key: 'id'
       }
     },
@@ -71,20 +74,20 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Users', // Assuming 'User' table exists for foreign key
+        model: 'Users', 
         key: 'id'
       }
     }
   }, {
     sequelize,
     modelName: 'ProductOrder',
-    timestamps: false, // Disable automatic timestamps if not needed
-    underscored: true, // Use underscores for column names
+    timestamps: false, 
+    underscored: true, 
     tableName: 'product_orders'
   });
 
 
-  // Associations
+
    
   return ProductOrder;
 };

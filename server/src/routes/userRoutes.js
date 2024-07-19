@@ -5,19 +5,21 @@ const checkAuth = require("../middlewares/checkAuthRole")
 route.use(express.json());
 
 // Register a new user
-route.post('/register', (request, response) => {
-    userController.register(
-        request.body.firstName,
-        request.body.lastName,
-        request.body.password,
-        request.body.address,
-        request.body.email,
-        request.body.phone,
-        request.body.role,
-        request.body.accountConfirmation
+route.post("/register", (request, response) => {
+  userController
+    .register(
+      request.body.firstName,
+      request.body.lastName,
+      request.body.password,
+      request.body.address,
+      request.body.email,
+      request.body.phone,
+      request.body.role,
+      request.body.rgpdChecked,
+      request.body.accountConfirmation
     )
-    .then(res => response.status(200).json(res))
-    .catch(err => response.status(500).json(err));
+    .then((res) => response.status(200).json(res))
+    .catch((err) => response.status(500).json(err));
 });
 
 // Login a user
@@ -99,9 +101,11 @@ route.put('/users/:userId',checkAuth({ roles: ['ADMIN','USER','ROLE_STORE_KEEPER
 });
 
 // Delete a user by ID (CRUD Delete)
-route.delete('/users/:userId',checkAuth({ roles: ['ADMIN'] }), (request, response) => {
+route.delete('/users/:userId',checkAuth({ roles: ['ADMIN','USER','ROLE_STORE_KEEPER'] }), (request, response) => {
     const userId = request.params.userId;
-    userController.deleteUser(userId)
+    const role = request.user.role; 
+    const token = request.headers.authorization.split(' ')[1];
+    userController.deleteUser(userId,role,token)
         .then(() => response.status(204).end())
         .catch(err => response.status(500).json(err));
 });

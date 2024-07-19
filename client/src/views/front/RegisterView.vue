@@ -5,6 +5,8 @@ import DefaultAuthCard from '../../components/front/Authentification/DefaultAuth
 import InputGroup from '../../components/front/Authentification/InputGroup.vue';
 import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue';
 import AuthenticationService from '../../services/AuthenticationService';
+import CheckboxOne from'@/components/back/componentsGeneric/Forms/Checkboxes/CheckboxOne.vue'
+
 import { ref } from 'vue';
 
 const firstName = ref('');
@@ -13,8 +15,11 @@ const address = ref('');
 const phone = ref('');
 const email = ref('');
 const password = ref('');
+const rgpdChecked = ref(false);
+
 const errorMessage = ref('');
 const register = async () => {
+    console.log("Checked:",rgpdChecked.value);
     try {
         const response = await AuthenticationService.register({
             firstName: firstName.value,
@@ -23,6 +28,7 @@ const register = async () => {
             email: email.value,
             phone: phone.value,
             password: password.value,
+            rgpdChecked: rgpdChecked.value,
         });
     
         router.push('/confirmation-email');
@@ -107,12 +113,12 @@ const register = async () => {
                     </g>
                 </svg>
             </InputGroup>
+            <CheckboxOne :checked="rgpdChecked" @change="rgpdChecked = $event.target.checked" />
 
             <div class="mb-5 mt-6">
                 <input type="submit" @click="register" value="Inscirption"
                     class="w-full cursor-pointer rounded-lg border border-primary bg-[#C58940] p-4 font-medium text-white transition hover:bg-opacity-90" />
             </div>
-
             <button
                 class="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 font-medium hover:bg-opacity-70 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-70">
                 <span>

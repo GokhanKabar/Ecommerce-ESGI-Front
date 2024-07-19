@@ -9,12 +9,10 @@ module.exports = (sequelize) => {
 
     static addHooks(db) {
       Family.addHook("afterCreate", async (family) => {
-        console.log("afterCreate hook triggered for family:", family);
         await FamilyMongo(family.id, db.Family, db.Product);
       });
 
       Family.addHook("afterUpdate", async (family) => {
-        console.log("afterUpdate hook triggered for family:", family);
         await FamilyMongo(family.id, db.Family, db.Product, true);
       });
     }
