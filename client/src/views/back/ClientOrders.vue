@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
+<<<<<<< Updated upstream
 import OrderCard from '../../components/back/componentsGeneric/order/ProductCard.vue';
 import ButtonDefault from '../../components/back/componentsGeneric/Buttons/ButtonDefault.vue';
 import BreadcrumbDefault from '../../components/back/componentsGeneric/Breadcrumbs/BreadcrumbDefault.vue';
+=======
+import OrderCard from '@/components/back/componentsGeneric/order/ProductCard.vue';
+import BreadcrumbDefault from '@/components/back/componentsGeneric/Breadcrumbs/BreadcrumbDefault.vue';
+>>>>>>> Stashed changes
 import OrderService from '../../services/OrderService';
 import store from '../../store/store.js';
 
@@ -33,7 +38,7 @@ onMounted(async () => {
 
   
   <DefaultLayout>
-    <BreadcrumbDefault :pageTitle="pageTitle" />
+    <BreadcrumbDefault :pageTitle="pageTitle"  linkText="Accueil" linkTo="/"  />
     <div class="container mx-auto">
 <OrderCard :orders="Orders"/>
 

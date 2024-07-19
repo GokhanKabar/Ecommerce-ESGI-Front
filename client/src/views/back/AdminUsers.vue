@@ -20,7 +20,8 @@ const editedUser = ref({
   phone: '',
   password: '',
   address: '',
-  role: ''
+  role: '',
+  rgpdChecked:true
 });
 const editUserNewData = ref({
   firstName: '',
@@ -29,7 +30,9 @@ const editUserNewData = ref({
   phone: '',
   password: '',
   address: '',
-  role: ''
+  role: '',
+  rgpdChecked:true
+
 });
 const NewUser = ref({
   firstName: '',
@@ -38,7 +41,8 @@ const NewUser = ref({
   address: '',
   email: '',
   phone: '',
-  role: ''
+  role: '',
+  rgpdChecked:true
 });
 
 const Errors = ref<string>();

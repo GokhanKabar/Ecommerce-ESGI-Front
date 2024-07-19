@@ -61,6 +61,11 @@ const store = new Vuex.Store({
           state.cart = state.cart.filter((p) => p.product.id !== id_product)
         }
       }
+    },RESET_USER(state) {
+      state.token = null;
+      state.user = null;
+      state.isUserLoggedIn = false;
+      state.cart = []; 
     }
   },
   actions: {
@@ -81,6 +86,9 @@ const store = new Vuex.Store({
     },
     decrementProductQuantity({ commit }, productId) {
       commit('DECREMENT_PRODUCT_QUANTITY', productId)
+    }
+    ,resetUser({ commit }) {
+      commit('RESET_USER');
     }
   }
 })

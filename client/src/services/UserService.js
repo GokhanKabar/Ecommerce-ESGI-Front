@@ -26,7 +26,7 @@ export default {
   },
   
   deleteUser(userId) {
-    if (!isAdmin()) throw new Error('Access denied: Unauthorized');
+    if (!isAdmin() && !isUser() && !isStoreKeeper()) throw new Error('Access denied: Unauthorized');
      return Api().delete(`users/${userId}`);
   }
 };
