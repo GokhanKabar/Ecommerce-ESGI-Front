@@ -1,28 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useStore } from 'vuex';
-<<<<<<< Updated upstream
 import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
 import BreadcrumbDefault from '../../components/back/componentsGeneric/Breadcrumbs/BreadcrumbDefault.vue';
 import CrudUser from '../../services/UserService';
 import AlertSuccess from '../../components/back/componentsGeneric/Alerts/AlertSuccess.vue';
-
 import ButtonDefault from '../../components/back/componentsGeneric/Buttons/ButtonDefault.vue';
 import InputGroup from '../../components/front/Authentification/InputGroup.vue';
 import DefaultCard from '../../components/back/componentsGeneric/Forms/DefaultCard.vue';
-=======
 import {useRouter} from'vue-router'
 const router = useRouter();
 
-import DefaultLayout from '@/components/back/layouts/DefaultLayout.vue';
-import BreadcrumbDefault from '@/components/back/componentsGeneric/Breadcrumbs/BreadcrumbDefault.vue';
-import CrudUser from '@/services/UserService';
-import AlertSuccess from '../../components/back/componentsGeneric/Alerts/AlertSuccess.vue'
-import ButtonDefault from '@/components/back/componentsGeneric/Buttons/ButtonDefault.vue'
-import InputGroup from '@/components/front/Authentification/InputGroup.vue';
-import DefaultCard from '@/components/back/componentsGeneric/Forms/DefaultCard.vue';
-import ConfirmationPopup from '../../components/back/componentsGeneric/Popup/ConfirmationPopup.vue'; 
->>>>>>> Stashed changes
+
 
 const pageTitle = ref('Profil Utilisateur');
 const store = useStore();

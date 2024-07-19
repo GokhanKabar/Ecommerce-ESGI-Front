@@ -1,18 +1,12 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 const router = useRouter();
-<<<<<<< Updated upstream
 import DefaultAuthCard from '../../components/front/Authentification/DefaultAuthCard.vue';
 import InputGroup from '../../components/front/Authentification/InputGroup.vue';
 import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue';
 import AuthenticationService from '../../services/AuthenticationService';
-=======
-import DefaultAuthCard from '@/components/front/Authentification/DefaultAuthCard.vue';
-import InputGroup from '@/components/front/Authentification/InputGroup.vue';
 import CheckboxOne from'@/components/back/componentsGeneric/Forms/Checkboxes/CheckboxOne.vue'
-import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue';
-import AuthenticationService from '@/services/AuthenticationService';
->>>>>>> Stashed changes
+
 import { ref } from 'vue';
 
 const firstName = ref('');
