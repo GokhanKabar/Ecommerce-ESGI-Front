@@ -13,6 +13,7 @@ const stripeRoutes = require("./routes/stripe.route.js");
 const stripeWebhook = require("./routes/stripeWebhook.route.js");
 const contactRoutes = require("./routes/contact.route.js");
 const statisticalRoutes= require("./routes/statistical.route.js")
+const alertRoutes = require("./routes/alert.route.js");
 
 const app = express();
 
@@ -37,6 +38,8 @@ app.use("/stripe", stripeRoutes);
 app.use(orderRoutes);
 app.use(orderRoutes);
 app.use('/contact', contactRoutes);
+app.use('/alerts', alertRoutes);
+
 // Connexion à MongoDB
 connectDB();
 

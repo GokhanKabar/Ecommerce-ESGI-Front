@@ -1,5 +1,8 @@
 const { Model, DataTypes } = require("sequelize");
 const ProductMongo = require("../../denormalization/ProductMongo");
+const Alert = require("./Alert");
+const notificationService = require("../../../services/notificationServices");
+
 
 module.exports = (sequelize) => {
   class Product extends Model {
@@ -13,11 +16,23 @@ module.exports = (sequelize) => {
       Product.addHook("afterCreate", async (product) => {
         console.log("afterCreate hook triggered for product:", product);
         await ProductMongo(product.id, db.Product, db.Brand, db.Family);
+
+        const alerts = await db.Alert.findAll({ where: { newProduct: true } });
+        notificationService.notifyUsers(alerts, 'Nouveau produit', `Un nouveau produit à été ajouté dans la catégorie ${product.category}.`);
       });
 
       Product.addHook("afterUpdate", async (product) => {
         console.log("afterUpdate hook triggered for product:", product);
         await ProductMongo(product.id, db.Product, db.Brand, db.Family);
+        if (product._previousDataValues.stock === 0 && product.stock > 0) {
+          const alerts = await Alert.findAll({ where: { restock: true } });
+          notificationService.notifyUsers(alerts, 'Produit de nouveau disponible', `Le produit ${product.name} à été restocké il est de nouveau disponible.`);
+        }
+
+        if (product._previousDataValues.price !== product.price) {
+          const alerts = await Alert.findAll({ where: { priceChange: true } });
+          notificationService.notifyUsers(alerts, 'Changement du prix', `Le prix du produit ${product.name} à été modifié.`);
+        }
       });
 
       Product.addHook("beforeDestroy", async (product) => {
