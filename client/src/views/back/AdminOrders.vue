@@ -31,9 +31,9 @@ const fetchOrdersForAdmin = async () => {
 const showPopup = ref(false);
 const orderDetails = ref({});
 
-const showOrderDetails = async (orderId) => {
+const showOrderDetails = async (order) => {
   try {
-    const response = await OrderService.getOrderDetails(orderId);
+    const response = await OrderService.getOrderDetails(order.id);
     orderDetails.value = response;
     showPopup.value = true;
   } catch (error) {
