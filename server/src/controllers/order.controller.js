@@ -148,6 +148,7 @@ exports.getOrdersByUser = async (req, res) => {
       orderId: order.id,
       deliveryStatus: order.delivery_status,
       paymentStatus: order.payment_status,
+      total: order.total,
       dateOrder: order.date_order,
       dateCreation: order.date_creation,
       dateUpdate: order.date_update,

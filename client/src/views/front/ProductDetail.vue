@@ -52,7 +52,7 @@ function goBack() {
 }
 
 function addToCart() {
-  console.log('product.value', product.value, product.value?.sequelizeId)
+  
   store.dispatch('addProductToCart', {
     id: product.value?.sequelizeId,
     name: product.value?.name,

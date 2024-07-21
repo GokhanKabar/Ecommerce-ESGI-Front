@@ -10,6 +10,15 @@ exports.getProducts = async (req, res) => {
   }
 };
 
+exports.getPromotionalProducts = async (req, res) => {
+  try {
+    const promotionalProducts = await Product.find({ promotion: { $gt: 0 } }).sort({ promotion: -1 }).limit(3);
+    res.status(200).json(promotionalProducts);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 exports.getProductsByCategory = async (req, res) => {
   try {
     const { category } = req.params;

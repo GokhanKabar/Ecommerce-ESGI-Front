@@ -33,6 +33,15 @@ export default {
       throw error
     }
   },
+  async getAllProductsPromo() {
+    try {
+      const response = await Api().get('/promotionalProducts')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching products:', error)
+      throw error
+    }
+  },
   async getProductsByCategory(category){
     try {
       const response = await Api().get(`/products/category/${category}`);
