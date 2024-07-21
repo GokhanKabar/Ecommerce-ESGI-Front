@@ -1,8 +1,30 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref,onMounted } from 'vue'
+import StatisticService from '../../../../services/StatisticService.js'
+import Loader from "../../componentsGeneric/Loaders/Loader.vue";
+interface CardItem {
+  icon: string;
+  title: string;
+  total: string;
+  growthRate: number;
+}
+const isLoading = ref(true)
 
-const cardItems = ref([
-  {
+const cardItems = ref<CardItem[]>([]);
+onMounted(() => {
+const fetchStatistics = async () => {
+  try {
+    const response = await StatisticService.getStatistics();    
+    const data=response.data;
+    const totalRevenue = data.totalRevenue ?? 0;
+    const totalOrders = data.totalOrders ?? 0;
+    const totalProducts = data.totalProducts ?? 0;
+    const totalUsers = data.totalUsers ?? 0;
+    const userGrowthRate = ((totalUsers - data.previousUsers) / data.previousUsers) * 100;
+    const productGrowthRate = ((data.totalProducts - data.previousProducts) / data.previousProducts) * 100;
+    const orderGrowthRate = ((data.totalOrders - data.previousOrders) / data.previousOrders) * 100;
+    const revenueGrowthRate = ((data.totalRevenue - data.previousRevenue) / data.previousRevenue) * 100;
+    cardItems.value = [{
     icon: `<svg
           class="fill-primary "
           width="22"
@@ -15,8 +37,8 @@ const cardItems = ref([
 
         </svg>`,
     title: 'Total Profit',
-    total: '$3.456K',
-    growthRate: 0.43
+    total: `${totalRevenue} €`,
+    growthRate: revenueGrowthRate.toFixed(2)
   },
   {
     icon: `<svg
@@ -41,8 +63,8 @@ const cardItems = ref([
             />
           </svg>`,
     title: 'Total commandes',
-    total: '$45,2K',
-    growthRate: 4.35
+    total:  `${totalOrders}`,
+    growthRate: orderGrowthRate.toFixed(2)
   },
   {
     icon: `<svg
@@ -63,8 +85,8 @@ const cardItems = ref([
             />
           </svg>`,
     title: 'Total Produits',
-    total: '2.450',
-    growthRate: 2.59
+    total: totalProducts,
+    growthRate: productGrowthRate.toFixed(2)
   },
   {
     icon: `<svg
@@ -89,15 +111,27 @@ const cardItems = ref([
             />
           </svg>`,
     title: 'Total Utilisateurs',
-    total: '3.456',
-    growthRate: -0.95
-  }
-])
+    total:totalUsers,
+    growthRate: userGrowthRate.toFixed(2)
+  }]
+  } catch (error) {
+    console.error('Error fetching statistics:', error);
+  }finally {
+      isLoading.value = false; 
+    }}
+  fetchStatistics();
+
+});
+
 </script>
 
 <template>
-  <!-- Card Item Start -->
+  <div v-if="isLoading" class="position-fixed ml-[35rem]">
+   <Loader />
+  </div>
+  
   <div
+    v-else
     v-for="(item, index) in cardItems"
     :key="index"
     class="rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default "
@@ -150,5 +184,4 @@ const cardItems = ref([
       </span>
     </div>
   </div>
-  <!-- Card Item End -->
 </template>
