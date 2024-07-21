@@ -1,38 +1,49 @@
-const { Order, ProductOrder, Product, User, sequelize } = require('../databases/sequelize/models');
-
+const {
+  Order,
+  ProductOrder,
+  Product,
+  User,
+  sequelize,
+} = require("../databases/sequelize/models");
 
 exports.createOrder = async (req, res) => {
   try {
     // Extraire les données de la requête
-    const { userId, products } = req.body;
+    const { userId, products, payment_intent_id } = req.body;
     // Calculer le total des produits
     const total = products.reduce((acc, product) => {
       return acc + parseFloat(product.price) * product.quantity;
     }, 0);
 
-    // Créer la commande 
+    // Créer la commande
     const order = await Order.create({
       user_id: userId,
-      delivery_status: 'confirmed',
-      payment_status: 'Payed',
+      payment_intent_id: payment_intent_id,
+      delivery_status: "confirmed",
+      payment_status: "Payed",
       total: total,
       date_order: new Date(),
       date_creation: new Date(),
       date_update: new Date(),
-      order_status: 'Confirmed'
+      order_status: "Confirmed",
     });
 
     // Ajouter les produits à la commande
     for (const product of products) {
-
       const sql = `
       INSERT INTO product_orders (product_id, order_id, quantity, date_create, user_create, user_update)
       VALUES (?, ?, ?, NOW(), ?, ?)
     `;
 
       await sequelize.query(sql, {
-        replacements: [product.productId, order.id, product.quantity, userId, userId],
-        type: sequelize.QueryTypes.INSERT
+        replacements: [
+          product.productId,
+          order.id,
+          product.quantity,
+          userId,
+          userId,
+        ],
+        type: sequelize.QueryTypes.INSERT,
       });
 
       // Mettre à jour la quantité des produits dans la table des produits
@@ -44,21 +55,20 @@ exports.createOrder = async (req, res) => {
 
       await sequelize.query(updateSql, {
         replacements: [product.quantity, product.productId],
-        type: sequelize.QueryTypes.UPDATE
+        type: sequelize.QueryTypes.UPDATE,
       });
-
     }
-    res.status(201).json('success');
+    res.status(201).json("success");
   } catch (error) {
-    console.error('Error creating order:', error);
+    console.error("Error creating order:", error);
     res.status(400).json({ error: error.message });
   }
-
-}
+};
 
 exports.getAllOrders = async (req, res) => {
   try {
-    const orders = await sequelize.query(`
+    const orders = await sequelize.query(
+      `
       SELECT ord.id ,CONCAT(u.lastName,' ',u.firstName) as lastName,u.email, ord.delivery_status , ord.payment_status , ord.date_order 
       FROM \`Order\` as ord 
       JOIN product_orders as po on po.order_id = ord.id 
@@ -66,23 +76,24 @@ exports.getAllOrders = async (req, res) => {
       JOIN Users as u ON u.id = ord.user_id
       GROUP BY ord.id, u.id
       ORDER BY date_order DESC
-    `, { type: sequelize.QueryTypes.SELECT });
+    `,
+      { type: sequelize.QueryTypes.SELECT }
+    );
     res.status(201).json(orders);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-
 exports.getOrderById = async (req, res) => {
   try {
     const order = await Order.findByPk(req.params.id);
     res.status(200).json(order);
-    console.log('allOrdersHere')
+    console.log("allOrdersHere");
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
-}
+};
 
 exports.deleteOrder = async (req, res) => {
   try {
@@ -91,27 +102,30 @@ exports.deleteOrder = async (req, res) => {
     // Check order status before deleting
     const order = await Order.findByPk(orderId);
     if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+      return res.status(404).json({ message: "Order not found" });
     }
 
-    if (order.delivery_status === 'delivered' || order.delivery_status === 'in_delivery') {
-      return res.status(400).json({ message: 'Cannot delete order delivered or in delivery status' });
+    if (
+      order.delivery_status === "delivered" ||
+      order.delivery_status === "in_delivery"
+    ) {
+      return res.status(400).json({
+        message: "Cannot delete order delivered or in delivery status",
+      });
     }
 
     // Update order status to 'canceled'
-    await order.update({ delivery_status: 'canceled' });
+    await order.update({ delivery_status: "canceled" });
 
     // Delete the order
     //await order.destroy();
 
-    res.status(200).json({ message: 'Order deleted successfully' });
+    res.status(200).json({ message: "Order deleted successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
 
 exports.getOrdersByUser = async (req, res) => {
   const userId = req.params.id;
@@ -121,16 +135,16 @@ exports.getOrdersByUser = async (req, res) => {
       include: [
         {
           model: Product,
-        }
+        },
       ],
-      order: [['date_order', 'DESC']]
+      order: [["date_order", "DESC"]],
     });
 
     if (!orders) {
       return res.status(200).json({ orders: [] });
     }
 
-    const formattedOrders = orders.map(order => ({
+    const formattedOrders = orders.map((order) => ({
       orderId: order.id,
       deliveryStatus: order.delivery_status,
       paymentStatus: order.payment_status,
@@ -140,7 +154,7 @@ exports.getOrdersByUser = async (req, res) => {
       dateUpdate: order.date_update,
       orderStatus: order.order_status,
       userId: order.user_id,
-      products: order.Products.map(product => ({
+      products: order.Products.map((product) => ({
         id: product.id,
         name: product.name,
         description: product.description,
@@ -157,8 +171,8 @@ exports.getOrdersByUser = async (req, res) => {
         brandId: product.brandId,
         familyId: product.familyId,
         quantity: product.ProductOrder.quantity,
-        totalPrice: product.ProductOrder.quantity * product.price
-      }))
+        totalPrice: product.ProductOrder.quantity * product.price,
+      })),
     }));
 
     res.status(200).json({ formattedOrders });
@@ -167,8 +181,6 @@ exports.getOrdersByUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 exports.getOrderDetails = async (req, res) => {
   const orderId = req.params.id;
@@ -181,16 +193,16 @@ exports.getOrderDetails = async (req, res) => {
         },
         {
           model: User,
-          attributes: ['firstName', 'lastName', 'email'], // Sélectionnez les champs que vous voulez récupérer
-        }
-      ]
+          attributes: ["firstName", "lastName", "email"], // Sélectionnez les champs que vous voulez récupérer
+        },
+      ],
     });
 
     if (!orders) {
       return res.status(200).json({ orders: [] });
     }
 
-    const OrderDetails = orders.map(order => ({
+    const OrderDetails = orders.map((order) => ({
       orderId: order.id,
       deliveryStatus: order.delivery_status,
       paymentStatus: order.payment_status,
@@ -200,20 +212,26 @@ exports.getOrderDetails = async (req, res) => {
       userId: order.user_id,
       customerName: `${order.User.firstName} ${order.User.lastName}`,
       customerEmail: order.User.email,
-      products: order.Products.map(product => ({
+      products: order.Products.map((product) => ({
         orderId: order.id,
         id: product.id,
         name: product.name,
         description: product.description,
         category: product.category,
         price: product.price,
-        discountedPrice: (product.price - (product.price * product.promotion / 100)).toFixed(2),
+        discountedPrice: (
+          product.price -
+          (product.price * product.promotion) / 100
+        ).toFixed(2),
         concentration: product.concentration,
         promotion: product.promotion,
         image: product.image,
         quantity: product.ProductOrder.quantity,
-        totalPrice: (product.ProductOrder.quantity * ((product.price - (product.price * product.promotion / 100)).toFixed(2))).toFixed(2)
-      }))
+        totalPrice: (
+          product.ProductOrder.quantity *
+          (product.price - (product.price * product.promotion) / 100).toFixed(2)
+        ).toFixed(2),
+      })),
     }));
 
     res.status(200).json(OrderDetails);
@@ -223,16 +241,14 @@ exports.getOrderDetails = async (req, res) => {
   }
 };
 
-
 exports.updateOrder = async (req, res) => {
-  const { orderId } = req.params; // Get order ID from request params
-  const { deliveryStatus, paymentStatus, orderStatus } = req.body; // Get update data from request body
-
+  const { id: orderId } = req.params; // Get order ID from request params
+  const { delivery_status, payment_status, order_status } = req.body; // Get update data from request body
   try {
     // Find the order to update
     const order = await Order.findByPk(orderId);
     if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+      return res.status(404).json({ message: "Order not found" });
     }
 
     // Validate update data (optional)
@@ -240,9 +256,9 @@ exports.updateOrder = async (req, res) => {
 
     // Update the order
     await order.update({
-      delivery_status: deliveryStatus || order.delivery_status,
-      payment_status: paymentStatus || order.payment_status,
-      order_status: orderStatus || order.order_status
+      delivery_status: delivery_status || order.delivery_status,
+      payment_status: payment_status || order.payment_status,
+      order_status: order_status || order.order_status,
     });
 
     // Format and return the updated order details
@@ -255,13 +271,12 @@ exports.updateOrder = async (req, res) => {
       dateUpdate: order.date_update,
       orderStatus: order.order_status,
       userId: order.user_id,
-      paymentId: order.payment_id
+      paymentId: order.payment_id,
     };
 
     res.status(200).json({ order: updatedOrderDetails });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
-}
-
+};

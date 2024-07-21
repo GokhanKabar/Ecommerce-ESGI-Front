@@ -21,7 +21,8 @@ router.post("/create-checkout-session", async (req, res) => {
         quantity: item.quantity,
       })),
       mode: "payment",
-      success_url: "http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}",
+      success_url:
+        "http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "http://localhost:5173/cancel",
       metadata: {
         items: JSON.stringify(
@@ -42,7 +43,6 @@ router.post("/create-checkout-session", async (req, res) => {
   }
 });
 
-
 // Nouvelle route pour récupérer les détails de la session de paiement Stripe
 router.get("/checkout-session/:sessionId", async (req, res) => {
   const { sessionId } = req.params;
@@ -56,5 +56,21 @@ router.get("/checkout-session/:sessionId", async (req, res) => {
   }
 });
 
+router.post("/refund", async (req, res) => {
+  const { payment_intent_id } = req.body;
+
+  try {
+    console.log("Processing refund for payment intent:", payment_intent_id);
+    const refund = await stripe.refunds.create({
+      payment_intent: payment_intent_id,
+    });
+
+    console.log("Refund successful:", refund);
+    res.json(refund);
+  } catch (error) {
+    console.error("Failed to process refund:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 module.exports = router;
