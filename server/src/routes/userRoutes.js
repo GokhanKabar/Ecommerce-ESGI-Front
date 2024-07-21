@@ -109,5 +109,5 @@ route.delete('/users/:userId',checkAuth({ roles: ['ADMIN','USER','ROLE_STORE_KEE
         .then(() => response.status(204).end())
         .catch(err => response.status(500).json(err));
 });
-
+    
 module.exports = route;

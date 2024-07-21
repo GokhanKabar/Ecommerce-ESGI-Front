@@ -8,6 +8,7 @@ import AlertSuccess from '../../components/back/componentsGeneric/Alerts/AlertSu
 import ButtonDefault from '../../components/back/componentsGeneric/Buttons/ButtonDefault.vue';
 import InputGroup from '../../components/front/Authentification/InputGroup.vue';
 import DefaultCard from '../../components/back/componentsGeneric/Forms/DefaultCard.vue';
+import ConfirmationPopup from '../../components/back/componentsGeneric/Popup/ConfirmationPopup.vue'
 import {useRouter} from'vue-router'
 const router = useRouter();
 
@@ -18,7 +19,7 @@ const store = useStore();
 const showEditForm = ref(false);
 const userToDelete = ref(null);
 const showSuccessAlertDelete = ref(false);
-const showConfirmationPopup = ref(false); // Ajout de la variable showConfirmationPopup
+const showConfirmationPopup = ref(false);
 
 const editUserNewData = ref({
   id: store.state.user.id,
@@ -55,6 +56,7 @@ const cancelEdit = () => {
 };
 
 const confirmDeleteUser = (user) => {
+  console.log('user delete ')
   userToDelete.value = user;
   showConfirmationPopup.value = true;
 };

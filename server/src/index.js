@@ -12,6 +12,7 @@ const connectDB = require("./databases/mongoose/mongo.connection.js"); // Import
 const stripeRoutes = require("./routes/stripe.route.js");
 const stripeWebhook = require("./routes/stripeWebhook.route.js");
 const contactRoutes = require("./routes/contact.route.js");
+const statisticalRoutes= require("./routes/statistical.route.js")
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use("/", indexRouter);
 app.use(userRoute);
 app.use(productsRoutes);
 app.use(brandsRoutes);
+app.use(statisticalRoutes);
 app.use(familiesRoutes);
 app.use("/stripe", stripeRoutes);
 app.use(orderRoutes);
