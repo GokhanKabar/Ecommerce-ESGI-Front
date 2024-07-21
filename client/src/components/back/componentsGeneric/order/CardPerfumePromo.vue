@@ -42,10 +42,10 @@ function addtocart(product){
 
 
   <div class="w-2/5 m-4 px-14">
-    <div class="text-center text-red font-bold text-3xl py-6">
-      <h1>
-        NOS BIG PROMOS
-      </h1> 
+    <div class="text-center text-red font-bold text-xl py-6">
+      <h2>
+        PROFITER DE NOS PROMOS
+      </h2> 
     </div>
     <div
       v-for="(perfume) in props.products"

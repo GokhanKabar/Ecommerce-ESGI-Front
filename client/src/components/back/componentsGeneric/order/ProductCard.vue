@@ -3,6 +3,8 @@ import { defineProps, ref, computed, defineEmits } from 'vue'
 import ButtonDefault from '@/components/back/componentsGeneric/Buttons/ButtonDefault.vue'
 import getImagePath from '../../../../utils/getImagePath'
 import OrderService from '@/services/OrderService'
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const currentPage = ref(1)
 const pageSize = 3
@@ -101,6 +103,49 @@ const handleRefund = async (orderId: number) => {
     console.error('Error refunding order:', error)
   }
 }
+
+const downloadPDF = (order) => {
+  const doc = new jsPDF();
+
+  // Title
+  doc.setFontSize(18);
+  doc.text('Facture', 14, 22);
+
+  // Order details
+  doc.setFontSize(12);
+  doc.text(`Numéro de commande: ${order.orderId}`, 14, 32);
+  doc.text(`Date de la commande: ${new Date(order.dateOrder).toLocaleDateString()}`, 14, 40);
+  doc.text(`Statut de la livraison: ${order.deliveryStatus}`, 14, 48);
+  doc.text(`Statut du paiement: ${order.paymentStatus}`, 14, 56);
+  doc.text(`Total: ${order.total} €`, 14, 64);
+
+  // Table headers
+  const head = [['Produit', 'Quantité', 'Prix Unitaire','Promotion']];
+
+  // Table body
+  const body = order.products.map(product => [
+    product.name,
+    product.quantity,
+    `${product.price} €`,
+    `${product.promotion} %`
+  ]);
+
+  // Adding table to the PDF
+  doc.autoTable({
+    head: head,
+    body: body,
+    startY: 72,
+    theme: 'grid',
+    headStyles: { fillColor: [216, 183, 117] },
+    styles: { overflow: 'linebreak' },
+  });
+
+  // Save the PDF
+  doc.save('facture.pdf');
+};
+
+
+
 </script>
 
 <template>
@@ -377,6 +422,7 @@ const handleRefund = async (orderId: number) => {
             >
               Demander un remboursement
             </button>
+            <button @click="downloadPDF(order)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded">Télécharger la facture</button>
             <ButtonDefault
               @click="reorder(order)"
               label="Commander à nouveau"
