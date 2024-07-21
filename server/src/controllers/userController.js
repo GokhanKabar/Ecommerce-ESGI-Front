@@ -921,15 +921,12 @@ exports.login = (email, password) => {
                 );
               } else {
                 let token = jwt.sign(
-                  { id: user.id },
-                  config.development.privateKey,
+                  { id: user.id ,lastName:user.lastName,firstName:user.firstName,email:user.email,address:user.address,phone:user.phone,role:user.role},config.development.privateKey,
                   { expiresIn: "1h" }
                 );
-                const userJson = user.toJSON();
-                // Réinitialiser les tentatives infructueuses après une connexion réussie
+                
                 user.update({ failedLoginAttempts: 0 });
                 resolve({
-                  user:userJson,
                   token: token,
                 });
               }
