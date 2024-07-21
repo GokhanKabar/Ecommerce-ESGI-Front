@@ -27,6 +27,7 @@ import MentionLegal from '@/views/front/MentionLegal.vue'
 import CGV from '@/views/front/CGV.vue'
 import PaiementSecurise from '@/views/front/PaiementSecurise.vue'
 import ProtectionDonnees from '@/views/front/ProtectionDonnees.vue'
+import ProfilAlerts from '@/views/back/ProfilAlerts.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -78,6 +79,12 @@ const router = createRouter({
       name: 'profile',
       component: ProfilView,
       meta: { title: 'profile', needsAuth: true }
+    },
+    {
+      path: '/alerts',
+      name: 'alerts',
+      component: ProfilAlerts,
+      meta: { title: 'alerts', needsAuth: true }
     },
     {
       path: '/',
