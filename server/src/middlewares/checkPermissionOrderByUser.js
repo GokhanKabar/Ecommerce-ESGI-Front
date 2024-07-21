@@ -2,9 +2,9 @@ const { User, Order } = require('../databases/sequelize/models');
 const jwt = require('jsonwebtoken');
 const config = require('../config/config.json');
 
-const checkUserPermissionsOrder = () => async (req, res, next) => {
+const checkPermissionsOrdersByUser = () => async (req, res, next) => {
   const header = req.headers.authorization ?? req.headers.Authorization;
-  const orderId = req.params.id;
+  const userId = req.params.id;
 
   if (!header) {
     return res.status(401).json({ message: 'Unauthorized: No token provided' });
@@ -29,13 +29,11 @@ const checkUserPermissionsOrder = () => async (req, res, next) => {
     }
 
     if (user.role === 'USER') {
-      const order = await Order.findByPk(orderId);
-      if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
-      }
-      if (order.user_id === user.id) {
+      
+      if (userId == user.id) {
         return next();
       }
+      
       return res.status(403).json({ message: 'Forbidden: Access denied' });
     }
 
@@ -46,4 +44,4 @@ const checkUserPermissionsOrder = () => async (req, res, next) => {
   }
 };
 
-module.exports = checkUserPermissionsOrder;
+module.exports = checkPermissionsOrdersByUser;
