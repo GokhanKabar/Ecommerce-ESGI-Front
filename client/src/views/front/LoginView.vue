@@ -8,28 +8,50 @@ import InputGroup from '../../components/front/Authentification/InputGroup.vue'
 import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
 import AuthenticationService from '../../services/AuthenticationService';
 import { ref } from 'vue';
+
 const email = ref('');
 const password = ref('');
 const errorMessage = ref('');
+
+const base64UrlDecode = (str: string): string => {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4 !== 0) {
+    str += '=';
+  }
+  return decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+};
+
+const decodeJwtToken = (token: string): any => {
+  const parts = token.split('.');
+  if (parts.length !== 3) {
+    throw new Error('JWT token should have 3 parts');
+  }
+  const payload = parts[1];
+  return JSON.parse(base64UrlDecode(payload));
+};
+
 const login = async () => {
   try {
     const response = await AuthenticationService.login({
       email: email.value,
       password: password.value,
     });
-    store.dispatch('setToken', response.data.token);
-    store.dispatch('setUser', response.data.user);
+    const token = response.data.token;
+    store.dispatch('setToken', token);
 
-    if (response.data.user.role === "USER") {
+    const decodedToken = decodeJwtToken(token);
+    console.log(decodedToken);
+    store.dispatch('setUser', decodedToken);
+
+    if (decodedToken.role === "USER") {
       router.push('/myorders');
-    } else if (response.data.user.role === "ADMIN" || response.data.user.role === "ROLE_STORE_KEEPER") {
+    } else if (decodedToken.role === "ADMIN" || decodedToken.role === "ROLE_STORE_KEEPER") {
       router.push('/admin');
     }
   } catch (error) {
     errorMessage.value = error.response.data;
   }
 };
-
 </script>
 
 <template>
