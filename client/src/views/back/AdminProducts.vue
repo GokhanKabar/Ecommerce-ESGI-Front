@@ -49,6 +49,9 @@ const showConfirmationPopup = ref(false);
 const productToDelete = ref(null);
 const successMessage = ref('');
 const errorMessage = ref('');
+const showSuccessAlert = ref(false);
+const showSuccessAlertdelete = ref(false);
+const showSuccessAlertUpdate = ref(false);
 const isAdmin = computed(() => store.state.user && store.state.user.role === 'ADMIN');
 
 const fetchProducts = async () => {
@@ -99,7 +102,11 @@ const createProduct = async () => {
       formData.append(key, newProduct.value[key]);
     }
     await ProductService.createProduct(formData);
-    successMessage.value = 'Produit enregistré avec succès';
+    showSuccessAlert.value = true;
+    setTimeout(() => {
+      showSuccessAlert.value = false;
+    }, 3000);
+
     resetForm();
     await fetchProducts();
     toggleForm();
@@ -124,7 +131,10 @@ const updateProduct = async () => {
       formData.append(key, editedProduct.value[key]);
     }
     await ProductService.updateProduct(editedProduct.value.id, formData);
-    successMessage.value = 'Produit mis à jour avec succès';
+    showSuccessAlertUpdate.value = true;
+    setTimeout(() => {
+      showSuccessAlertUpdate.value = false;
+    }, 3000);
     await fetchProducts();
     toggleEditForm();
   } catch (error) {
@@ -146,6 +156,10 @@ const deleteProduct = async () => {
     await ProductService.deleteProduct(productToDelete.value.id);
     successMessage.value = 'Produit supprimé avec succès';
     await fetchProducts();
+    showSuccessAlertdelete.value = true;
+    setTimeout(() => {
+      showSuccessAlertdelete.value = false;
+    }, 3000);
     showConfirmationPopup.value = false;
   } catch (error) {
     errorMessage.value = 'Erreur lors de la suppression du produit';
@@ -176,7 +190,9 @@ const resetForm = () => {
 <template>
   <DefaultLayout>
     <div class="absolute top-17 left-150 w-125">
-      <AlertSuccess v-if="successMessage" :message="successMessage" />
+      <AlertSuccess v-if="showSuccessAlert" :message="'Produit enregistré avec succès'" />
+      <AlertSuccess v-if="showSuccessAlertdelete" :message="'Produit supprimé avec succès'" />
+      <AlertSuccess v-if="showSuccessAlertUpdate" :message="'Produit modifié avec succès'" />
     </div>
     <div v-if="showForm || showEditForm" class="overlay"></div>
     <BreadcrumbDefault :pageTitle="'Produits'" />

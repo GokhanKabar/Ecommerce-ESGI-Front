@@ -23,7 +23,9 @@ const showConfirmationPopup = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
 const pageTitle = 'Familles';
-
+const showSuccessAlert = ref(false);
+const showSuccessAlertdelete = ref(false);
+const showSuccessAlertUpdate = ref(false);
 
 const fetchFamilies = async () => {
   try {
@@ -54,7 +56,10 @@ const toggleEditForm = () => {
 const createFamily = async () => {
   try {
     await FamilyService.createFamily(newFamily.value);
-    successMessage.value = 'Famille enregistrée avec succès';
+    showSuccessAlert.value = true;
+    setTimeout(() => {
+      showSuccessAlert.value = false;
+    }, 3000);
     newFamily.value.name = '';
     await fetchFamilies();
     toggleForm();
@@ -73,7 +78,10 @@ const updateFamily = async () => {
   try {
     console.log('Updating family with new value:', familyToEdit.value);
     await FamilyService.updateFamily(familyToEdit.value.id, familyToEdit.value);
-    successMessage.value = 'Famille mise à jour avec succès';
+    showSuccessAlertUpdate.value = true;
+    setTimeout(() => {
+      showSuccessAlertUpdate.value = false;
+    }, 3000);
     await fetchFamilies();
     toggleEditForm();
   } catch (error) {
@@ -90,7 +98,10 @@ const confirmDeleteFamily = (family) => {
 const deleteFamily = async () => {
   try {
     await FamilyService.deleteFamily(familyToDelete.value.id);
-    successMessage.value = 'Famille supprimée avec succès';
+    showSuccessAlertdelete.value = true;
+    setTimeout(() => {
+      showSuccessAlertdelete.value = false;
+    }, 3000);
     await fetchFamilies();
     showConfirmationPopup.value = false;
   } catch (error) {
@@ -107,7 +118,9 @@ const cancelDelete = () => {
 <template>
   <DefaultLayout>
     <div class="absolute top-17 left-150 w-125">
-      <AlertSuccess v-if="successMessage" :message="successMessage" />
+      <AlertSuccess v-if="showSuccessAlert" :message="'Famille enregistré avec succès'" />
+      <AlertSuccess v-if="showSuccessAlertdelete" :message="'Famille supprimé avec succès'" />
+      <AlertSuccess v-if="showSuccessAlertUpdate" :message="'Famille modifié avec succès'" />
     </div>
     <div v-if="showForm || showEditForm" class="overlay"></div>
     <BreadcrumbDefault :pageTitle="pageTitle" />
