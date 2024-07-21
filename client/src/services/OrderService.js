@@ -35,9 +35,9 @@ export default {
       throw error
     }
   },
-  async getOrderDetails(user_id) {
+  async getOrderDetails(order_id) {
     try {
-      const response = await Api().get(`getOrderDetails/${user_id}`)
+      const response = await Api().get(`getOrderDetails/${order_id}`)
       return response.data
     } catch (error) {
       console.error('Error fetching Orders by user:', error)
