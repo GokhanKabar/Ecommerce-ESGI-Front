@@ -32,7 +32,6 @@ const props = defineProps({
             </div>
             <div class="flex flex-row gap-5 justify-end mr-10 lg:mt-2 ">
               <Cart v-if="isUser()" :sideBarType="'back'"/> 
-              <DropdownNotification/>
               <DropdownUser/>
               
             </div>

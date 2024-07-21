@@ -1,33 +1,41 @@
-const { DataTypes } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  const Alert = sequelize.define('Alert', {
+  class Alert extends Model {
+    static associate(models) {
+      Alert.belongsTo(models.User, { foreignKey: 'userId' });
+    }
+  }
+
+  Alert.init({
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    type: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    status: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
-    },
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    newProduct: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    restock: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    priceChange: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     }
   }, {
-    tableName: 'alerts',
-    timestamps: true,
-    underscored: true
+    sequelize,
+    modelName: 'Alert',
+    timestamps: false,
+    underscored: true,
+    tableName: 'alerts'
   });
-
-  Alert.associate = (models) => {
-    Alert.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
-  };
 
   return Alert;
 };

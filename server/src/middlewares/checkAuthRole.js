@@ -26,10 +26,17 @@ module.exports = ({ roles = [] } = {}) => async (req, res, next) => {
     }
     
     req.user = user;
-    console.log(user.role)
     if (roles.length > 0 && !roles.includes(user.role)) {
       return res.sendStatus(403);
     }
+
+    if (checkUserId) {
+      const userIdFromRequest = req.params.userId || req.body.userId;
+      if (user.id !== parseInt(userIdFromRequest, 10)) {
+        return res.sendStatus(403);
+      }
+    }
+    
     
     next();
   } catch (e) {

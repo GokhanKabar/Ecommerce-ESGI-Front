@@ -8,6 +8,7 @@ import DocumentsIcon from '../icons/DocumentsIcon.vue';
 import ReportsIcon from '../icons/ReportsIcon.vue';
 import ProjectsIcon from '../icons/ProjectsIcon.vue';
 import TeamIcon from '../icons/TeamIcon.vue';
+import NotificationsIcon from '../icons/Notifications.vue';
 
 import { isAdmin, isStoreKeeper, isUser } from '../../../store/roleManagement.js';
 
@@ -25,6 +26,8 @@ onMounted(() => {
     activeItem.value = 'orders';
   }else if (path.includes('/myorders')) {
     activeItem.value = 'myorders';
+  }else if (path.includes('/alerts')) {
+    activeItem.value = 'alerts';
   } else if (path.includes('/admin/brand')) {
     activeItem.value = 'brand'; 
   } else if (path.includes('/admin/family')) {
@@ -66,7 +69,12 @@ onMounted(() => {
           <ProjectsIcon />
           <span class="text-white font-normal ml-2">Mes Commandes</span>
         </RouterLink>
-      
+
+        <RouterLink v-if="isUser()" to="/alerts" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#f9d896] rounded" :class="{'bg-[#D8B775]': activeItem === 'alerts'}">
+          <NotificationsIcon />
+          <span class="text-white font-normal ml-2">Notifications</span>
+        </RouterLink>
+
         <RouterLink v-if="isAdmin() || isStoreKeeper()" to="/admin/brand" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#f9d896] rounded" :class="{'bg-[#D8B775]': activeItem === 'brand'}">
           <CalendarIcon />
           <span class="text-white font-normal ml-2">Marques</span>
