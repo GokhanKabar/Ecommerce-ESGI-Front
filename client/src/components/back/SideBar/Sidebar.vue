@@ -3,10 +3,10 @@
 import { ref, onMounted } from 'vue';
 import HomeIcon from '../icons/HomeIcon.vue';
 import LogoIcon from '../icons/LogoIcon.vue';
-import CalendarIcon from '../icons/CalendarIcon.vue';
-import DocumentsIcon from '../icons/DocumentsIcon.vue';
-import ReportsIcon from '../icons/ReportsIcon.vue';
-import ProjectsIcon from '../icons/ProjectsIcon.vue';
+import OrderIcon from '../icons/OrderIcon.vue';
+import FamilyIcon from '../icons/FamilyIcon.vue';
+import BrandIcon from '../icons/BrandIcon.vue';
+import ProductIcon from '../icons/ProductIcon.vue'
 import TeamIcon from '../icons/TeamIcon.vue';
 import NotificationsIcon from '../icons/Notifications.vue';
 
@@ -61,12 +61,12 @@ onMounted(() => {
         </RouterLink> 
 
         <RouterLink v-if="isAdmin()  " to="/admin/orders" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#f9d896] rounded" :class="{'bg-[#D8B775]': activeItem === 'orders'}">
-          <ProjectsIcon />
+          <OrderIcon />
           <span class="text-white font-normal ml-2">Commandes</span>
         </RouterLink>
 
         <RouterLink v-if="isUser()" to="/myorders" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#f9d896] rounded" :class="{'bg-[#D8B775]': activeItem === 'myorders'}">
-          <ProjectsIcon />
+          <OrderIcon />
           <span class="text-white font-normal ml-2">Mes Commandes</span>
         </RouterLink>
 
@@ -76,24 +76,20 @@ onMounted(() => {
         </RouterLink>
 
         <RouterLink v-if="isAdmin() || isStoreKeeper()" to="/admin/brand" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#f9d896] rounded" :class="{'bg-[#D8B775]': activeItem === 'brand'}">
-          <CalendarIcon />
+          <BrandIcon />
           <span class="text-white font-normal ml-2">Marques</span>
         </RouterLink>
         
         <RouterLink v-if="isAdmin() || isStoreKeeper()" to="/admin/family" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#f9d896] rounded" :class="{'bg-[#D8B775]': activeItem === 'family'}">
-          <CalendarIcon />
+          <FamilyIcon />
           <span class="text-white font-normal ml-2">Familles</span>
         </RouterLink>
         
         <RouterLink v-if="isAdmin() || isStoreKeeper()" to="/admin/products" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#f9d896] rounded" :class="{'bg-[#D8B775]': activeItem === 'products'}">
-          <DocumentsIcon />
+          <ProductIcon />
           <span class="text-white font-normal ml-2">Produits</span>
         </RouterLink>
         
-        <RouterLink v-if="isAdmin()" to="/admin/reports" class="flex flex-row items-center py-3 px-5 m-2 hover:bg-[#f9d896] rounded" :class="{'bg-[#D8B775]': activeItem === 'reports'}">
-          <ReportsIcon />
-          <span class="text-white font-normal ml-2">Rapports</span>
-        </RouterLink>
       </nav>
     </div>
   </div>
