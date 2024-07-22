@@ -50,7 +50,7 @@ onMounted(loadAlerts);
 
 <template>
     <DefaultLayout>
-        <BreadcrumbDefault :pageTitle="pageTitle" />
+      <BreadcrumbDefault :pageTitle="pageTitle" linkText="Accueil" linkTo="/" />
       <div class="profile-alerts-container mx-auto my-6 p-4 shadow rounded bg-white">
         <h1 class="text-2xl font-bold mb-4">Gestion des alertes par mail</h1>
         <form @submit.prevent="submitAlertSettings">
@@ -68,7 +68,7 @@ onMounted(loadAlerts);
           </div>
           <ButtonDefault label="Enregistrer les préférences" customClasses="bg-[#D8B775] text-white rounded-md" />
         </form>
-        <div v-if="notification.show" class="notification fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow">
+        <div v-if="notification.show" class="notification absolute top-[4rem] right-[30rem] bg-green-500 text-white px-4 py-2 rounded shadow">
           {{ notification.message }}
         </div>
       </div>

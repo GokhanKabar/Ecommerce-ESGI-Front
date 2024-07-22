@@ -1,14 +1,9 @@
 import Api from '@/services/Api'
-import store from '../store/store'
-
-const isAdmin = () => {
-  const user = store.state.user
-  return user && user.role === 'ADMIN'
-}
+import { isAdmin,isStoreKeeper } from '../store/roleManagement';
 
 export default {
   createProduct(productData) {
-    if (!isAdmin()) throw new Error('Unauthorized')
+    if (!isAdmin() && !isStoreKeeper()) throw new Error('Unauthorized')
     return Api().post('products', productData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -92,7 +87,7 @@ export default {
     }
   },
   updateProduct(id, productData) {
-    if (!isAdmin()) throw new Error('Unauthorized')
+    if (!isAdmin() && !isStoreKeeper()) throw new Error('Unauthorized')
     return Api().put(`products/${id}`, productData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -100,7 +95,7 @@ export default {
     })
   },
   deleteProduct(id) {
-    if (!isAdmin()) throw new Error('Unauthorized')
+    if (!isAdmin() && !isStoreKeeper()) throw new Error('Unauthorized')
     return Api().delete(`products/${id}`)
   },
   async searchProducts(query) {
