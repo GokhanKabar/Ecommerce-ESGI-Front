@@ -21,8 +21,10 @@ const showEditForm = ref(false);
 const showConfirmationPopup = ref(false);
 const brandToDelete = ref(null);
 const brandToEdit = ref(null);
-const successMessage = ref('');
 const errorMessage = ref('');
+const showSuccessAlert = ref(false);
+const showSuccessAlertdelete = ref(false);
+const showSuccessAlertUpdate = ref(false);
 
 const fetchBrands = async () => {
   try {
@@ -53,12 +55,19 @@ const createBrand = async () => {
   console.log(newBrand.value); // Afficher la valeur actuelle pour le debug
   try {
     await BrandService.createBrand(newBrand.value);
-    successMessage.value = 'Marque enregistrée avec succès';
+    showSuccessAlert.value = true;
+    setTimeout(() => {
+      showSuccessAlert.value = false;
+    }, 3000);
     newBrand.value.name = '';
     await fetchBrands();
     toggleForm();
   } catch (error) {
-    errorMessage.value = 'Erreur lors de la création de la marque';
+    if (error.response && error.response.data.error) {
+      errorMessage.value = error.response.data.error;
+    } else {
+      errorMessage.value = 'Erreur lors de la création de la marque';
+    }
     console.error('Error creating brand:', error);
   }
 };
@@ -72,11 +81,18 @@ const updateBrand = async () => {
   try {
     console.log('Updating brand with new value:', brandToEdit.value);
     await BrandService.updateBrand(brandToEdit.value.id, brandToEdit.value);
-    successMessage.value = 'Marque mise à jour avec succès';
+    showSuccessAlertUpdate.value = true;
+    setTimeout(() => {
+      showSuccessAlertUpdate.value = false;
+    }, 3000);
     await fetchBrands();
     toggleEditForm();
   } catch (error) {
-    errorMessage.value = 'Erreur lors de la mise à jour de la marque';
+    if (error.response && error.response.data.error) {
+      errorMessage.value = error.response.data.error;
+    } else {
+      errorMessage.value = 'Erreur lors de la mise à jour de la marque';
+    }
     console.error('Error updating brand:', error);
   }
 };
@@ -89,11 +105,18 @@ const confirmDeleteBrand = (brand) => {
 const deleteBrand = async () => {
   try {
     await BrandService.deleteBrand(brandToDelete.value.id);
-    successMessage.value = 'Marque supprimée avec succès';
+    showSuccessAlertdelete.value = true;
+    setTimeout(() => {
+      showSuccessAlertdelete.value = false;
+    }, 3000);
     await fetchBrands();
     showConfirmationPopup.value = false;
   } catch (error) {
-    errorMessage.value = 'Erreur lors de la suppression de la marque';
+    if (error.response && error.response.data.error) {
+      errorMessage.value = error.response.data.error;
+    } else {
+      errorMessage.value = 'Erreur lors de la suppression de la marque';
+    }
     console.error('Error deleting brand:', error);
   }
 };
@@ -106,7 +129,9 @@ const cancelDelete = () => {
 <template>
   <DefaultLayout>
     <div class="absolute top-17 left-150 w-125">
-      <AlertSuccess v-if="successMessage" :message="successMessage" />
+      <AlertSuccess v-if="showSuccessAlert" :message="'Marque enregistré avec succès'" />
+      <AlertSuccess v-if="showSuccessAlertdelete" :message="'Marque supprimé avec succès'" />
+      <AlertSuccess v-if="showSuccessAlertUpdate" :message="'Marque modifié avec succès'" />
     </div>
     <div v-if="showForm || showEditForm" class="overlay"></div>
     <BreadcrumbDefault :pageTitle="pageTitle" />

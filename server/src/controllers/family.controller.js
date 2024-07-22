@@ -23,9 +23,33 @@ exports.createFamily = async (req, res) => {
     const family = await Family.create(value);
     res.status(201).json(family);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
+
+exports.updateFamily = async (req, res) => {
+  const { id, createdAt, updatedAt, ...updateData } = req.body;
+
+  const { error, value } = familySchema.validate(updateData);
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  try {
+    const family = await Family.findByPk(req.params.id);
+    if (!family) {
+      return res.status(404).json({ error: "Family not found" });
+    }
+
+    Object.assign(family, value);
+    await family.save();
+
+    res.status(200).json({ message: "Family updated", family });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 exports.getAllFamilies = async (req, res) => {
   try {
@@ -48,25 +72,6 @@ exports.getFamilyById = async (req, res) => {
   }
 };
 
-exports.updateFamily = async (req, res) => {
-  const { error, value } = familySchema.validate(req.body);
-
-  if (error) {
-    return res.status(400).json({ error: error.details[0].message });
-  }
-
-  try {
-    const [updated] = await Family.update(value, {
-      where: { id: req.params.id },
-    });
-    if (!updated) {
-      return res.status(404).json({ error: "Family not found" });
-    }
-    res.status(200).json({ message: "Family updated" });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
 
 exports.deleteFamily = async (req, res) => {
   try {

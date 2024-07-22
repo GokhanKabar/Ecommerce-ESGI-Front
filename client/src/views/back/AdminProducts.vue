@@ -49,7 +49,11 @@ const showConfirmationPopup = ref(false);
 const productToDelete = ref(null);
 const successMessage = ref('');
 const errorMessage = ref('');
-const isAdmin = computed(() => store.state.user && store.state.user.role === 'ADMIN' && store.state.user.role === 'ROLE_STORE_KEEPER');
+
+const showSuccessAlert = ref(false);
+const showSuccessAlertdelete = ref(false);
+const showSuccessAlertUpdate = ref(false);
+const isAdmin = computed(() => store.state.user && store.state.user.role === 'ADMIN' || store.state.user.role === 'ROLE_STORE_KEEPER');
 
 const fetchProducts = async () => {
   try {
@@ -99,12 +103,20 @@ const createProduct = async () => {
       formData.append(key, newProduct.value[key]);
     }
     await ProductService.createProduct(formData);
-    successMessage.value = 'Produit enregistré avec succès';
+    showSuccessAlert.value = true;
+    setTimeout(() => {
+      showSuccessAlert.value = false;
+    }, 3000);
+
     resetForm();
     await fetchProducts();
     toggleForm();
   } catch (error) {
-    errorMessage.value = 'Erreur lors de la création du produit';
+    if (error.response && error.response.data.error) {
+      errorMessage.value = error.response.data.error;
+    } else {
+      errorMessage.value = 'Erreur lors de la création du produit';
+    }
     console.error('Error creating product:', error);
   }
 };
@@ -124,11 +136,18 @@ const updateProduct = async () => {
       formData.append(key, editedProduct.value[key]);
     }
     await ProductService.updateProduct(editedProduct.value.id, formData);
-    successMessage.value = 'Produit mis à jour avec succès';
+    showSuccessAlertUpdate.value = true;
+    setTimeout(() => {
+      showSuccessAlertUpdate.value = false;
+    }, 3000);
     await fetchProducts();
     toggleEditForm();
   } catch (error) {
-    errorMessage.value = 'Erreur lors de la mise à jour du produit';
+    if (error.response && error.response.data.error) {
+      errorMessage.value = error.response.data.error;
+    } else {
+      errorMessage.value = 'Erreur lors de la mise à jour du produit';
+    }
     console.error('Error updating product:', error);
   }
 };
@@ -146,9 +165,17 @@ const deleteProduct = async () => {
     await ProductService.deleteProduct(productToDelete.value.id);
     successMessage.value = 'Produit supprimé avec succès';
     await fetchProducts();
+    showSuccessAlertdelete.value = true;
+    setTimeout(() => {
+      showSuccessAlertdelete.value = false;
+    }, 3000);
     showConfirmationPopup.value = false;
   } catch (error) {
-    errorMessage.value = 'Erreur lors de la suppression du produit';
+    if (error.response && error.response.data.error) {
+      errorMessage.value = error.response.data.error;
+    } else {
+      errorMessage.value = 'Erreur lors de la suppression du produit';
+    }
     console.error('Error deleting product:', error);
   }
 };
@@ -176,7 +203,9 @@ const resetForm = () => {
 <template>
   <DefaultLayout>
     <div class="absolute top-17 left-150 w-125">
-      <AlertSuccess v-if="successMessage" :message="successMessage" />
+      <AlertSuccess v-if="showSuccessAlert" :message="'Produit enregistré avec succès'" />
+      <AlertSuccess v-if="showSuccessAlertdelete" :message="'Produit supprimé avec succès'" />
+      <AlertSuccess v-if="showSuccessAlertUpdate" :message="'Produit modifié avec succès'" />
     </div>
     <div v-if="showForm || showEditForm" class="overlay"></div>
     <BreadcrumbDefault :pageTitle="'Produits'" />
@@ -320,6 +349,7 @@ const resetForm = () => {
               <InputGroup
                 label="Nom"
                 type="text"
+                :value="editedProduct.name"
                 @input="editedProduct.name=$event.target.value"
                 placeholder="Nom du produit"
                 customClasses="w-full xl:w-1/2"
@@ -328,6 +358,7 @@ const resetForm = () => {
               <InputGroup
                 label="Description"
                 type="text"
+                :value="editedProduct.description"
                 @input="editedProduct.description=$event.target.value"
                 placeholder="Description du produit"
                 customClasses="w-full xl:w-1/2"
@@ -351,6 +382,7 @@ const resetForm = () => {
               <InputGroup
                 label="Prix"
                 type="number"
+                :value="editedProduct.price"
                 @input="editedProduct.price=$event.target.value"
                 placeholder="Prix"
                 customClasses="w-full xl:w-1/2"
@@ -361,6 +393,7 @@ const resetForm = () => {
               <InputGroup
                 label="Stock"
                 type="number"
+                :value="editedProduct.stock"
                 @input="editedProduct.stock=$event.target.value"
                 placeholder="Stock"
                 customClasses="w-full xl:w-1/2"
@@ -370,6 +403,7 @@ const resetForm = () => {
                 <label for="editProductConcentration" class="block text-sm font-medium text-gray-700">Concentration</label>
                 <select
                   id="editProductConcentration"
+                  :value="editedProduct.concentration"
                   @input="editedProduct.concentration=$event.target.value"
                   required
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -385,6 +419,7 @@ const resetForm = () => {
               <InputGroup
                 label="Promotion"
                 type="text"
+                :value="editedProduct.promotion"
                 @input="editedProduct.promotion=$event.target.value"
                 customClasses="w-full xl:w-1/2"
               />
@@ -400,6 +435,7 @@ const resetForm = () => {
                 <label for="editProductBrand" class="block text-sm font-medium text-gray-700">Marque</label>
                 <select
                   id="editProductBrand"
+                  :value="editedProduct.brandId"
                   @input="editedProduct.brandId=$event.target.value"
                   required
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -412,6 +448,7 @@ const resetForm = () => {
                 <label for="editProductFamily" class="block text-sm font-medium text-gray-700">Famille</label>
                 <select
                   id="editProductFamily"
+                  :value="editedProduct.familyId"
                   @input="editedProduct.familyId=$event.target.value"
                   required
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
