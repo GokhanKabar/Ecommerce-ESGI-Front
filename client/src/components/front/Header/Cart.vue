@@ -37,7 +37,8 @@ const totalPrice = computed(() => {
     .reduce((total, item) => {
       const { product } = item
       const quantity = product.quantity || 0
-      const price = parseFloat(product.price)
+      const priceString = product.price.replace(',', '.').replace(/[^0-9.]/g, ''); 
+      const price = parseFloat(priceString);
       let itemTotal = quantity * price
       return total + itemTotal
     }, 0)
@@ -65,7 +66,7 @@ const createCheckoutSession = async () => {
       items: cartProducts.value.map((item) => ({
         productId: item.product.id, // Assurez-vous que productId est inclus
         name: item.product.name,
-        amount: parseFloat(item.product.price),
+        amount: parseFloat(item.product.price.replace(',', '.').replace(/[^0-9.]/g, '')),
         quantity: item.product.quantity
       }))
     })

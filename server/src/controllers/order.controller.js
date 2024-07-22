@@ -10,9 +10,14 @@ exports.createOrder = async (req, res) => {
   try {
     // Extraire les données de la requête
     const { userId, products, payment_intent_id } = req.body;
-    // Calculer le total des produits
+    // Calculer le total des produits en prenant en compte la promotion
     const total = products.reduce((acc, product) => {
-      return acc + parseFloat(product.price) * product.quantity;
+      const priceString = product.price.replace(',', '.').replace(/[^0-9.]/g, ''); 
+      const price = parseFloat(priceString);
+      const quantity = product.quantity;
+      const promotion = product.promotion || 0; 
+      const discountedPrice = (price - (price * (promotion / 100))).toFixed(2);
+      return acc + (parseFloat(discountedPrice) * quantity);
     }, 0);
 
     // Créer la commande
@@ -69,17 +74,29 @@ exports.getAllOrders = async (req, res) => {
   try {
     const orders = await sequelize.query(
       `
-      SELECT ord.id ,CONCAT(u.lastName,' ',u.firstName) as lastName,u.email, ord.delivery_status , ord.payment_status , ord.date_order 
+      SELECT ord.id, CONCAT(u.lastName, ' ', u.firstName) as fullName, u.email, ord.delivery_status as deliveryStatus, ord.payment_status as paymentStatus, ord.date_order as dateOrder
       FROM \`Order\` as ord 
       JOIN product_orders as po on po.order_id = ord.id 
       JOIN products as p on p.id = po.product_id 
       JOIN Users as u ON u.id = ord.user_id
       GROUP BY ord.id, u.id
       ORDER BY date_order DESC
-    `,
+      `,
       { type: sequelize.QueryTypes.SELECT }
     );
-    res.status(201).json(orders);
+
+    // Mapping to change field names and ensure order
+    const mappedOrders = orders.map(order => ({
+      numéro: order.id,
+      client: order.fullName,
+      email: order.email,
+      livraison: order.deliveryStatus,
+      paiement: order.paymentStatus,
+      date: order.dateOrder
+
+    }));
+
+    res.status(201).json(mappedOrders);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
