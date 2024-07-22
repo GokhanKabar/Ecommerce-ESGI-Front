@@ -1,14 +1,10 @@
 import Api from '@/services/Api'
-import store from '../store/store'
+import { isAdmin,isStoreKeeper } from '../store/roleManagement';
 
-const isAdmin = () => {
-  const user = store.state.user
-  return user && user.role === 'ADMIN'
-}
 
 export default {
   createBrand(brandData) {
-    if (!isAdmin()) throw new Error('Unauthorized')
+    if (!isAdmin() && !isStoreKeeper()) throw new Error('Unauthorized')
     return Api().post('brands', brandData)
   },
   async getAllBrands() {
@@ -33,11 +29,11 @@ export default {
     return Api().get(`brands/${id}`)
   },
   updateBrand(id, brandData) {
-    if (!isAdmin()) throw new Error('Unauthorized')
+    if (!isAdmin() && !isStoreKeeper()) throw new Error('Unauthorized')
     return Api().put(`brands/${id}`, brandData)
   },
   deleteBrand(id) {
-    if (!isAdmin()) throw new Error('Unauthorized')
+    if (!isAdmin() && !isStoreKeeper()) throw new Error('Unauthorized')
     return Api().delete(`brands/${id}`)
   }
 }

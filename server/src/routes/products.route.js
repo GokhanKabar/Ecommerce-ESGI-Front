@@ -38,9 +38,9 @@ router.get("/products/:id", productController.getProductById);
 router.get("/products/category/:category", productController.getProductsByCategory);
 router.get("/products/family/:familyId", productController.getProductsByFamilyId);
 
-router.post("/products", checkAuth({ roles: ['ADMIN'] }), upload.single("image"), productController.createProduct);
-router.put("/products/:id", checkAuth({ roles: ['ADMIN'] }), upload.single("image"), productController.updateProduct);
-router.get("/productsall", checkAuth({ roles: ['ADMIN'] }), productController.getProductsAdmin);
-router.delete("/products/:id", checkAuth({ roles: ['ADMIN'] }), productController.deleteProduct);
+router.post("/products", checkAuth({ roles: ['ADMIN','ROLE_STORE_KEEPER'] }), upload.single("image"), productController.createProduct);
+router.put("/products/:id", checkAuth({ roles: ['ADMIN','ROLE_STORE_KEEPER'] }), upload.single("image"), productController.updateProduct);
+router.get("/productsall", checkAuth({ roles: ['ADMIN','ROLE_STORE_KEEPER'] }), productController.getProductsAdmin);
+router.delete("/products/:id", checkAuth({ roles: ['ADMIN','ROLE_STORE_KEEPER'] }), productController.deleteProduct);
 
 module.exports = router;

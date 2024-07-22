@@ -8,11 +8,11 @@ import AlertSuccess from '../../components/back/componentsGeneric/Alerts/AlertSu
 import ButtonDefault from '../../components/back/componentsGeneric/Buttons/ButtonDefault.vue';
 import InputGroup from '../../components/front/Authentification/InputGroup.vue';
 import DefaultCard from '../../components/back/componentsGeneric/Forms/DefaultCard.vue';
-import ConfirmationPopup from '../../components/back/componentsGeneric/Popup/ConfirmationPopup.vue'
-import {useRouter} from'vue-router'
+import ConfirmationPopup from '../../components/back/componentsGeneric/Popup/ConfirmationPopup.vue';
+import { useRouter } from 'vue-router';
+import jsPDF from 'jspdf';
+
 const router = useRouter();
-
-
 
 const pageTitle = ref('Profil Utilisateur');
 const store = useStore();
@@ -56,7 +56,6 @@ const cancelEdit = () => {
 };
 
 const confirmDeleteUser = (user) => {
-  console.log('user delete ')
   userToDelete.value = user;
   showConfirmationPopup.value = true;
 };
@@ -64,7 +63,7 @@ const confirmDeleteUser = (user) => {
 const deleteUser = async () => {
   try {
     if (userToDelete.value) {
-      await CrudUser.deleteUser(userToDelete.value.id, store.state.user.role,store.state.token);
+      await CrudUser.deleteUser(userToDelete.value.id, store.state.user.role, store.state.token);
       showSuccessAlertDelete.value = true;
       setTimeout(() => {
         showSuccessAlertDelete.value = false;
@@ -81,11 +80,25 @@ const deleteUser = async () => {
 const cancelDelete = () => {
   showConfirmationPopup.value = false;
 };
-const showForm=()=>{
-  console.log('hello elword')
+const showForm = () => {
   showEditForm.value = true;
-
 }
+
+// Function to generate PDF
+const downloadUserInfoPDF = () => {
+  const doc = new jsPDF();
+  const user = store.state.user;
+  
+  doc.text('Informations Personnelles', 10, 10);
+  doc.text(`Nom: ${user.firstName}`, 10, 20);
+  doc.text(`Prénom: ${user.lastName}`, 10, 30);
+  doc.text(`Email: ${user.email}`, 10, 40);
+  doc.text(`Téléphone: ${user.phone}`, 10, 50);
+  doc.text(`Adresse: ${user.address}`, 10, 60);
+  doc.text(`Rôle: ${user.role}`, 10, 70);
+  
+  doc.save('informations_personnelles.pdf');
+};
 </script>
 
 <template>
@@ -217,6 +230,7 @@ const showForm=()=>{
       <div class="flex justify-around items-center px-4 py-3 bg-gray-50">
         <ButtonDefault label="Modifier le profil" customClasses="bg-[#D8B775] text-white rounded-md" @click="showForm()"/>
         <ButtonDefault label="Supprimer le profil" customClasses="bg-red text-white rounded-md" @click="confirmDeleteUser(store.state.user)"/>
+        <ButtonDefault label="Télécharger PDF" customClasses="bg-[#D8B775] text-white rounded-md" @click="downloadUserInfoPDF()"/>
       </div>
     </div>
   </DefaultLayout>

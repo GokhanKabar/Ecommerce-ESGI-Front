@@ -49,7 +49,7 @@ const showConfirmationPopup = ref(false);
 const productToDelete = ref(null);
 const successMessage = ref('');
 const errorMessage = ref('');
-const isAdmin = computed(() => store.state.user && store.state.user.role === 'ADMIN');
+const isAdmin = computed(() => store.state.user && store.state.user.role === 'ADMIN' && store.state.user.role === 'ROLE_STORE_KEEPER');
 
 const fetchProducts = async () => {
   try {

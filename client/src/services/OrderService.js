@@ -1,11 +1,4 @@
 import Api from '@/services/Api'
-import store from '../store/store'
-
-const isAdmin = () => {
-  const user = store.state.user
-  return user && user.role === 'ADMIN'
-}
-
 export default {
   async createOrder(orderData) {
     try {
