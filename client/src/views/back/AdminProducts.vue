@@ -52,7 +52,7 @@ const errorMessage = ref('');
 const showSuccessAlert = ref(false);
 const showSuccessAlertdelete = ref(false);
 const showSuccessAlertUpdate = ref(false);
-const isAdmin = computed(() => store.state.user && store.state.user.role === 'ADMIN' && store.state.user.role === 'ROLE_STORE_KEEPER');
+const isAdmin = computed(() => store.state.user && store.state.user.role === 'ADMIN' || store.state.user.role === 'ROLE_STORE_KEEPER');
 
 const fetchProducts = async () => {
   try {
