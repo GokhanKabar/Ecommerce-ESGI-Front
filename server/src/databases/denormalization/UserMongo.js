@@ -15,10 +15,8 @@ module.exports = async function (userId, User, Order, onlyRemove = false) {
       ],
     });
 
-    console.log("User found:", user);
     
     if (!user) {
-      console.log("User not found");
       return;
     }
 

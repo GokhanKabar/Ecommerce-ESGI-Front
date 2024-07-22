@@ -38,7 +38,6 @@ const fetchBrands = async () => {
 
 onMounted(async () => {
   await fetchBrands();  
-  console.log(brands.value);
 });
 
 const toggleForm = () => {
@@ -52,7 +51,6 @@ const toggleEditForm = () => {
 };
 
 const createBrand = async () => {
-  console.log(newBrand.value); // Afficher la valeur actuelle pour le debug
   try {
     await BrandService.createBrand(newBrand.value);
     showSuccessAlert.value = true;
@@ -79,7 +77,6 @@ const editBrand = (brand) => {
 
 const updateBrand = async () => {
   try {
-    console.log('Updating brand with new value:', brandToEdit.value);
     await BrandService.updateBrand(brandToEdit.value.id, brandToEdit.value);
     showSuccessAlertUpdate.value = true;
     setTimeout(() => {

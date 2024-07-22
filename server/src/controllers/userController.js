@@ -905,7 +905,6 @@ exports.login = (email, password) => {
         } else {
           bcrypt.compare(password, user.password).then((same) => {
             if (same) {
-              console.log("isPasswordExpired:", isPasswordExpired(user));
               if (isPasswordExpired(user)) {
                 const resetToken = generateConfirmationToken();
                 const resetTokenExpiration = new Date();
@@ -1662,10 +1661,6 @@ function sendEmailforgotPassword(email, resetToken) {
           "Erreur lors de l'envoi de l'e-mail de réinitialisation du mot de passe"
         );
       } else {
-        console.log(
-          "E-mail de réinitialisation du mot de passe envoyé :",
-          info.response
-        );
         resolve(
           "Un e-mail de réinitialisation du mot de passe a été envoyé avec succès"
         );
@@ -2332,7 +2327,6 @@ function sendLockoutNotification(email, lockUntil) {
         console.error("Erreur lors de l'envoi de l'e-mail  :", error);
         reject("Erreur lors de l'envoi de l'e-mail ");
       } else {
-        console.log("E-mail a été envoyé avec succès :", info.response);
         resolve("Un e-mail a été envoyé avec succès");
       }
     });
@@ -2342,8 +2336,6 @@ function isPasswordExpired(user) {
   const passwordExpirationDate = user.lastPasswordChange
     ? new Date(user.lastPasswordChange.getTime() + 60 * 24 * 60 * 60 * 1000)
     : new Date(user.createdAt.getTime() + 60 * 24 * 60 * 60 * 1000);
-  console.log(passwordExpirationDate);
-  console.log(new Date());
   return passwordExpirationDate <= new Date();
 }
 exports.forgotPassword = (email) => {
@@ -2370,7 +2362,6 @@ exports.forgotPassword = (email) => {
             .then((response) => {
               sendEmailforgotPassword(email, resetToken)
                 .then(() => {
-                  console.log("E-mail envoyé avec succès");
                   resolve(response);
                 })
                 .catch((error) => {
@@ -2581,7 +2572,6 @@ exports.updateUser = (
       })
       .then((updatedUser) => resolve(updatedUser))
       .catch((err) => reject(err));
-    console.log("success errors");
   });
 };
 
@@ -2595,8 +2585,6 @@ exports.deleteUser = (userId,role,token) => {
             if (role === "USER" || role === "ROLE_STORE_KEEPER") {
                 if (token) {
                     const decoded = jwt.verify(token, config.development.privateKey);
-                    console.log('decoded.id:',decoded.id)
-                    console.log('userId:',userId)
                     if (parseInt(userId,10) !== parseInt(decoded.id,10)) {
                         return reject("Access denied: Forbidden");
                     }

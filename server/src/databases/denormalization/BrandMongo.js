@@ -2,7 +2,6 @@ const BrandMongo = require("../mongoose/Brands");
 
 module.exports = async function(brandId, Brand, Product, onlyRemove = false) {
   try {
-    console.log(brandId,Brand);
     const brand = await Brand.findByPk(brandId, {
       include: [
         {
@@ -12,10 +11,8 @@ module.exports = async function(brandId, Brand, Product, onlyRemove = false) {
       ],
     });
 
-    console.log("Brand found:", brand);
 
     if (!brand) {
-      console.log("Brand not found");
       return;
     }
 

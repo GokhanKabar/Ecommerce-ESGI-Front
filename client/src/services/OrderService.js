@@ -52,7 +52,6 @@ export default {
         payment_intent_id
       })
 
-      console.log('Refund successful:', refundResponse.data)
     } catch (error) {
       console.error('Erreur lors du remboursement :', error)
       throw error
@@ -60,8 +59,6 @@ export default {
   },
 
   async updateOrder(orderId, orderData) {
-    console.log('orderId:', orderId)
-    console.log('orderData:', orderData)
     try {
       const response = await Api().put(`updateOrder/${orderId}`, orderData)
       return response.data

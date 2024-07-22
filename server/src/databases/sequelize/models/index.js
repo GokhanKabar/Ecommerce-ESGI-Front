@@ -30,7 +30,6 @@ fs.readdirSync(__dirname)
   .forEach((file) => {
     const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
     db[model.name] = model;
-    console.log(`Model ${model.name} loaded successfully.`);
   });
 
   Object.keys(db).forEach(modelName => {
@@ -41,7 +40,6 @@ fs.readdirSync(__dirname)
   
   Object.keys(db).forEach(modelName => {
     if (db[modelName].addHooks) {
-      console.log(`Adding hooks for model: ${modelName}`);
       db[modelName].addHooks(db);
     }
   });

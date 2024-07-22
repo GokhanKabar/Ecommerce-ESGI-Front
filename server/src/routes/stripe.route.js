@@ -6,8 +6,6 @@ router.post("/create-checkout-session", async (req, res) => {
   const { items } = req.body;
 
   try {
-    // Create Stripe session
-    console.log("items", items);
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: items.map((item) => ({
@@ -16,7 +14,7 @@ router.post("/create-checkout-session", async (req, res) => {
           product_data: {
             name: item.name,
           },
-          unit_amount: item.amount * 100, // Stripe requires amounts in cents
+          unit_amount: item.amount * 100,
         },
         quantity: item.quantity,
       })),
@@ -33,9 +31,6 @@ router.post("/create-checkout-session", async (req, res) => {
         ),
       },
     });
-
-    console.log(items);
-    console.log("Stripe session created:", session); // Log created session
     res.json({ id: session.id });
   } catch (error) {
     console.error("Failed to create checkout session:", error);
@@ -43,7 +38,6 @@ router.post("/create-checkout-session", async (req, res) => {
   }
 });
 
-// Nouvelle route pour récupérer les détails de la session de paiement Stripe
 router.get("/checkout-session/:sessionId", async (req, res) => {
   const { sessionId } = req.params;
 
@@ -60,12 +54,10 @@ router.post("/refund", async (req, res) => {
   const { payment_intent_id } = req.body;
 
   try {
-    console.log("Processing refund for payment intent:", payment_intent_id);
     const refund = await stripe.refunds.create({
       payment_intent: payment_intent_id,
     });
 
-    console.log("Refund successful:", refund);
     res.json(refund);
   } catch (error) {
     console.error("Failed to process refund:", error);
