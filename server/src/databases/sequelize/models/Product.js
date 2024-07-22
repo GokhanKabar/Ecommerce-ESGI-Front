@@ -14,7 +14,6 @@ module.exports = (sequelize) => {
 
     static addHooks(db) {
       Product.addHook("afterCreate", async (product) => {
-        console.log("afterCreate hook triggered for product:", product);
         await ProductMongo(product.id, db.Product, db.Brand, db.Family);
 
         const alerts = await db.Alert.findAll({ where: { newProduct: true } });
@@ -22,21 +21,19 @@ module.exports = (sequelize) => {
       });
 
       Product.addHook("afterUpdate", async (product) => {
-        console.log("afterUpdate hook triggered for product:", product);
         await ProductMongo(product.id, db.Product, db.Brand, db.Family);
         if (product._previousDataValues.stock === 0 && product.stock > 0) {
-          const alerts = await Alert.findAll({ where: { restock: true } });
+          const alerts = await db.Alert.findAll({ where: { restock: true } });
           notificationService.notifyUsers(alerts, 'Produit de nouveau disponible', `Le produit ${product.name} à été restocké il est de nouveau disponible.`);
         }
 
         if (product._previousDataValues.price !== product.price) {
-          const alerts = await Alert.findAll({ where: { priceChange: true } });
+          const alerts = await db.Alert.findAll({ where: { priceChange: true } });
           notificationService.notifyUsers(alerts, 'Changement du prix', `Le prix du produit ${product.name} à été modifié.`);
         }
       });
 
       Product.addHook("beforeDestroy", async (product) => {
-        console.log("afterDestroy hook triggered for product:", product);
         try {
           const result = await ProductMongo(
             product.id,

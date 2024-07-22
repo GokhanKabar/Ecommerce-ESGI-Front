@@ -49,19 +49,24 @@ exports.getBrandById = async (req, res) => {
 };
 
 exports.updateBrand = async (req, res) => {
-  const { error, value } = brandSchema.validate(req.body);
+  const { id, createdAt, updatedAt, ...updateData } = req.body;
+
+  const { error, value } = brandSchema.validate(updateData);
   if (error) {
     return res.status(400).json({ error: error.details[0].message });
   }
 
   try {
-    const [updated] = await Brand.update(value, {
-      where: { id: req.params.id },
-    });
-    if (!updated) {
+    const brand = await Brand.findByPk(req.params.id);
+    if (!brand) {
       return res.status(404).json({ error: "Brand not found" });
     }
-    res.status(200).json({ message: "Brand updated" });
+
+    Object.assign(brand, value);
+
+    await brand.save();
+
+    res.status(200).json({ message: "Brand updated", brand });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
