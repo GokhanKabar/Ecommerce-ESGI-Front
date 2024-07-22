@@ -1,14 +1,10 @@
 import Api from '@/services/Api'
-import store from '../store/store'
+import { isAdmin,isStoreKeeper } from '../store/roleManagement';
 
-const isAdmin = () => {
-  const user = store.state.user
-  return user && user.role === 'ADMIN'
-}
 
 export default {
   createFamily(familyData) {
-    if (!isAdmin()) throw new Error('Unauthorized')
+    if (!isAdmin() && !isStoreKeeper()) throw new Error('Unauthorized')
     return Api().post('families', familyData)
   },
   async getAllFamilies() {
@@ -33,11 +29,11 @@ export default {
     return Api().get(`families/${id}`)
   },
   updateFamily(id, familyData) {
-    if (!isAdmin()) throw new Error('Unauthorized')
+    if (!isAdmin() && !isStoreKeeper()) throw new Error('Unauthorized')
     return Api().put(`families/${id}`, familyData)
   },
   deleteFamily(id) {
-    if (!isAdmin()) throw new Error('Unauthorized')
+    if (!isAdmin() && !isStoreKeeper()) throw new Error('Unauthorized')
     return Api().delete(`families/${id}`)
   }
 }

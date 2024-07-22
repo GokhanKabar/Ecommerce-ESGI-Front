@@ -67,7 +67,6 @@ route.get('/users',checkAuth({ roles: ['ADMIN'] }),(request, response) => {
     userController.getAllUsers()
         .then(users => {
             const filteredUsers = users.filter(user => user.role !== 'ADMIN');
-            // Sélectionnez uniquement les champs que vous voulez
             const selectedUsers = filteredUsers.map(user => ({
                 id: user.id,
                 nom: user.firstName,
