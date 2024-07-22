@@ -67,7 +67,7 @@ watch(route, () => {
   <DefaultLayout>
     <CarousselPerfume />
     <div class="flex">
-      <SidebarProduct @apply-filters="applyFilters" />
+      <SidebarProduct category="femme" @apply-filters="applyFilters" />
       <div class="w-5/6 p-4">
         <div class="text-center text-black text-3xl p-12">
           <h1>NOS PRODUITS PARFUM FEMME</h1>

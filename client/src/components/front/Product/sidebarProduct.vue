@@ -4,7 +4,9 @@ import ProductService from '../../../services/ProductService.js'
 import { type Product } from '../../../types/products.types'
 import { type Ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { defineProps } from 'vue'
 
+const props = defineProps<{ category: string }>()
 const products: Ref<Product[]> = ref([])
 const selectedBrands: Ref<string[]> = ref([])
 const selectedFamilies: Ref<string[]> = ref([])
@@ -28,9 +30,20 @@ const loadFiltersFromQuery = () => {
 }
 
 onMounted(async () => {
-  products.value = await ProductService.getAllProducts()
+  await fetchProducts()
   loadFiltersFromQuery()
 })
+
+const fetchProducts = async () => {
+  try {
+    const response = await ProductService.getProductsByCategory(props.category)
+    if (response) {
+      products.value = response
+    }
+  } catch (error) {
+    console.error('Failed to fetch products', error)
+  }
+}
 
 const emit = defineEmits(['apply-filters'])
 
@@ -63,11 +76,17 @@ watch(
 
 // Extract unique brands and families from products
 const brands = computed(() => {
-  return [...new Set(products.value.map((product) => product.brand.name))]
+  if (products.value.length > 0) {
+    return [...new Set(products.value.map((product) => product.brand.name))]
+  }
+  return []
 })
 
 const families = computed(() => {
-  return [...new Set(products.value.map((product) => product.family.name))]
+  if (products.value.length > 0) {
+    return [...new Set(products.value.map((product) => product.family.name))]
+  }
+  return []
 })
 </script>
 

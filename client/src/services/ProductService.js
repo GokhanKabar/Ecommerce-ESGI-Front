@@ -37,23 +37,10 @@ export default {
       throw error
     }
   },
-  async getProductsByCategory(category, filters) {
+  async getProductsByCategory(category, filters = {}) {
     try {
-      const params = new URLSearchParams()
-      if (filters.brands.length) params.append('brands', filters.brands.join(','))
-      if (filters.families.length) params.append('families', filters.families.join(','))
-      if (filters.priceRange) {
-        params.append('minPrice', filters.priceRange[0])
-        params.append('maxPrice', filters.priceRange[1])
-      }
-      if (filters.promotion) params.append('promotion', filters.promotion)
-      if (filters.stock) params.append('stock', filters.stock)
-
-      const response = await Api().get(`/products/category/${category}`, { params })
-      return response.data.map((product) => ({
-        ...product,
-        image: product.image ? `${product.image}` : null
-      }))
+      const response = await Api().get(`/products/category/${category}`, { params: filters })
+      return response.data
     } catch (error) {
       console.error('Error fetching products by category', error)
       throw error
