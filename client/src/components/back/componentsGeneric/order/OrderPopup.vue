@@ -136,7 +136,7 @@ const close = () => {
                                         ? 'En cours de livraison'
                                         : order.deliveryStatus === 'delivered'
                                             ? 'Livré'
-                                            : 'En retard' }}
+                                            : 'Retourné ' }}
                             </div>
                             <div class="text-sm text-gray-600">{{ new Date(order.dateOrder).toLocaleDateString() }}
                             </div>

@@ -15,7 +15,7 @@ import store from '../../store/store.js';
 const pageTitle = ref('Commandes');
 const Orders = ref([]);
 const user_id = store.state.user.id;
-const headers = ['id', 'lastName', 'email', 'delivery_status', 'payment_status', 'date_order'];
+const headers = [ 'Numéro', 'Client', 'Email','Livraison',  'Paiement','Date'];
 const showOrderDetailsPopup = ref(false);
 
 const fetchOrdersForAdmin = async () => {
@@ -33,7 +33,7 @@ const orderDetails = ref({});
 
 const showOrderDetails = async (order) => {
   try {
-    const response = await OrderService.getOrderDetails(order.id);
+    const response = await OrderService.getOrderDetails(order.numéro);
     orderDetails.value = response;
     showPopup.value = true;
   } catch (error) {
@@ -58,8 +58,8 @@ onMounted(async () => {
     <BreadcrumbDefault :pageTitle="pageTitle" />
     
 
-    <DataTable :headers="headers" :data="Orders" :filterableColumns="headers" :editUser="showOrderDetails"
-      :deleteUser="confirmDeleteProduct" />
+    <DataTable :headers="headers" :data="Orders" :filterableColumns="[ 'Numéro', 'Client', 'Email','Livraison',  'Paiement','Date']" :editUser="showOrderDetails"
+      :deleteUser="showOrderDetails" />
    
       <OrderPopup :isVisible="showPopup" :orderDetails="orderDetails" @delete="" @close="closePopup" />
 
