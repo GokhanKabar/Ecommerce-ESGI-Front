@@ -40,7 +40,6 @@ const login = async () => {
     store.dispatch('setToken', token);
 
     const decodedToken = decodeJwtToken(token);
-    console.log(decodedToken);
     store.dispatch('setUser', decodedToken);
 
     if (decodedToken.role === "USER") {

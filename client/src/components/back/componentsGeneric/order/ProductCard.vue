@@ -98,7 +98,6 @@ const handleRefund = async (orderId: number) => {
       order_status: 'Refunded'
     })
     alert('Remboursement réussi')
-    console.log('Refund successful')
   } catch (error) {
     console.error('Error refunding order:', error)
   }

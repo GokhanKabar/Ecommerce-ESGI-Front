@@ -106,7 +106,6 @@ exports.getOrderById = async (req, res) => {
   try {
     const order = await Order.findByPk(req.params.id);
     res.status(200).json(order);
-    console.log("allOrdersHere");
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

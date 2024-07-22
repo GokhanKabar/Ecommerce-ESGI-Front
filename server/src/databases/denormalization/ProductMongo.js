@@ -8,7 +8,6 @@ module.exports = async function (
   onlyRemove = false
 ) {
   try {
-    console.log(productId, Product);
     const product = await Product.findByPk(productId, {
       include: [
         {
@@ -22,10 +21,8 @@ module.exports = async function (
       ],
     });
 
-    console.log("Product found:", product);
 
     if (!product) {
-      console.log("Product not found");
       return;
     }
 

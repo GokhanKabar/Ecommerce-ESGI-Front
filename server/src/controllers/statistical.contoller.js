@@ -75,8 +75,6 @@ exports.getTotals = async (req, res) => {
        const date1 = new Date( startOfWeek.setHours(0, 0, 0, 0));
        const date2 = new Date(endOfWeek.setHours(23, 59, 59, 999));
 
-       console.log(date1);
-       console.log(date2);
         const dailyOrders = await Order.findAll({
             attributes: [
                 [literal("DATE_FORMAT(created_at, '%Y-%m-%d')"), 'day'],
@@ -87,7 +85,6 @@ exports.getTotals = async (req, res) => {
             group: [literal("DATE_FORMAT(created_at, '%Y-%m-%d')")],
             order: [literal("DATE_FORMAT(created_at, '%Y-%m-%d')")]
         });
-      console.log("dailyOrders:",dailyOrders)
         const days = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
         const dailyLabels = [];
         const dailySeries = {

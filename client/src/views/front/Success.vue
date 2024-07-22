@@ -10,14 +10,10 @@ const route = useRoute()
 
 onMounted(async () => {
   const sessionId = route.query.session_id
-  console.log(sessionId)
-
   try {
     // Vérifiez le statut du paiement avec votre backend
     const response = await fetch(`http://localhost:8000/stripe/checkout-session/${sessionId}`)
     const session = await response.json()
-
-    console.log(session)
 
     if (session.payment_status === 'paid') {
       // Créez la commande dans votre backend avec des informations supplémentaires

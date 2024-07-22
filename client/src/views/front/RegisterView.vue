@@ -19,7 +19,6 @@ const rgpdChecked = ref(false);
 
 const errorMessage = ref('');
 const register = async () => {
-    console.log("Checked:",rgpdChecked.value);
     try {
         const response = await AuthenticationService.register({
             firstName: firstName.value,
@@ -116,7 +115,7 @@ const register = async () => {
             <CheckboxOne :checked="rgpdChecked" @change="rgpdChecked = $event.target.checked" />
 
             <div class="mb-5 mt-6">
-                <input type="submit" @click="register" value="Inscirption"
+                <input type="submit" @click="register" value="Inscription"
                     class="w-full cursor-pointer rounded-lg border border-primary bg-[#C58940] p-4 font-medium text-white transition hover:bg-opacity-90" />
             </div>
             <button

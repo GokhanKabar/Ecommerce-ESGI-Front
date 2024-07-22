@@ -26,7 +26,6 @@ module.exports = ({ roles = [] } = {}) => async (req, res, next) => {
     }
     
     req.user = user;
-    console.log(user.role)
     if (roles.length > 0 && !roles.includes(user.role)) {
       return res.sendStatus(403);
     }

@@ -42,12 +42,6 @@ module.exports = (sequelize) => {
             db.Family,
             true
           );
-
-          if (result.deletedCount === 1) {
-            console.log("MongoDB document deleted for product:", product.id);
-          } else {
-            console.log("No MongoDB document found for product:", product.id);
-          }
         } catch (error) {
           console.error(
             "Error deleting MongoDB document for product:",

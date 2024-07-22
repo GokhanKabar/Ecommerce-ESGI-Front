@@ -36,7 +36,6 @@ const fetchFamilies = async () => {
 
 onMounted(async () => {
   await fetchFamilies();
-  console.log('Families:', families.value);
 });
 
 const toggleForm = () => {
@@ -72,7 +71,6 @@ const editFamily = (family) => {
 
 const updateFamily = async () => {
   try {
-    console.log('Updating family with new value:', familyToEdit.value);
     await FamilyService.updateFamily(familyToEdit.value.id, familyToEdit.value);
     showSuccessAlertUpdate.value = true;
     setTimeout(() => {

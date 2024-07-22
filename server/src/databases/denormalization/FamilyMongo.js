@@ -2,7 +2,6 @@ const FamilyMongo = require("../mongoose/Families");
 
 module.exports = async function(familyId, Family, Product, onlyRemove = false) {
   try {
-    console.log(familyId, Family);
     const family = await Family.findByPk(familyId, {
       include: [
         {
@@ -12,10 +11,7 @@ module.exports = async function(familyId, Family, Product, onlyRemove = false) {
       ],
     });
 
-    console.log("Family found:", family);
-
     if (!family) {
-      console.log("Family not found");
       return;
     }
 
