@@ -21,7 +21,6 @@ const showEditForm = ref(false);
 const showConfirmationPopup = ref(false);
 const brandToDelete = ref(null);
 const brandToEdit = ref(null);
-const successMessage = ref('');
 const errorMessage = ref('');
 const showSuccessAlert = ref(false);
 const showSuccessAlertdelete = ref(false);
@@ -64,7 +63,11 @@ const createBrand = async () => {
     await fetchBrands();
     toggleForm();
   } catch (error) {
-    errorMessage.value = 'Erreur lors de la création de la marque';
+    if (error.response && error.response.data.error) {
+      errorMessage.value = error.response.data.error;
+    } else {
+      errorMessage.value = 'Erreur lors de la création de la marque';
+    }
     console.error('Error creating brand:', error);
   }
 };
@@ -85,7 +88,11 @@ const updateBrand = async () => {
     await fetchBrands();
     toggleEditForm();
   } catch (error) {
-    errorMessage.value = 'Erreur lors de la mise à jour de la marque';
+    if (error.response && error.response.data.error) {
+      errorMessage.value = error.response.data.error;
+    } else {
+      errorMessage.value = 'Erreur lors de la mise à jour de la marque';
+    }
     console.error('Error updating brand:', error);
   }
 };
@@ -105,7 +112,11 @@ const deleteBrand = async () => {
     await fetchBrands();
     showConfirmationPopup.value = false;
   } catch (error) {
-    errorMessage.value = 'Erreur lors de la suppression de la marque';
+    if (error.response && error.response.data.error) {
+      errorMessage.value = error.response.data.error;
+    } else {
+      errorMessage.value = 'Erreur lors de la suppression de la marque';
+    }
     console.error('Error deleting brand:', error);
   }
 };

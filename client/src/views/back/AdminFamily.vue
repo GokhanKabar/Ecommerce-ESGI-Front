@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { useStore } from 'vuex';
+import { ref, onMounted } from 'vue';
 import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
 import FamilyService from '../../services/FamilyService';
 import AlertSuccess from '../../components/back/componentsGeneric/Alerts/AlertSuccess.vue';
@@ -11,7 +10,6 @@ import DefaultCard from '../../components/back/componentsGeneric/Forms/DefaultCa
 import InputGroup from '../../components/front/Authentification/InputGroup.vue';
 import ConfirmationPopup from '../../components/back/componentsGeneric/Popup/ConfirmationPopup.vue';
 
-
 const headers = ['name'];
 const families = ref([]);
 const newFamily = ref({ name: '' });
@@ -20,7 +18,6 @@ const familyToDelete = ref(null);
 const showForm = ref(false);
 const showEditForm = ref(false);
 const showConfirmationPopup = ref(false);
-const successMessage = ref('');
 const errorMessage = ref('');
 const pageTitle = 'Familles';
 const showSuccessAlert = ref(false);
@@ -41,7 +38,6 @@ onMounted(async () => {
   await fetchFamilies();
   console.log('Families:', families.value);
 });
-
 
 const toggleForm = () => {
   showForm.value = !showForm.value;
@@ -64,7 +60,7 @@ const createFamily = async () => {
     await fetchFamilies();
     toggleForm();
   } catch (error) {
-    errorMessage.value = 'Erreur lors de la création de la famille';
+    errorMessage.value = error.response.data.error || 'Erreur lors de la création de la famille';
     console.error('Error creating family:', error);
   }
 };
@@ -85,7 +81,7 @@ const updateFamily = async () => {
     await fetchFamilies();
     toggleEditForm();
   } catch (error) {
-    errorMessage.value = 'Erreur lors de la mise à jour de la famille';
+    errorMessage.value = error.response.data.error || 'Erreur lors de la mise à jour de la famille';
     console.error('Error updating family:', error);
   }
 };
@@ -105,7 +101,7 @@ const deleteFamily = async () => {
     await fetchFamilies();
     showConfirmationPopup.value = false;
   } catch (error) {
-    errorMessage.value = 'Erreur lors de la suppression de la famille';
+    errorMessage.value = error.response.data.error || 'Erreur lors de la suppression de la famille';
     console.error('Error deleting family:', error);
   }
 };
