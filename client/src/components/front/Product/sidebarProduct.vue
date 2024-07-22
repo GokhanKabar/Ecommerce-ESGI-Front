@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, defineEmits, computed } from 'vue'
+import { ref, onMounted, defineEmits, computed, watch } from 'vue'
 import ProductService from '../../../services/ProductService.js'
 import { type Product } from '../../../types/products.types'
 import { type Ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const products: Ref<Product[]> = ref([])
 const selectedBrands: Ref<string[]> = ref([])
@@ -12,11 +13,38 @@ const priceRange = ref<[number, number]>([0, 1000])
 const promotionFilter = ref(false)
 const stockFilter = ref(false)
 
+const router = useRouter()
+const route = useRoute()
+
+const loadFiltersFromQuery = () => {
+  selectedBrands.value = route.query.brands ? route.query.brands.split(',') : []
+  selectedFamilies.value = route.query.families ? route.query.families.split(',') : []
+  priceRange.value = [
+    route.query.minPrice ? Number(route.query.minPrice) : 0,
+    route.query.maxPrice ? Number(route.query.maxPrice) : 1000
+  ]
+  promotionFilter.value = route.query.promotion === 'true'
+  stockFilter.value = route.query.stock === 'true'
+}
+
 onMounted(async () => {
   products.value = await ProductService.getAllProducts()
+  loadFiltersFromQuery()
 })
 
 const emit = defineEmits(['apply-filters'])
+
+const updateUrlWithFilters = () => {
+  const query: Record<string, string> = {}
+  if (selectedBrands.value.length) query.brands = selectedBrands.value.join(',')
+  if (selectedFamilies.value.length) query.families = selectedFamilies.value.join(',')
+  if (priceRange.value[0] !== 0) query.minPrice = priceRange.value[0].toString()
+  if (priceRange.value[1] !== 1000) query.maxPrice = priceRange.value[1].toString()
+  if (promotionFilter.value) query.promotion = promotionFilter.value.toString()
+  if (stockFilter.value) query.stock = stockFilter.value.toString()
+  router.push({ query })
+  applyFilters()
+}
 
 const applyFilters = () => {
   emit('apply-filters', {
@@ -27,6 +55,11 @@ const applyFilters = () => {
     stock: stockFilter.value
   })
 }
+
+watch(
+  [selectedBrands, selectedFamilies, priceRange, promotionFilter, stockFilter],
+  updateUrlWithFilters
+)
 
 // Extract unique brands and families from products
 const brands = computed(() => {

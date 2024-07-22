@@ -1,5 +1,5 @@
 import Api from '@/services/Api'
-import { isAdmin,isStoreKeeper } from '../store/roleManagement';
+import { isAdmin, isStoreKeeper } from '../store/roleManagement'
 
 export default {
   createProduct(productData) {
@@ -37,16 +37,26 @@ export default {
       throw error
     }
   },
-  async getProductsByCategory(category){
+  async getProductsByCategory(category, filters) {
     try {
-      const response = await Api().get(`/products/category/${category}`);
+      const params = new URLSearchParams()
+      if (filters.brands.length) params.append('brands', filters.brands.join(','))
+      if (filters.families.length) params.append('families', filters.families.join(','))
+      if (filters.priceRange) {
+        params.append('minPrice', filters.priceRange[0])
+        params.append('maxPrice', filters.priceRange[1])
+      }
+      if (filters.promotion) params.append('promotion', filters.promotion)
+      if (filters.stock) params.append('stock', filters.stock)
+
+      const response = await Api().get(`/products/category/${category}`, { params })
       return response.data.map((product) => ({
         ...product,
-        image: product.image ? `${product.image}` : null,
-      }));
+        image: product.image ? `${product.image}` : null
+      }))
     } catch (error) {
-      console.error('Error fetching products by category', error);
-      throw error;
+      console.error('Error fetching products by category', error)
+      throw error
     }
   },
   async getProductById(id) {
