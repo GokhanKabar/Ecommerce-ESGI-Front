@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import DefaultLayout from '../../components/front/layouts/DefaultLayout.vue'
 import SidebarProduct from '../../components/front/Product/SidebarProduct.vue'
 import CardPerfume from '../../components/front/Product/CardPerfume.vue'
@@ -10,11 +11,13 @@ import { type Ref } from 'vue'
 
 const allProducts: Ref<Product[]> = ref([])
 const filteredProducts: Ref<Product[]> = ref([])
+const route = useRoute()
+const router = useRouter()
 
-onMounted(async () => {
-  allProducts.value = await ProductService.getProductsByCategory('femme')
-  filteredProducts.value = allProducts.value // Initialement, tous les produits sont affichés
-})
+const fetchProducts = async (filters = {}) => {
+  allProducts.value = await ProductService.getProductsByCategory('femme', filters)
+  applyFilters(filters)
+}
 
 const applyFilters = (filters: {
   brands: string[]
@@ -35,6 +38,29 @@ const applyFilters = (filters: {
     return matchesBrand && matchesFamily && matchesPrice && matchesPromotion && matchesStock
   })
 }
+
+const loadFiltersFromQuery = () => {
+  return {
+    brands: route.query.brands ? route.query.brands.split(',') : [],
+    families: route.query.families ? route.query.families.split(',') : [],
+    priceRange: [
+      route.query.minPrice ? Number(route.query.minPrice) : 0,
+      route.query.maxPrice ? Number(route.query.maxPrice) : 1000
+    ] as [number, number],
+    promotion: route.query.promotion === 'true',
+    stock: route.query.stock === 'true'
+  }
+}
+
+onMounted(() => {
+  const filters = loadFiltersFromQuery()
+  fetchProducts(filters)
+})
+
+watch(route, () => {
+  const filters = loadFiltersFromQuery()
+  applyFilters(filters)
+})
 </script>
 
 <template>
