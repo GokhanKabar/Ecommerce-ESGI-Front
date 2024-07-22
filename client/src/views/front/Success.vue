@@ -14,7 +14,7 @@ onMounted(async () => {
 
   try {
     // Vérifiez le statut du paiement avec votre backend
-    const response = await fetch(`http://localhost:8000/stripe/checkout-session/${sessionId}`)
+    const response = await fetch(`http://sensvinylo.tech/stripe/checkout-session/${sessionId}`)
     const session = await response.json()
 
     console.log(session)

@@ -20,26 +20,25 @@ const app = express();
 // Configuration de CORS
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "http://sensvinylo.tech",
     credentials: true,
   })
 );
+app.use(express.json()); // For parsing application/json
+app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 
 // Configuration des routes
-app.use("/stripe-webhook", stripeWebhook);
-app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
-app.use("/", indexRouter);
-app.use(userRoute);
-app.use(productsRoutes);
-app.use(brandsRoutes);
-app.use(statisticalRoutes);
-app.use(familiesRoutes);
-app.use("/stripe", stripeRoutes);
-app.use(orderRoutes);
-app.use(orderRoutes);
-app.use('/contact', contactRoutes);
-app.use('/alerts', alertRoutes);
-
+app.use("/api/stripe-webhook", stripeWebhook);
+app.use("/api/uploads", express.static(path.join(__dirname, "..", "uploads")));
+app.use("/api", indexRouter);
+app.use("/api", userRoute);
+app.use("/api", productsRoutes);
+app.use("/api", brandsRoutes);
+app.use("/api", familiesRoutes);
+app.use("/api/stripe", stripeRoutes);
+app.use("/api", orderRoutes);
+app.use("/api", orderRoutes);
+app.use('/api/contact', contactRoutes);
 // Connexion à MongoDB
 connectDB();
 

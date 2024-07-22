@@ -22,8 +22,8 @@ router.post("/create-checkout-session", async (req, res) => {
       })),
       mode: "payment",
       success_url:
-        "http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "http://localhost:5173/cancel",
+        "http://sensvinylo.tech/api/success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "http://sensvinylo.tech/api/cancel",
       metadata: {
         items: JSON.stringify(
           items.map((item) => ({

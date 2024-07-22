@@ -20,7 +20,7 @@ const toggleNav = () => {
 const handleSearch = async () => {
   if (searchQuery.value) {
     try {
-      const response = await fetch(`http://localhost:8000/search?q=${searchQuery.value}`)
+      const response = await fetch(`http://sensvinylo.tech/api/search?q=${searchQuery.value}`)
       if (!response.ok) throw new Error('Network response was not ok')
       searchResults.value = await response.json()
     } catch (error) {
