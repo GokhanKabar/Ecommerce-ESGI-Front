@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
 import BreadcrumbDefault from '../../components/back/componentsGeneric/Breadcrumbs/BreadcrumbDefault.vue';
 import CrudUser from '../../services/UserService';
+import OrderService from '../../services/OrderService';
 import AlertSuccess from '../../components/back/componentsGeneric/Alerts/AlertSuccess.vue';
 import ButtonDefault from '../../components/back/componentsGeneric/Buttons/ButtonDefault.vue';
 import InputGroup from '../../components/front/Authentification/InputGroup.vue';
@@ -11,15 +12,17 @@ import DefaultCard from '../../components/back/componentsGeneric/Forms/DefaultCa
 import ConfirmationPopup from '../../components/back/componentsGeneric/Popup/ConfirmationPopup.vue';
 import { useRouter } from 'vue-router';
 import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import logo from '../../assets/PARFUMS.png'; 
 
 const router = useRouter();
-
-const pageTitle = ref('Profil Utilisateur');
 const store = useStore();
+const pageTitle = ref('Profil Utilisateur');
 const showEditForm = ref(false);
 const userToDelete = ref(null);
 const showSuccessAlertDelete = ref(false);
 const showConfirmationPopup = ref(false);
+const userOrders = ref([]); // Stocker les commandes de l'utilisateur
 
 const editUserNewData = ref({
   id: store.state.user.id,
@@ -35,6 +38,13 @@ const editUserNewData = ref({
 
 const ErrorsUpdateUser = ref('');
 const showSuccessAlertUpdate = ref(false);
+
+const companyInfo = {
+  name: 'Parfums Entreprise',
+  address: '242 rue Fbg St Antoine, Paris, France',
+  phone: '+33 1 23 45 67 89',
+  email: 'contact@parfums.com'
+};
 
 const saveUser = async () => {
   try {
@@ -83,23 +93,83 @@ const cancelDelete = () => {
 const showForm = () => {
   showEditForm.value = true;
 }
-
-// Function to generate PDF
-const downloadUserInfoPDF = () => {
+const downloadUserInfoPDF = async () => {
   const doc = new jsPDF();
   const user = store.state.user;
+  const bgColor = '#D8B775';
+  doc.setFillColor(bgColor);
+  doc.rect(10, 0, 190, 20, 'F'); 
+
+
+  doc.setFontSize(18);
+  doc.setTextColor('#fff');
+  doc.text('Informations Personnelles', 70, 10); 
   
-  doc.text('Informations Personnelles', 10, 10);
-  doc.text(`Nom: ${user.firstName}`, 10, 20);
-  doc.text(`Prénom: ${user.lastName}`, 10, 30);
-  doc.text(`Email: ${user.email}`, 10, 40);
-  doc.text(`Téléphone: ${user.phone}`, 10, 50);
-  doc.text(`Adresse: ${user.address}`, 10, 60);
-  doc.text(`Rôle: ${user.role}`, 10, 70);
   
+  doc.addImage(logo, 'PNG', 10, 25, 50, 50);
+
+  doc.setFontSize(12);
+  doc.setTextColor(0);
+  doc.text(`Entreprise: ${companyInfo.name}`, 10, 65);
+  doc.text(`Adresse: ${companyInfo.address}`, 10, 70);
+  doc.text(`Téléphone: ${companyInfo.phone}`, 10, 75);
+  doc.text(`Email: ${companyInfo.email}`, 10, 80);
+
+ 
+
+  doc.setFontSize(12);
+  doc.setTextColor(0);
+  doc.text(`Nom: ${user.firstName}`, 135, 65);
+  doc.text(`Prénom: ${user.lastName}`, 135, 70);
+  doc.text(`Email: ${user.email}`, 135, 75);
+  doc.text(`Téléphone: ${user.phone}`, 135, 80);
+  doc.text(`Adresse: ${user.address}`, 135, 85);
+
+  const orders = userOrders.value;
+  doc.setFontSize(16);
+  doc.setTextColor('#D8B775');
+  doc.text('Mes commandes', 85,120); 
+
+  if (orders.length > 0) {
+    doc.autoTable({
+      startY:125,
+      head: [['ID Commande', 'Statut Livraison', 'Statut Paiement', 'Total', 'Date Commande']],
+      body: orders.map(order => [
+        order.orderId,
+        order.deliveryStatus,
+        order.paymentStatus,
+        order.total,
+        order.dateOrder
+      ]),
+      theme: 'grid',
+      headStyles: { fillColor: [220, 220, 220] },
+      alternateRowStyles: { fillColor: [240, 240, 240] },
+      margin: { top: 160 }
+    });
+  } else {
+    doc.text('Aucune commande trouvée.', 70, 160);
+  }
+
   doc.save('informations_personnelles.pdf');
 };
+
+
+const fetchUserOrders = async () => {
+  try {
+    const response = await OrderService.getOrderByUser(store.state.user.id);
+    console.log(response.formattedOrders)
+    userOrders.value = response.formattedOrders;
+
+  } catch (error) {
+    console.error('Error fetching user orders:', error);
+  }
+};
+
+onMounted(() => {
+  fetchUserOrders();
+});
 </script>
+
 
 <template>
   <DefaultLayout>
@@ -229,7 +299,8 @@ const downloadUserInfoPDF = () => {
       />
       <div class="flex justify-around items-center px-4 py-3 bg-gray-50">
         <ButtonDefault label="Modifier le profil" customClasses="bg-[#D8B775] text-white rounded-md" @click="showForm()"/>
-        <ButtonDefault label="Supprimer le profil" customClasses="bg-red text-white rounded-md" @click="confirmDeleteUser(store.state.user)"/>
+
+        <ButtonDefault v-if="store.state.user.role !== 'ADMIN'" label="Supprimer le profil" customClasses="bg-red text-white rounded-md" @click="confirmDeleteUser(store.state.user)"/>
         <ButtonDefault label="Télécharger PDF" customClasses="bg-[#D8B775] text-white rounded-md" @click="downloadUserInfoPDF()"/>
       </div>
     </div>
@@ -247,3 +318,6 @@ const downloadUserInfoPDF = () => {
   pointer-events: auto;
 }
 </style>
+
+
+
