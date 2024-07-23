@@ -20,7 +20,7 @@ const app = express();
 // Configuration de CORS
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "http://parfums-esgi.store",
     credentials: true,
   })
 );
