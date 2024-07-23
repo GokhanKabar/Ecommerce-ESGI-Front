@@ -209,7 +209,7 @@ exports.getOrderDetails = async (req, res) => {
         },
         {
           model: User,
-          attributes: ["firstName", "lastName", "email"], // Sélectionnez les champs que vous voulez récupérer
+          attributes: ["firstName", "lastName", "email","address"], // Sélectionnez les champs que vous voulez récupérer
         },
       ],
     });

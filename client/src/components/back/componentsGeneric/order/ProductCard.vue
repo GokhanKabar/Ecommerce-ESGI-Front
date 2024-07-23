@@ -8,6 +8,7 @@ import 'jspdf-autotable';
 
 const currentPage = ref(1)
 const pageSize = 3
+const order=ref()
 const props = defineProps<{
   reorder: (row: any) => void
   orders: {
@@ -103,7 +104,20 @@ const handleRefund = async (orderId: number) => {
   }
 }
 
-const downloadPDF = (order) => {
+const fetchOrderDetails= async(orderId: number)=> {
+  try {
+    const response = await OrderService.getOrderDetails(order.numéro);
+    return order.value 
+  } catch (error) {
+    console.error('Error fetching order details:', error);
+  }
+
+}
+
+const downloadPDF =async (order) => {
+try{
+  await fetchOrderDetails(order)
+
   const doc = new jsPDF();
 
   // Title
@@ -141,6 +155,9 @@ const downloadPDF = (order) => {
 
   // Save the PDF
   doc.save('facture.pdf');
+}catch{
+
+  }
 };
 
 
