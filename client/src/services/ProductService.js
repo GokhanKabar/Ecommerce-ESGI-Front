@@ -37,6 +37,17 @@ export default {
       throw error
     }
   },
+
+  async updateStock(id,qt,op) {
+    try {
+      const response = await Api().get(`/updateProductStock/${id}/${qt}/${op}`)
+      return response.data
+    } catch (error) {
+      console.error('Error fetching products:', error)
+      throw error
+    }
+  },
+
   async getProductsByCategory(category, filters) {
     try {
       const params = new URLSearchParams()

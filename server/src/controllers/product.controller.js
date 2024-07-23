@@ -203,6 +203,40 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
+exports.updateProductStock = async (req, res) => {
+  const { id, qt, op } = req.params;
+console.log('id'+id)
+console.log('qt'+qt)
+console.log('op'+op)
+  try {
+    const product = await SequelizeProduct.findByPk(id);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    let newStock;
+    if (op == 1) {
+      newStock = product.stock + parseInt(qt, 10);
+    } else if (op == 0) {
+      if (product.stock < qt) {
+        return res.status(400).json({ message: 'Insufficient stock' });
+      }
+      newStock = product.stock - parseInt(qt, 10);
+    } else {
+      return res.status(400).json({ message: 'Invalid operation ***' });
+    }
+
+    product.stock = newStock;
+    await product.save();
+
+    res.status(200).json({ message: 'Stock updated successfully', product });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
