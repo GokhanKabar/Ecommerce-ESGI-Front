@@ -17,24 +17,45 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    newProduct: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
+    newProductCategories: {
+      type: DataTypes.JSON,
+      defaultValue: [],
+      validate: {
+        isArray(value) {
+          if (!Array.isArray(value)) {
+            throw new Error('newProductCategories must be an array');
+          }
+        }
+      }
     },
-    restock: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
+    restockProductIds: {
+      type: DataTypes.JSON,
+      defaultValue: [],
+      validate: {
+        isArray(value) {
+          if (!Array.isArray(value)) {
+            throw new Error('restockProductIds must be an array');
+          }
+        }
+      }
     },
-    priceChange: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
+    priceChangeProductIds: {
+      type: DataTypes.JSON,
+      defaultValue: [],
+      validate: {
+        isArray(value) {
+          if (!Array.isArray(value)) {
+            throw new Error('priceChangeProductIds must be an array');
+          }
+        }
+      }
     }
   }, {
     sequelize,
     modelName: 'Alert',
-    timestamps: false,
+    timestamps: true,  // Enable timestamps if needed
     underscored: true,
-    tableName: 'alerts'
+    tableName: 'alerts',
   });
 
   return Alert;

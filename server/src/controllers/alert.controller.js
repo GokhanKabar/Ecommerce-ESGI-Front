@@ -1,40 +1,48 @@
-const { Alert } = require('../databases/sequelize/models'); // Utilisez l'importation correcte pour votre structure de projet
+const { Alert } = require('../databases/sequelize/models');
 
-exports.getAlerts = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const alerts = await Alert.findOne({ where: { userId } });
-    if (!alerts) {
-      return res.status(404).json({ message: 'Alertes non trouvées' });
+class AlertController {
+  // Créer une nouvelle alerte
+  async createAlert(req, res) {
+    try {
+      const alert = await Alert.create(req.body);
+      return res.status(201).json(alert);
+    } catch (error) {
+      return res.status(400).json({ error: error.message });
     }
-    res.status(200).json(alerts);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
   }
-};
 
-exports.updateAlerts = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const { newProduct, restock, priceChange } = req.body;
-
-    let alerts = await Alert.findOne({ where: { userId } });
-    if (alerts) {
-      alerts.newProduct = newProduct;
-      alerts.restock = restock;
-      alerts.priceChange = priceChange;
-      await alerts.save();
-    } else {
-      alerts = await Alert.create({
-        userId,
-        newProduct,
-        restock,
-        priceChange
-      });
+  // Obtenir toutes les alertes pour un utilisateur
+  async getAlerts(req, res) {
+    try {
+      const alerts = await Alert.findAll({ where: { userId: req.params.userId } });
+      return res.status(200).json(alerts);
+    } catch (error) {
+      return res.status(400).json({ error: error.message });
     }
-
-    res.status(200).json(alerts);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
   }
-};
+
+  // Mettre à jour une alerte
+  async updateAlert(req, res) {
+    try {
+      const { id } = req.params;
+      await Alert.update(req.body, { where: { id } });
+      const updatedAlert = await Alert.findByPk(id);
+      return res.status(200).json(updatedAlert);
+    } catch (error) {
+      return res.status(400).json({ error: error.message });
+    }
+  }
+
+  // Supprimer une alerte
+  async deleteAlert(req, res) {
+    try {
+      const { id } = req.params;
+      await Alert.destroy({ where: { id } });
+      return res.status(204).send();
+    } catch (error) {
+      return res.status(400).json({ error: error.message });
+    }
+  }
+}
+
+module.exports = new AlertController();

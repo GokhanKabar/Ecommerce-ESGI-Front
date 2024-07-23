@@ -245,3 +245,12 @@ exports.searchProducts = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getAllProductsSequelize = async (req, res) => {
+  try {
+    const products = await SequelizeProduct.findAll();
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

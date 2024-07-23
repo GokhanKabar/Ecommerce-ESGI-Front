@@ -103,5 +103,14 @@ export default {
       console.error('Error searching products:', error)
       throw error
     }
+  },
+  async getSequelizeProducts() {
+    try {
+      const response = await Api().get('sequelize/products')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching sequelize products:', error)
+      throw error
+    }
   }
 }

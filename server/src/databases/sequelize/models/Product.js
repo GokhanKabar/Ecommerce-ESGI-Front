@@ -1,8 +1,7 @@
 const { Model, DataTypes } = require("sequelize");
+const mongoose = require('mongoose');
 const ProductMongo = require("../../denormalization/ProductMongo");
-const Alert = require("./Alert");
 const notificationService = require("../../../services/notificationServices");
-
 
 module.exports = (sequelize) => {
   class Product extends Model {
@@ -12,42 +11,33 @@ module.exports = (sequelize) => {
       Product.belongsToMany(models.Order, { through: models.ProductOrder });
     }
 
-    static addHooks(db) {
-      Product.addHook("afterCreate", async (product) => {
-        await ProductMongo(product.id, db.Product, db.Brand, db.Family);
+    static addHooks(models) {
+      Product.addHook("afterCreate", async (product, options) => {
+        const productId = new mongoose.Types.ObjectId(product.id);
+        await ProductMongo(productId, models.Product, models.Brand, models.Family);
 
-        const alerts = await db.Alert.findAll({ where: { newProduct: true } });
-        notificationService.notifyUsers(alerts, 'Nouveau produit', `Un nouveau produit à été ajouté dans la catégorie ${product.category}.`);
+        await notificationService.notifyNewProduct(product.category);
       });
 
-      Product.addHook("afterUpdate", async (product) => {
-        await ProductMongo(product.id, db.Product, db.Brand, db.Family);
+      Product.addHook("afterUpdate", async (product, options) => {
+        const productId = new mongoose.Types.ObjectId(product.id);
+        await ProductMongo(productId, models.Product, models.Brand, models.Family);
+
         if (product._previousDataValues.stock === 0 && product.stock > 0) {
-          const alerts = await db.Alert.findAll({ where: { restock: true } });
-          notificationService.notifyUsers(alerts, 'Produit de nouveau disponible', `Le produit ${product.name} à été restocké il est de nouveau disponible.`);
+          await notificationService.notifyRestock(product.id);
         }
 
         if (product._previousDataValues.price !== product.price) {
-          const alerts = await db.Alert.findAll({ where: { priceChange: true } });
-          notificationService.notifyUsers(alerts, 'Changement du prix', `Le prix du produit ${product.name} à été modifié.`);
+          await notificationService.notifyPriceChange(product.id);
         }
       });
 
-      Product.addHook("beforeDestroy", async (product) => {
+      Product.addHook("beforeDestroy", async (product, options) => {
+        const productId = new mongoose.Types.ObjectId(product.id);
         try {
-          const result = await ProductMongo(
-            product.id,
-            db.Product,
-            db.Brand,
-            db.Family,
-            true
-          );
+          await ProductMongo(productId, models.Product, models.Brand, models.Family, true);
         } catch (error) {
-          console.error(
-            "Error deleting MongoDB document for product:",
-            product.id,
-            error
-          );
+          console.error("Error deleting MongoDB document for product:", product.id, error);
         }
       });
     }

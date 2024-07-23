@@ -37,6 +37,7 @@ router.get("/promotionalProducts", productController.getPromotionalProducts);
 router.get("/products/:id", productController.getProductById);
 router.get("/products/category/:category", productController.getProductsByCategory);
 router.get("/products/family/:familyId", productController.getProductsByFamilyId);
+router.get("/sequelize/products", productController.getAllProductsSequelize);
 
 router.post("/products", checkAuth({ roles: ['ADMIN','ROLE_STORE_KEEPER'] }), upload.single("image"), productController.createProduct);
 router.put("/products/:id", checkAuth({ roles: ['ADMIN','ROLE_STORE_KEEPER'] }), upload.single("image"), productController.updateProduct);
