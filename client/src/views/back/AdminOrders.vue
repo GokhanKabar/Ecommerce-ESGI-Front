@@ -1,72 +1,70 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue';
+import { onMounted, ref } from 'vue'
+import DefaultLayout from '../../components/back/layouts/DefaultLayout.vue'
 
-import DataTable from '../../components/back/componentsGeneric/DataTable.vue';
-import OrderPopup from '../../components/back/componentsGeneric/order/OrderPopup.vue';
-import OrderCard from '@/components/back/componentsGeneric/order/ProductCard.vue';
-import ButtonDefault from '@/components/back/componentsGeneric/Buttons/ButtonDefault.vue';
+import DataTable from '../../components/back/componentsGeneric/DataTable.vue'
+import OrderPopup from '../../components/back/componentsGeneric/order/OrderPopup.vue'
+import OrderCard from '@/components/back/componentsGeneric/order/ProductCard.vue'
+import ButtonDefault from '@/components/back/componentsGeneric/Buttons/ButtonDefault.vue'
 
-import BreadcrumbDefault from '../../components/back/componentsGeneric/Breadcrumbs/BreadcrumbDefault.vue';
-import OrderService from '../../services/OrderService';
-import store from '../../store/store.js';
+import BreadcrumbDefault from '../../components/back/componentsGeneric/Breadcrumbs/BreadcrumbDefault.vue'
+import OrderService from '../../services/OrderService'
+import store from '../../store/store.js'
 
-
-const pageTitle = ref('Commandes');
-const Orders = ref([]);
-const user_id = store.state.user.id;
-const headers = [ 'Numéro', 'Client', 'Email','Livraison',  'Paiement','Date'];
-const showOrderDetailsPopup = ref(false);
+const pageTitle = ref('Commandes')
+const Orders = ref([])
+const user_id = store.state.user.id
+const headers = ['Numéro', 'Client', 'Email', 'Livraison', 'Paiement', 'Date']
+const showOrderDetailsPopup = ref(false)
 
 const fetchOrdersForAdmin = async () => {
   try {
-    const response = await OrderService.getAllOrders();
-    Orders.value = response;
+    const response = await OrderService.getAllOrders()
+    Orders.value = response
   } catch (error) {
-    console.error('Error fetching families:', error);
-
+    console.error('Error fetching families:', error)
   }
-};
+}
 
-const showPopup = ref(false);
-const orderDetails = ref({});
+const showPopup = ref(false)
+const orderDetails = ref({})
 
 const showOrderDetails = async (order) => {
   try {
-    const response = await OrderService.getOrderDetails(order.numéro);
-    orderDetails.value = response;
-    showPopup.value = true;
+    const response = await OrderService.getOrderDetails(order.numéro)
+    orderDetails.value = response
+    showPopup.value = true
   } catch (error) {
-    console.error('Error fetching order details:', error);
+    console.error('Error fetching order details:', error)
   }
-};
+}
 
 const closePopup = () => {
-  showPopup.value = false;
-};
+  showPopup.value = false
+}
 
 onMounted(async () => {
-  await fetchOrdersForAdmin();
-
-});
-
+  await fetchOrdersForAdmin()
+})
 </script>
 <template>
-
-
   <DefaultLayout>
     <BreadcrumbDefault :pageTitle="pageTitle" />
-    
 
-    <DataTable :headers="headers" :data="Orders" :filterableColumns="[ 'Numéro', 'Client', 'Email','Livraison',  'Paiement','Date']" :editUser="showOrderDetails"
-      :deleteUser="showOrderDetails" />
-   
-      <OrderPopup :isVisible="showPopup" :orderDetails="orderDetails" @delete="" @close="closePopup" />
+    <DataTable
+      :headers="headers"
+      :data="Orders"
+      :filterableColumns="['Numéro', 'Client', 'Email', 'Livraison', 'Paiement', 'Date']"
+      :editUser="showOrderDetails"
+      :deleteUser="showOrderDetails"
+    />
 
-    
-
-
-
+    <OrderPopup
+      :isVisible="showPopup"
+      :orderDetails="orderDetails"
+      @delete=""
+      @close="closePopup"
+    />
   </DefaultLayout>
 </template>
 
@@ -76,15 +74,12 @@ onMounted(async () => {
   transition: opacity 0.5s;
 }
 
-
 .fade-enter,
 .fade-leave-to
 
-/* .fade-leave-active in <2.1.8 */
-  {
+/* .fade-leave-active in <2.1.8 */ {
   opacity: 0;
 }
-
 
 .popup {
   position: fixed;
@@ -118,9 +113,8 @@ onMounted(async () => {
   transition: opacity 0.5s;
 }
 
-
-.fade-enter, .fade-leave-to {
-
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

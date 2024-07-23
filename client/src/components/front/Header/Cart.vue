@@ -5,6 +5,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { loadStripe } from '@stripe/stripe-js'
 import getImagePath from '@/utils/getImagePath'
+import { onMounted } from 'vue'
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || '')
 
@@ -32,13 +33,12 @@ const cartProducts = computed(() => store.state.cart)
 const isUserLoggedIn = computed(() => store.state.isUserLoggedIn)
 
 const totalPrice = computed(() => {
- 
   return store.state.cart
     .reduce((total, item) => {
       const { product } = item
       const quantity = product.quantity || 0
-      const priceString = product.price.replace(',', '.').replace(/[^0-9.]/g, ''); 
-      const price = parseFloat(priceString);
+      const priceString = product.price.replace(',', '.').replace(/[^0-9.]/g, '')
+      const price = parseFloat(priceString)
       let itemTotal = quantity * price
       return total + itemTotal
     }, 0)
@@ -57,21 +57,23 @@ const createCheckoutSession = async () => {
   }
 
   const stripe = await stripePromise
-  const response = await fetch('http://localhost:8000/stripe/create-checkout-session', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      items: cartProducts.value.map((item) => ({
-        productId: item.product.id, // Assurez-vous que productId est inclus
-        name: item.product.name,
-        amount: parseFloat(item.product.price.replace(',', '.').replace(/[^0-9.]/g, '')),
-        quantity: item.product.quantity
-      }))
-    })
-  })
-
+  const response = await fetch(
+    `http://localhost:8000/stripe/create-checkout-session/${store.state.user.id}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        items: cartProducts.value.map((item) => ({
+          productId: item.product.id, // Assurez-vous que productId est inclus
+          name: item.product.name,
+          amount: parseFloat(item.product.price.replace(',', '.').replace(/[^0-9.]/g, '')),
+          quantity: item.product.quantity
+        }))
+      })
+    }
+  )
   const session = await response.json()
 
   if (session.error) {
@@ -85,14 +87,14 @@ const createCheckoutSession = async () => {
     console.error(result.error.message)
   }
 }
-
 </script>
 
 <template>
-  <div :class="['nav-item ', sideBarType === 'back' ? 'mt-2' :'' ]" >
+  <div :class="['nav-item ', sideBarType === 'back' ? 'mt-2' : '']">
     <a href="#" class="flex flex-row gap-1">
       <svg
-        :width="sideBarType === 'back' ? 27 : 17" :height="sideBarType === 'back' ? 27 : 17"
+        :width="sideBarType === 'back' ? 27 : 17"
+        :height="sideBarType === 'back' ? 27 : 17"
         viewBox="0 0 17 17"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -112,7 +114,10 @@ const createCheckoutSession = async () => {
       <div class="relative" ref="target">
         <span
           @click.prevent="dropdownOpen = !dropdownOpen"
-          :class="['hidden md:inline-block hover:text-[#D8B775] font-semibold', sideBarType === 'back' ? 'text-black mt-1' : 'text-white']"
+          :class="[
+            'hidden md:inline-block hover:text-[#D8B775] font-semibold',
+            sideBarType === 'back' ? 'text-black mt-1' : 'text-white'
+          ]"
         >
           MON PANIER ({{ totalProducts }})
         </span>
@@ -120,7 +125,10 @@ const createCheckoutSession = async () => {
           v-show="dropdownOpen"
           class="absolute right-0 mt-4 flex w-80 flex-col rounded-sm border border-stroke bg-white shadow-default z-50"
         >
-          <ul v-if="cartProducts.length" class="flex flex-col gap-5 border-b border-stroke px-4 py-4 max-h-64 overflow-y-auto">
+          <ul
+            v-if="cartProducts.length"
+            class="flex flex-col gap-5 border-b border-stroke px-4 py-4 max-h-64 overflow-y-auto"
+          >
             <li
               v-for="item in cartProducts"
               :key="item.product.id"
@@ -152,9 +160,7 @@ const createCheckoutSession = async () => {
               </div>
             </li>
           </ul>
-          <div v-else class="px-6 py-4 text-center text-gray-500">
-            Votre panier est vide.
-          </div>
+          <div v-else class="px-6 py-4 text-center text-gray-500">Votre panier est vide.</div>
           <div v-if="cartProducts.length" class="flex justify-between px-6 py-4">
             <span class="text-sm font-semibold text-xl">Total:</span>
             <span class="text-sm font-semibold text-xl">{{ totalPrice }} €</span>

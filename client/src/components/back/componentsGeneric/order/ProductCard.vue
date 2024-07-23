@@ -3,8 +3,8 @@ import { defineProps, ref, computed, defineEmits } from 'vue'
 import ButtonDefault from '@/components/back/componentsGeneric/Buttons/ButtonDefault.vue'
 import getImagePath from '../../../../utils/getImagePath'
 import OrderService from '@/services/OrderService'
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import jsPDF from 'jspdf'
+import 'jspdf-autotable'
 
 const currentPage = ref(1)
 const pageSize = 3
@@ -14,7 +14,7 @@ const props = defineProps<{
     orderId: number
     deliveryStatus: string
     paymentStatus: string
-    total: Number
+    total: number
     dateOrder: string
     dateCreation: string
     dateUpdate: string
@@ -86,48 +86,35 @@ const actualDeliveryStatus = {
   in_progress: 'En cours de livraison',
   delivered: 'Livré',
   not_delivered: 'Non livré',
-  Returned: 'Retourné'
-}
-
-const handleRefund = async (orderId: number) => {
-  try {
-    await OrderService.refundOrder(orderId)
-    await OrderService.updateOrder(orderId, {
-      delivery_status: 'Returned',
-      payment_status: 'Refunded',
-      order_status: 'Refunded'
-    })
-    alert('Remboursement réussi')
-  } catch (error) {
-    console.error('Error refunding order:', error)
-  }
+  Returned: 'Retourné',
+  'Refund requested': 'Demande de remboursement'
 }
 
 const downloadPDF = (order) => {
-  const doc = new jsPDF();
+  const doc = new jsPDF()
 
   // Title
-  doc.setFontSize(18);
-  doc.text('Facture', 14, 22);
+  doc.setFontSize(18)
+  doc.text('Facture', 14, 22)
 
   // Order details
-  doc.setFontSize(12);
-  doc.text(`Numéro de commande: ${order.orderId}`, 14, 32);
-  doc.text(`Date de la commande: ${new Date(order.dateOrder).toLocaleDateString()}`, 14, 40);
-  doc.text(`Statut de la livraison: ${order.deliveryStatus}`, 14, 48);
-  doc.text(`Statut du paiement: ${order.paymentStatus}`, 14, 56);
-  doc.text(`Total: ${order.total} €`, 14, 64);
+  doc.setFontSize(12)
+  doc.text(`Numéro de commande: ${order.orderId}`, 14, 32)
+  doc.text(`Date de la commande: ${new Date(order.dateOrder).toLocaleDateString()}`, 14, 40)
+  doc.text(`Statut de la livraison: ${order.deliveryStatus}`, 14, 48)
+  doc.text(`Statut du paiement: ${order.paymentStatus}`, 14, 56)
+  doc.text(`Total: ${order.total} €`, 14, 64)
 
   // Table headers
-  const head = [['Produit', 'Quantité', 'Prix Unitaire','Promotion']];
+  const head = [['Produit', 'Quantité', 'Prix Unitaire', 'Promotion']]
 
   // Table body
-  const body = order.products.map(product => [
+  const body = order.products.map((product) => [
     product.name,
     product.quantity,
     `${product.price} €`,
     `${product.promotion} %`
-  ]);
+  ])
 
   // Adding table to the PDF
   doc.autoTable({
@@ -136,15 +123,25 @@ const downloadPDF = (order) => {
     startY: 72,
     theme: 'grid',
     headStyles: { fillColor: [216, 183, 117] },
-    styles: { overflow: 'linebreak' },
-  });
+    styles: { overflow: 'linebreak' }
+  })
 
   // Save the PDF
-  doc.save('facture.pdf');
-};
+  doc.save('facture.pdf')
+}
 
-
-
+const handleRefundRequest = async (orderId: number) => {
+  try {
+    await OrderService.updateOrder(orderId, {
+      delivery_status: 'Refund requested',
+      payment_status: 'Refund requested',
+      order_status: 'Refund requested'
+    })
+    alert('Votre demande de remboursement a bien été prise en compte.')
+  } catch (error) {
+    alert('Une erreur est survenue lors de la demande de remboursement.')
+  }
+}
 </script>
 
 <template>
@@ -358,6 +355,10 @@ const downloadPDF = (order) => {
               <span v-if="order.paymentStatus === 'Refunded'"
                 >Remboursé le : {{ new Date(order.dateUpdate).toLocaleDateString() }}</span
               >
+              <span v-else-if="order.paymentStatus === 'Refund requested'"
+                >Demande de remboursement effectué le :
+                {{ new Date(order.dateUpdate).toLocaleDateString() }}</span
+              >
               <span
                 v-else-if="order.paymentStatus === 'not payed'"
                 class="inline-flex items-center"
@@ -415,13 +416,17 @@ const downloadPDF = (order) => {
           <div class="col-span-2 flex flex-col space-y-2 m-12">
             <button class="bg-gray-200 text-gray-700 px-2 py-1 rounded">Suivre</button>
             <button
-              v-if="!(order.paymentStatus === 'Refunded')"
+              v-if="
+                !(order.paymentStatus === 'Refund requested' || order.paymentStatus === 'Refunded')
+              "
               class="bg-gray-200 text-gray-700 px-2 py-1 rounded"
-              @click="handleRefund(order.orderId)"
+              @click="handleRefundRequest(order.orderId)"
             >
               Demander un remboursement
             </button>
-            <button @click="downloadPDF(order)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded">Télécharger la facture</button>
+            <button @click="downloadPDF(order)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded">
+              Télécharger la facture
+            </button>
             <ButtonDefault
               @click="reorder(order)"
               label="Commander à nouveau"
