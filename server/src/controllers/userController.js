@@ -2571,7 +2571,7 @@ exports.updateUser = (
               password: hashedPassword,
               address,
               phone,
-              role,
+              role: role==="ADMIN"? role :user.role,
             });
           });
         } else {
@@ -2581,7 +2581,7 @@ exports.updateUser = (
             email,
             address,
             phone,
-            role,
+            role: role==="ADMIN"? role :user.role,
           });
         }
       })
