@@ -998,7 +998,7 @@ function sendEmailforgotPassword(email, resetToken) {
       tls: { rejectUnauthorized: false },
     });
 
-    const resetLink = `http://parfums-esgi.store/api/renitialisation-mot-de-passe?token=${resetToken}`;
+    const resetLink = `http://localhost:8000/confirmEmail/${email}/${emailToken}`;
     const htmlContent = `
         <style type="text/css">
         #outlook a {
