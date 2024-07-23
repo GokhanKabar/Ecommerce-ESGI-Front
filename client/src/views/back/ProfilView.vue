@@ -301,7 +301,7 @@ onMounted(() => {
         <ButtonDefault label="Modifier le profil" customClasses="bg-[#D8B775] text-white rounded-md" @click="showForm()"/>
 
         <ButtonDefault v-if="store.state.user.role !== 'ADMIN'" label="Supprimer le profil" customClasses="bg-red text-white rounded-md" @click="confirmDeleteUser(store.state.user)"/>
-        <ButtonDefault label="Télécharger PDF" customClasses="bg-[#D8B775] text-white rounded-md" @click="downloadUserInfoPDF()"/>
+        <ButtonDefault v-if="store.state.user.role === 'USER'" label="Télécharger PDF" customClasses="bg-[#D8B775] text-white rounded-md" @click="downloadUserInfoPDF()"/>
       </div>
     </div>
   </DefaultLayout>
