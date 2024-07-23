@@ -5,7 +5,8 @@
   "type": "commonjs",
   "scripts": {
     "dev": "node --env-file=.env src/index.js && node --watch src/index.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "test":"jest"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
