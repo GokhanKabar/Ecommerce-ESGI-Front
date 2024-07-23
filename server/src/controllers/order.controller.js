@@ -22,6 +22,8 @@ exports.createOrder = async (data) => {
       date_creation: new Date(),
       date_update: new Date(),
       order_status: "Confirmed",
+      order_user_name: data.shipping.name,
+      order_address: data.shipping.address,
     });
 
     // Ajouter les produits à la commande

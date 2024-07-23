@@ -20,6 +20,22 @@ module.exports = (sequelize) => {
         allowNull: true,
         defaultValue: null,
       },
+      order_user_name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          len: [1, 50],
+        },
+      },
+      order_address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          len: [1, 255],
+        },
+      },
       delivery_status: {
         type: DataTypes.STRING,
         allowNull: false,
