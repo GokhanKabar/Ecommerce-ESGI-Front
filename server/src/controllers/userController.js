@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const db = require("../databases/sequelize/models");
 const jwt = require("jsonwebtoken");
 const config = require("../config/config.json");
