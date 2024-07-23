@@ -20,7 +20,7 @@ const toggleNav = () => {
 const handleSearch = async () => {
   if (searchQuery.value) {
     try {
-      const response = await fetch(`http://parfums-esgi.store/search?q=${searchQuery.value}`)
+      const response = await fetch(`http://parfums-esgi.store/api/search?q=${searchQuery.value}`)
       if (!response.ok) throw new Error('Network response was not ok')
       searchResults.value = await response.json()
     } catch (error) {
