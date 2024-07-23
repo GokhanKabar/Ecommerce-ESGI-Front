@@ -1,5 +1,4 @@
 const { Model, DataTypes } = require("sequelize");
-const mongoose = require('mongoose');
 const ProductMongo = require("../../denormalization/ProductMongo");
 const notificationService = require("../../../services/notificationServices");
 
@@ -13,29 +12,33 @@ module.exports = (sequelize) => {
 
     static addHooks(models) {
       Product.addHook("afterCreate", async (product, options) => {
-        const productId = new mongoose.Types.ObjectId(product.id);
-        await ProductMongo(productId, models.Product, models.Brand, models.Family);
-
-        await notificationService.notifyNewProduct(product.category);
+        try {
+          await ProductMongo(product.id, models.Product, models.Brand, models.Family);
+          await notificationService.notifyNewProduct(product.category);
+        } catch (error) {
+          console.error("Error in afterCreate hook:", error);
+        }
       });
 
       Product.addHook("afterUpdate", async (product, options) => {
-        const productId = new mongoose.Types.ObjectId(product.id);
-        await ProductMongo(productId, models.Product, models.Brand, models.Family);
+        try {
+          await ProductMongo(product.id, models.Product, models.Brand, models.Family);
 
-        if (product._previousDataValues.stock === 0 && product.stock > 0) {
-          await notificationService.notifyRestock(product.id);
-        }
+          if (product._previousDataValues.stock === 0 && product.stock > 0) {
+            await notificationService.notifyRestock(product.id);
+          }
 
-        if (product._previousDataValues.price !== product.price) {
-          await notificationService.notifyPriceChange(product.id);
+          if (product._previousDataValues.price !== product.price) {
+            await notificationService.notifyPriceChange(product.id);
+          }
+        } catch (error) {
+          console.error("Error in afterUpdate hook:", error);
         }
       });
 
       Product.addHook("beforeDestroy", async (product, options) => {
-        const productId = new mongoose.Types.ObjectId(product.id);
         try {
-          await ProductMongo(productId, models.Product, models.Brand, models.Family, true);
+          await ProductMongo(product.id, models.Product, models.Brand, models.Family, true);
         } catch (error) {
           console.error("Error deleting MongoDB document for product:", product.id, error);
         }
