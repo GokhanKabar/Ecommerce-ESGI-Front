@@ -57,7 +57,7 @@ const createCheckoutSession = async () => {
   }
 
   const stripe = await stripePromise
-  const response = await fetch('http://sensvinylo.tech/api/stripe/create-checkout-session', {
+  const response = await fetch('http://parfums-esgi.store/api/stripe/create-checkout-session', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

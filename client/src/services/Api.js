@@ -2,10 +2,10 @@ import axios from 'axios'
 import  store  from '@/store/store';
 export default () => {
   return axios.create({
-    baseURL: `http://sensvinylo.tech/api`,
+    baseURL: `http://parfums-esgi.store/api`,
     
     headers: {
-      'Access-Control-Allow-Origin': 'http://sensvinylo.tech',
+      'Access-Control-Allow-Origin': 'http://parfums-esgi.store',
       Authorization: `Bearer ${store.state.token}`
     }
   })
