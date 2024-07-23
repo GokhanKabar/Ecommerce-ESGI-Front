@@ -17,11 +17,8 @@ module.exports = (sequelize) => {
       },
       payment_intent_id: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-          len: [1, 50],
-        },
+        allowNull: true,
+        defaultValue: null,
       },
       delivery_status: {
         type: DataTypes.STRING,

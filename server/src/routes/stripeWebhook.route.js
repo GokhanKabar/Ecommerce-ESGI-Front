@@ -4,6 +4,8 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const Product = require("../databases/mongoose/Products"); // MongoDB Product Model
 const SequelizeProduct = require("../databases/sequelize/models").Product; // Sequelize Product Model
 const { sequelize } = require("../databases/sequelize/models"); // Sequelize instance
+const OrderController = require("../controllers/order.controller");
+const SequelizeOrder = require("../databases/sequelize/models").Order;
 
 router.post(
   "/",
@@ -25,8 +27,17 @@ router.post(
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
-
+      console.log("Checkout session completed:", session);
       try {
+        const order = await OrderController.createOrder(session);
+        SequelizeOrder.update(
+          {
+            payment_status: "Payed",
+            payment_intent_id: session.payment_intent,
+          },
+          { where: { id: order } }
+        );
+
         const t = await sequelize.transaction();
         const items = JSON.parse(session.metadata.items);
 

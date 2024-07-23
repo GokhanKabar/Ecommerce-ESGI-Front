@@ -6,24 +6,15 @@ const {
   sequelize,
 } = require("../databases/sequelize/models");
 
-exports.createOrder = async (req, res) => {
+exports.createOrder = async (data) => {
   try {
     // Extraire les données de la requête
-    const { userId, products, payment_intent_id } = req.body;
-    // Calculer le total des produits en prenant en compte la promotion
-    const total = products.reduce((acc, product) => {
-      const priceString = product.price.replace(',', '.').replace(/[^0-9.]/g, ''); 
-      const price = parseFloat(priceString);
-      const quantity = product.quantity;
-      const promotion = product.promotion || 0; 
-      const discountedPrice = (price - (price * (promotion / 100))).toFixed(2);
-      return acc + (parseFloat(discountedPrice) * quantity);
-    }, 0);
+    const { userId, items, total } = data.metadata;
+    const itemsParse = JSON.parse(items);
 
     // Créer la commande
     const order = await Order.create({
       user_id: userId,
-      payment_intent_id: payment_intent_id,
       delivery_status: "confirmed",
       payment_status: "Payed",
       total: total,
@@ -34,7 +25,7 @@ exports.createOrder = async (req, res) => {
     });
 
     // Ajouter les produits à la commande
-    for (const product of products) {
+    for (const product of itemsParse) {
       const sql = `
       INSERT INTO product_orders (product_id, order_id, quantity, date_create, user_create, user_update)
       VALUES (?, ?, ?, NOW(), ?, ?)
@@ -63,10 +54,9 @@ exports.createOrder = async (req, res) => {
         type: sequelize.QueryTypes.UPDATE,
       });
     }
-    res.status(201).json("success");
+    return order.id;
   } catch (error) {
     console.error("Error creating order:", error);
-    res.status(400).json({ error: error.message });
   }
 };
 
@@ -86,14 +76,13 @@ exports.getAllOrders = async (req, res) => {
     );
 
     // Mapping to change field names and ensure order
-    const mappedOrders = orders.map(order => ({
+    const mappedOrders = orders.map((order) => ({
       numéro: order.id,
       client: order.fullName,
       email: order.email,
       livraison: order.deliveryStatus,
       paiement: order.paymentStatus,
-      date: order.dateOrder
-
+      date: order.dateOrder,
     }));
 
     res.status(201).json(mappedOrders);
@@ -224,6 +213,7 @@ exports.getOrderDetails = async (req, res) => {
       paymentStatus: order.payment_status,
       total: order.total,
       dateOrder: order.date_order,
+      dateUpdate: order.date_update,
       orderStatus: order.order_status,
       userId: order.user_id,
       customerName: `${order.User.firstName} ${order.User.lastName}`,

@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-router.post("/create-checkout-session", async (req, res) => {
+router.post("/create-checkout-session/:id", async (req, res) => {
+  console.log(req.params);
   const { items } = req.body;
 
   try {
@@ -19,10 +20,14 @@ router.post("/create-checkout-session", async (req, res) => {
         quantity: item.quantity,
       })),
       mode: "payment",
-      success_url:
-        "http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}",
+      success_url: "http://localhost:5173/success",
       cancel_url: "http://localhost:5173/cancel",
       metadata: {
+        userId: req.params.id,
+        total: items.reduce(
+          (acc, item) => acc + item.amount * item.quantity,
+          0
+        ),
         items: JSON.stringify(
           items.map((item) => ({
             productId: item.productId,
