@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const db = require("../databases/sequelize/models");
 const jwt = require("jsonwebtoken");
 const config = require("../config/config.json");
@@ -393,7 +393,7 @@ function sendConfirmationEmail(email, emailToken, lastName, firstName) {
                                                                 role="presentation"
                                                                 style="border:none;border-radius:3px;cursor:auto;mso-padding-alt:10px 25px;background:transparent;"
                                                                 valign="middle">
-                                                                <a href="http://parfums-esgi.store/confirmEmail/${email}/${emailToken}" style="display:inline-block;width:250px;background:transparent;color:#C58940;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:17px;font-weight:bold;line-height:120%;margin:0;text-decoration:none;text-transform:none;padding:10px 25px;mso-padding-alt:0px;border-radius:3px;border:1px solid #C58940;" target="_blank">Activer mon compte</a>.
+                                                                <a href="http://parfums-esgi.store/api/confirmEmail/${email}/${emailToken}" style="display:inline-block;width:250px;background:transparent;color:#C58940;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:17px;font-weight:bold;line-height:120%;margin:0;text-decoration:none;text-transform:none;padding:10px 25px;mso-padding-alt:0px;border-radius:3px;border:1px solid #C58940;" target="_blank">Activer mon compte</a>.
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -860,7 +860,8 @@ exports.register = (
               emailTokenExpiration.setDate(emailTokenExpiration.getDate() + 1);
               const allowedRoles = ["USER"]; 
               if (!allowedRoles.includes(role)) {
-                return reject("Rôle non autorisé");
+                reject({ status: 401, message: "Unauthorized role" });
+                return;
               }
               db.User.create({
                 firstName: firstName,
@@ -1003,7 +1004,7 @@ function sendEmailforgotPassword(email, resetToken) {
       tls: { rejectUnauthorized: false },
     });
 
-    const resetLink = `http://parfums-esgi.store/confirmEmail/${email}/${emailToken}`;
+    const resetLink = `http://parfums-esgi.store/api/confirmEmail/${email}/${emailToken}`;
     const htmlContent = `
         <style type="text/css">
         #outlook a {
@@ -2561,7 +2562,7 @@ exports.updateUser = (
               password: hashedPassword,
               address,
               phone,
-              role,
+              role: role==="ADMIN"? role :user.role,
             });
           });
         } else {
@@ -2571,7 +2572,7 @@ exports.updateUser = (
             email,
             address,
             phone,
-            role,
+            role: role==="ADMIN"? role :user.role,
           });
         }
       })
