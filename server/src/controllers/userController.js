@@ -834,6 +834,7 @@ exports.register = (
 ) => {
 
     return new Promise((resolve, reject) => {
+
     let validate  = schemaRegister.validate({
       firstName,
       lastName,
@@ -857,6 +858,10 @@ exports.register = (
               const emailToken = generateConfirmationToken();
               const emailTokenExpiration = new Date();
               emailTokenExpiration.setDate(emailTokenExpiration.getDate() + 1);
+              const allowedRoles = ["USER"]; 
+              if (!allowedRoles.includes(role)) {
+                return reject("Rôle non autorisé");
+              }
               db.User.create({
                 firstName: firstName,
                 lastName: lastName,
@@ -864,7 +869,7 @@ exports.register = (
                 password: hashedPassword,
                 address: address,
                 phone: phone,
-                role: role,
+                role: "USER",
                 accountConfirmation: false,
                 emailToken: emailToken,
                 emailTokenExpiration: emailTokenExpiration,
