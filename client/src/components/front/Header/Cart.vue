@@ -57,7 +57,7 @@ const createCheckoutSession = async () => {
   }
 
   const stripe = await stripePromise
-  const response = await fetch('http://localhost:8000/stripe/create-checkout-session', {
+  const response = await fetch('http://parfums-esgi.store/stripe/create-checkout-session', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
