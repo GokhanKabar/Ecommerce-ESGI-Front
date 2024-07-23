@@ -5,7 +5,8 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/config.json");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
+const { send } = require("process");
 
 const schemaRegister = Joi.object({
   firstName: Joi.string().min(3).max(50).required().messages({
@@ -19,7 +20,7 @@ const schemaRegister = Joi.object({
     "string.max": "Le prénom ne peut pas dépasser {#limit} caractères.",
   }),
   address: Joi.string()
-   //.pattern(new RegExp("^[0-9]+\\s+[a-zA-Z]+\\s+[a-zA-Z\\s]+\\s+[0-9]{5}$"))
+    //.pattern(new RegExp("^[0-9]+\\s+[a-zA-Z]+\\s+[a-zA-Z\\s]+\\s+[0-9]{5}$"))
     .required()
     .messages({
       //"string.empty": "L'adresse est requis.",
@@ -53,11 +54,13 @@ const schemaRegister = Joi.object({
   }),
   emailToken: Joi.string().allow(null, ""),
   rgpdChecked: Joi.boolean().required().valid(true).messages({
-    "boolean.base": "Vous devez accepter la politique de gestion des données personnelles.",
-    "any.only": "Vous devez accepter la politique de gestion des données personnelles.",
-    "any.required": "Vous devez accepter la politique de gestion des données personnelles.",
-  })
-  
+    "boolean.base":
+      "Vous devez accepter la politique de gestion des données personnelles.",
+    "any.only":
+      "Vous devez accepter la politique de gestion des données personnelles.",
+    "any.required":
+      "Vous devez accepter la politique de gestion des données personnelles.",
+  }),
 });
 
 const schemaUpdateUser = Joi.object({
@@ -832,10 +835,8 @@ exports.register = (
   role = "USER",
   rgpdChecked
 ) => {
-
-    return new Promise((resolve, reject) => {
-
-    let validate  = schemaRegister.validate({
+  return new Promise((resolve, reject) => {
+    let validate = schemaRegister.validate({
       firstName,
       lastName,
       password,
@@ -847,20 +848,21 @@ exports.register = (
     });
 
     if (validate.error) {
-      reject(validate.error.details[0].message);
+      reject({ status: 400, message: validate.error.details[0].message });
     } else {
       db.User.count({ where: { email: email } })
         .then((userCount) => {
           if (userCount !== 0) {
-            reject("Cet email existe déjà");
+            reject({ status: 409, message: "Cet email existe déjà" });
           } else {
             bcrypt.hash(password, 10).then((hashedPassword) => {
               const emailToken = generateConfirmationToken();
               const emailTokenExpiration = new Date();
               emailTokenExpiration.setDate(emailTokenExpiration.getDate() + 1);
-              const allowedRoles = ["USER"]; 
+              const allowedRoles = ["USER"];
               if (!allowedRoles.includes(role)) {
-                return reject("Rôle non autorisé");
+                reject({ status: 401, message: "Unauthorized role" });
+                return;
               }
               db.User.create({
                 firstName: firstName,
@@ -880,17 +882,19 @@ exports.register = (
                   resolve(response);
                 })
                 .catch((error) => {
-                  reject(error);
+                  reject({ status: 500, message: error.message });
                 });
             });
           }
         })
         .catch((error) => {
-          reject("Erreur lors de la vérification de l'existence de l'email");
+          reject({
+            status: 500,
+            message: "Erreur lors de la vérification de l'existence de l'email",
+          });
         });
     }
   });
-  
 };
 
 exports.login = (email, password) => {
@@ -925,10 +929,19 @@ exports.login = (email, password) => {
                 );
               } else {
                 let token = jwt.sign(
-                  { id: user.id ,lastName:user.lastName,firstName:user.firstName,email:user.email,address:user.address,phone:user.phone,role:user.role},config.development.privateKey,
+                  {
+                    id: user.id,
+                    lastName: user.lastName,
+                    firstName: user.firstName,
+                    email: user.email,
+                    address: user.address,
+                    phone: user.phone,
+                    role: user.role,
+                  },
+                  config.development.privateKey,
                   { expiresIn: "1h" }
                 );
-                
+
                 user.update({ failedLoginAttempts: 0 });
                 resolve({
                   token: token,
@@ -2438,8 +2451,7 @@ exports.createUser = ({
   email,
   phone,
   role,
-  rgpdChecked
-  ,
+  rgpdChecked,
 }) => {
   return new Promise((resolve, reject) => {
     let validate = schemaRegister.validate({
@@ -2450,7 +2462,7 @@ exports.createUser = ({
       email,
       phone,
       role,
-      rgpdChecked
+      rgpdChecked,
     });
     if (validate.error) {
       reject(validate.error.details[0].message);
@@ -2493,16 +2505,16 @@ exports.createUser = ({
   });
 };
 exports.getAllUsers = () => {
-    return new Promise((resolve, reject) => {
-      db.User.findAll({
-        where: {
-          deleted: false
-        }
-      })
+  return new Promise((resolve, reject) => {
+    db.User.findAll({
+      where: {
+        deleted: false,
+      },
+    })
       .then((users) => resolve(users))
       .catch((err) => reject(err));
-    });
-  };
+  });
+};
 
 exports.getUserById = (userId) => {
   return new Promise((resolve, reject) => {
@@ -2520,7 +2532,7 @@ exports.getUserById = (userId) => {
 
 exports.updateUser = (
   userId,
-  { firstName, lastName, email, password, address, phone, role ,token}
+  { firstName, lastName, email, password, address, phone, role, token }
 ) => {
   return new Promise((resolve, reject) => {
     const { error } = schemaUpdateUser.validate({
@@ -2535,17 +2547,15 @@ exports.updateUser = (
     if (error) {
       return reject(error.details[0].message);
     }
-     if (role === "USER" || role === "ROLE_STORE_KEEPER") {
-        if (token) {
-            const decoded = jwt.verify(token, config.development.privateKey);
-            if (parseInt(userId) !== parseInt(decoded.id)) {
-                return reject(new Error("Access denied: Forbidden"));
-            }
+    if (role === "USER" || role === "ROLE_STORE_KEEPER") {
+      if (token) {
+        const decoded = jwt.verify(token, config.development.privateKey);
+        if (parseInt(userId) !== parseInt(decoded.id)) {
+          return reject(new Error("Access denied: Forbidden"));
         }
-       
+      }
     }
-    
- 
+
     db.User.findByPk(userId)
       .then((user) => {
         if (!user) {
@@ -2580,44 +2590,43 @@ exports.updateUser = (
   });
 };
 
-exports.deleteUser = (userId,role,token) => {
-    return new Promise((resolve, reject) => {
-      db.User.findByPk(userId)
-        .then((user) => {
-          if (!user) {
-            reject("User not found");
-          } else {
-            if (role === "USER" || role === "ROLE_STORE_KEEPER") {
-                if (token) {
-                    const decoded = jwt.verify(token, config.development.privateKey);
-                    if (parseInt(userId,10) !== parseInt(decoded.id,10)) {
-                        return reject("Access denied: Forbidden");
-                    }
-                }
+exports.deleteUser = (userId, role, token) => {
+  return new Promise((resolve, reject) => {
+    db.User.findByPk(userId)
+      .then((user) => {
+        if (!user) {
+          reject("User not found");
+        } else {
+          if (role === "USER" || role === "ROLE_STORE_KEEPER") {
+            if (token) {
+              const decoded = jwt.verify(token, config.development.privateKey);
+              if (parseInt(userId, 10) !== parseInt(decoded.id, 10)) {
+                return reject("Access denied: Forbidden");
+              }
             }
-            const pseudonym = `deleted_user_${uuidv4()}`;
-  
-            user.firstName = pseudonym;
-            user.lastName = pseudonym;
-            user.address = null;
-            user.email = `${pseudonym}@example.com`;
-            user.phone = null;
-            user.password = "";
-            user.role = null;
-            user.accountConfirmation = false;
-            user.emailToken = null;
-            user.emailTokenExpiration = null;
-            user.resetToken = null;
-            user.resetTokenExpiration = null;
-            user.failedLoginAttempts = 0;
-            user.lastPasswordChange = null;
-            user.lockedUntil = null;
-            user.deleted = true;
-            return user.save();
           }
-        })
-        .then(() => resolve())
-        .catch((err) => reject(err));
-    });
-  };
-  
+          const pseudonym = `deleted_user_${uuidv4()}`;
+
+          user.firstName = pseudonym;
+          user.lastName = pseudonym;
+          user.address = null;
+          user.email = `${pseudonym}@example.com`;
+          user.phone = null;
+          user.password = "";
+          user.role = null;
+          user.accountConfirmation = false;
+          user.emailToken = null;
+          user.emailTokenExpiration = null;
+          user.resetToken = null;
+          user.resetTokenExpiration = null;
+          user.failedLoginAttempts = 0;
+          user.lastPasswordChange = null;
+          user.lockedUntil = null;
+          user.deleted = true;
+          return user.save();
+        }
+      })
+      .then(() => resolve())
+      .catch((err) => reject(err));
+  });
+};
