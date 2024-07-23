@@ -20,7 +20,7 @@ const app = express();
 // Configuration de CORS
 app.use(
   cors({
-    origin: "http://sensvinylo.tech",
+    origin: "http://parfums-esgi.store",
     credentials: true,
   })
 );

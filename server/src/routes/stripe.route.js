@@ -20,8 +20,8 @@ router.post("/create-checkout-session", async (req, res) => {
       })),
       mode: "payment",
       success_url:
-        "http://sensvinylo.tech/api/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "http://sensvinylo.tech/api/cancel",
+        "http://parfums-esgi.store/api/success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "http://parfums-esgi.store/api/cancel",
       metadata: {
         items: JSON.stringify(
           items.map((item) => ({
