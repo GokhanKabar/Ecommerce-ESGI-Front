@@ -57,7 +57,7 @@ const actualDeliveryStatus = {
         <!-- Informations du client -->
         <div class="flex justify-between items-center p-4 rounded">
           <span class="font-bold"
-            >Client : <span class="font-semibold">{{ order.customerName }}</span></span
+            >Client : <span class="font-semibold">{{ order.orderUserName }}</span></span
           >
           <span class="font-bold"
             >Email : <span class="font-semibold">{{ order.customerEmail }}</span></span

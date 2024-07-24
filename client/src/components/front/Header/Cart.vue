@@ -65,6 +65,9 @@ const createCheckoutSession = async () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        firstName: store.state.user.firstName,
+        lastName: store.state.user.lastName,
+        address: store.state.user.address,
         items: cartProducts.value.map((item) => ({
           productId: item.product.id, // Assurez-vous que productId est inclus
           name: item.product.name,
