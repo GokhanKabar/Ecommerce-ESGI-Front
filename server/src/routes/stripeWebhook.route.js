@@ -8,22 +8,10 @@ const OrderController = require("../controllers/order.controller");
 const SequelizeOrder = require("../databases/sequelize/models").Order;
 
 router.post(
-  "/",
-  express.raw({ type: "application/json" }),
+  "/webhook",
+  express.json(), // Remplace express.raw par express.json
   async (req, res) => {
-    const sig = req.headers["stripe-signature"];
-    let event;
-
-    try {
-      event = await stripe.webhooks.constructEvent(
-        req.body,
-        sig,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
-    } catch (err) {
-      console.error("Webhook signature verification failed.", err.message);
-      return res.sendStatus(400);
-    }
+    const event = req.body;
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;

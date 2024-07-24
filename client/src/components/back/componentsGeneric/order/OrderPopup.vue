@@ -312,7 +312,7 @@ try {
                 <span class="ml-1">Non payé</span>
               </span>
               <span v-else-if="order.paymentStatus === 'Refunded'"
-                >Remboursé le : {{ new Date(order.dateUpdate).toLocaleDateString() }}</span
+                >Remboursé le : {{ new Date(order.dateOrder).toLocaleDateString() }}</span
               >
               <span v-else-if="order.paymentStatus === 'Refund requested'"
                 >Demande de remboursement effectué le :

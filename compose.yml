@@ -50,7 +50,7 @@ services:
       - "8080:80"
     environment:
       PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: alikhelifa147
+      MYSQL_ROOT_PASSWORD: mohammad93
 
   mongodb:
     image: mongo
@@ -67,6 +67,7 @@ services:
     image: nginx:latest
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ./certbot/www:/var/www/certbot/:ro

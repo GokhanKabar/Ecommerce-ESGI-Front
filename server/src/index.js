@@ -20,7 +20,7 @@ const app = express();
 // Configuration de CORS
 app.use(
   cors({
-    origin: "http://parfums-esgi.store",
+    origin: "https://parfums-esgi.store",
     credentials: true,
   })
 );
@@ -29,7 +29,7 @@ app.use(express.json()); // For parsing application/json
 app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 
 // Configuration des routes
-app.use("/stripe-webhook", stripeWebhook);
+app.use(stripeWebhook);
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 app.use("/", indexRouter);
 app.use(userRoute);

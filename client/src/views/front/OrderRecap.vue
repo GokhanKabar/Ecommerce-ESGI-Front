@@ -6,7 +6,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import getImagePath from '@/utils/getImagePath'
 import DefaultLayout from '@/components/front/layouts/DefaultLayout.vue'
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || '')
+const stripePromise = loadStripe('pk_test_51MfRFGCMBvQfTrL5zaAYZa6esabVRWnIMj5y6bPWU6l1RGmYTizrgZbA9ZmuhzbhpsSBuUHHd8lUc8KRpmZCZobI00ROPqmaqY')
 
 const showLoginMessage = ref(false)
 
@@ -39,7 +39,7 @@ const createCheckoutSession = async () => {
 
   const stripe = await stripePromise
   const response = await fetch(
-    `http://localhost:8000/stripe/create-checkout-session/${store.state.user.id}`,
+    `https://parfums-esgi.store/api/stripe/create-checkout-session/${store.state.user.id}`,
     {
       method: 'POST',
       headers: {

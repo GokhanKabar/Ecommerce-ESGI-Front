@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripe = require("stripe")("sk_test_51MfRFGCMBvQfTrL5rqhekc6Sye3reRZNvQNoM0Q6u6nbrXIIuyfEQ0DE9ZoECeZ7BooRHFwDawty3eCA2OMH33IL00r1cje0gN");
 
 router.post("/create-checkout-session/:id", async (req, res) => {
   console.log(req.params);
