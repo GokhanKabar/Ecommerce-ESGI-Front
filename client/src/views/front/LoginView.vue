@@ -43,7 +43,7 @@ const login = async () => {
     store.dispatch('setUser', decodedToken);
 
     if (decodedToken.role === "USER") {
-      router.push('/myorders');
+      router.push('/');
     } else if (decodedToken.role === "ADMIN" || decodedToken.role === "ROLE_STORE_KEEPER") {
       router.push('/admin');
     }
