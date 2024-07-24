@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8000';
+const API_URL = 'http://parfums-esgi.store/api';
 
 export default function getImagePath(imageName: string | undefined): string {
   if (!imageName) return '';

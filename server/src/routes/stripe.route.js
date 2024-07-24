@@ -20,8 +20,8 @@ router.post("/create-checkout-session/:id", async (req, res) => {
         quantity: item.quantity,
       })),
       mode: "payment",
-      success_url: "http://localhost:5173/success",
-      cancel_url: "http://localhost:5173/cancel",
+      success_url: "http://parfums-esgi.store/success",
+      cancel_url: "http://parfums-esgi.store/cancel",
       metadata: {
         userId: req.params.id,
         name: req.body.firstName + " " + req.body.lastName,

@@ -20,10 +20,13 @@ const app = express();
 // Configuration de CORS
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "http://parfums-esgi.store",
     credentials: true,
   })
 );
+
+app.use(express.json()); // For parsing application/json
+app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 
 // Configuration des routes
 app.use("/stripe-webhook", stripeWebhook);
