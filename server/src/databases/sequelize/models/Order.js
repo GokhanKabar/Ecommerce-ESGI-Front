@@ -31,6 +31,30 @@ module.exports = (sequelize) => {
           len: [1, 50],
         },
       },
+      order_userName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          len: [1, 200],
+        },
+      },
+      order_address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          len: [1, 200],
+        },
+      },
+      order_email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          len: [1, 200],
+        },
+      },
       payment_status: {
         type: DataTypes.STRING,
         allowNull: false,

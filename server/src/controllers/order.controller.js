@@ -19,6 +19,7 @@ exports.createOrder = async (req, res) => {
       const discountedPrice = (price - (price * (promotion / 100))).toFixed(2);
       return acc + (parseFloat(discountedPrice) * quantity);
     }, 0);
+    const user = await User.findByPk(userId);
 
     // Créer la commande
     const order = await Order.create({
@@ -31,6 +32,9 @@ exports.createOrder = async (req, res) => {
       date_creation: new Date(),
       date_update: new Date(),
       order_status: "Confirmed",
+      order_address:user.address,
+      order_userName:user.firstName +' '+user.lastName,
+      order_email:user.email
     });
 
     // Ajouter les produits à la commande
@@ -227,7 +231,11 @@ exports.getOrderDetails = async (req, res) => {
       orderStatus: order.order_status,
       userId: order.user_id,
       customerName: `${order.User.firstName} ${order.User.lastName}`,
+      orderName: order.order_userName,
       customerEmail: order.User.email,
+      order_address:order.User.address,
+      order_email:order.order_email,
+      address:order.order_address,
       products: order.Products.map((product) => ({
         orderId: order.id,
         id: product.id,
@@ -244,9 +252,10 @@ exports.getOrderDetails = async (req, res) => {
         image: product.image,
         quantity: product.ProductOrder.quantity,
         totalPrice: (
-          product.ProductOrder.quantity *
-          (product.price - (product.price * product.promotion) / 100).toFixed(2)
-        ).toFixed(2),
+          (
+            product.price -
+            (product.price * product.promotion) / 100
+          ).toFixed(2) * product.ProductOrder.quantity  ),
       })),
     }));
 

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue';
-
-
-
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 const props = defineProps<{
     isVisible: Boolean,
     orderDetails: {
@@ -19,6 +18,83 @@ const confirm = () => {
 const close = () => {
     emit('close');
 };
+
+
+const downloadPDF = async (orders) => {
+
+   const order = orders;
+  try {
+    const doc = new jsPDF();
+
+   
+
+    // Title
+    doc.setFontSize(18);
+    doc.text('Facture', 14, 22);
+
+    // Company details
+    doc.setFontSize(12);
+    doc.text('Parfums Entreprise', 140, 22);
+    doc.text('242 rue Fbg St Antoine, Paris', 140, 30);
+    doc.text('+33 1 23 45 67 89', 140, 38);
+    doc.text('parfumsesgi@contact.store', 140, 46);
+
+    // User details
+    doc.setFontSize(12);
+    doc.text(`Nom complet: ${order.orderName}`, 14, 30);
+    doc.text(`Adresse: ${order.address}`, 14, 38);
+    doc.text(`Email: ${order.order_email}`, 14, 46);
+     // Adding a horizontal line
+     doc.setLineWidth(0.2);
+    doc.line(14, 52, 200, 52);
+    // Order details
+    doc.text(`Numéro de commande: ${order.orderId}`, 14, 68);
+    doc.text(`Date de la commande: ${new Date(order.dateOrder).toLocaleDateString()}`, 14, 76);
+    doc.text(`Statut de la livraison: ${order.deliveryStatus}`, 140, 68);
+    doc.text(`Statut du paiement: ${order.paymentStatus}`, 140, 76);
+
+    // Table headers
+    const head = [['Produit', 'Description', 'Quantité', 'Prix Unitaire', 'Promotion', 'Total']];
+
+    // Table body
+    const body = Array.isArray(order.products) ? order.products.map(product => {
+      const unitPrice = product.price;
+      const quantity = product.quantity;
+      const promotion = product.promotion;
+      const discountedPrice = unitPrice * (1 - promotion / 100);
+      const totalPrice = discountedPrice * quantity;
+
+      return [
+        product.name,
+        product.description,
+        quantity,
+        `${unitPrice.toFixed(2)} €`,
+        `${promotion} %`,
+        `${totalPrice.toFixed(2)} €`,
+      ];
+    }) : [];
+
+    // Adding total row
+    body.push(['', '', '', '', 'Total:', `${order.total.toFixed(2)} €`]);
+
+    // Adding table to the PDF
+    doc.autoTable({
+      head: head,
+      body: body,
+      startY: 92,
+      theme: 'grid',
+      headStyles: { fillColor: [216, 183, 117] },
+      styles: { overflow: 'linebreak' },
+    });
+
+    // Save the PDF
+    doc.save('facture.pdf');
+  } catch (error) {
+    console.error('Erreur lors de la génération du PDF:', error);
+  }
+};
+
+
 
 </script>
 
@@ -181,20 +257,21 @@ const close = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(product, index) in order.products" :key="index">
-                                <td class="border p-2">{{ product.name }}</td>
-                                <td class="border p-2">{{ product.quantity }}</td>
-                                <td class="border p-2">{{ product.discountedPrice }} €</td>
-                                <td class="border p-2">{{ product.concentration }}</td>
-                            </tr>
+                        <tr v-for="(product, index) in order.products" :key="index">
+                            <td class="border p-2">{{ product.name }}</td>
+                            <td class="border p-2">{{ product.quantity }}</td>
+                            <td class="border p-2">{{ product.discountedPrice }} €</td>
+                            <td class="border p-2">{{ product.concentration }}</td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
-
+                <button @click="downloadPDF(order)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded">Télécharger la facture</button>
             </div>
 
             <div class="buttons">
-
+                
+           
                 <button @click="" class="bg-red text-white rounded mx-6 px-5 py-2">Annuler et Rembourser</button>
                 <button @click="close" class="bg-[#D8B775] text-white rounded px-5 py-2">Fermer</button>
 
