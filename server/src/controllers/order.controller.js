@@ -200,7 +200,7 @@ exports.getOrderDetails = async (req, res) => {
         },
         {
           model: User,
-          attributes: ["firstName", "lastName", "email"], // Sélectionnez les champs que vous voulez récupérer
+          attributes: ["firstName", "lastName", "email","address"], // Sélectionnez les champs que vous voulez récupérer
         },
       ],
     });
@@ -215,13 +215,13 @@ exports.getOrderDetails = async (req, res) => {
       paymentStatus: order.payment_status,
       total: order.total,
       dateOrder: order.date_order,
-      dateUpdate: order.date_update,
       orderStatus: order.order_status,
       userId: order.user_id,
-      orderUserName: order.order_user_name,
-      orderAddress: order.order_address,
       customerName: `${order.User.firstName} ${order.User.lastName}`,
       customerEmail: order.User.email,
+      orderUserName: order.order_user_name,
+      orderAddress: order.order_address,
+      address:order.order_address,
       products: order.Products.map((product) => ({
         orderId: order.id,
         id: product.id,
@@ -238,9 +238,10 @@ exports.getOrderDetails = async (req, res) => {
         image: product.image,
         quantity: product.ProductOrder.quantity,
         totalPrice: (
-          product.ProductOrder.quantity *
-          (product.price - (product.price * product.promotion) / 100).toFixed(2)
-        ).toFixed(2),
+          (
+            product.price -
+            (product.price * product.promotion) / 100
+          ).toFixed(2) * product.ProductOrder.quantity  ),
       })),
     }));
 
@@ -250,6 +251,7 @@ exports.getOrderDetails = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 exports.updateOrder = async (req, res) => {
   const { id: orderId } = req.params; // Get order ID from request params

@@ -90,45 +90,92 @@ const actualDeliveryStatus = {
   'Refund requested': 'Demande de remboursement'
 }
 
-const downloadPDF = (order) => {
-  const doc = new jsPDF()
+const fetchOrderDetails= async(order)=> {
+  try {
+    const response = await OrderService.getOrderDetails(order.orderId);
+    downloadPDF (response);
+  } catch (error) {
+    console.error('Error fetching order details:', error);
+  }
 
-  // Title
-  doc.setFontSize(18)
-  doc.text('Facture', 14, 22)
-
-  // Order details
-  doc.setFontSize(12)
-  doc.text(`Numéro de commande: ${order.orderId}`, 14, 32)
-  doc.text(`Date de la commande: ${new Date(order.dateOrder).toLocaleDateString()}`, 14, 40)
-  doc.text(`Statut de la livraison: ${order.deliveryStatus}`, 14, 48)
-  doc.text(`Statut du paiement: ${order.paymentStatus}`, 14, 56)
-  doc.text(`Total: ${order.total} €`, 14, 64)
-
-  // Table headers
-  const head = [['Produit', 'Quantité', 'Prix Unitaire', 'Promotion']]
-
-  // Table body
-  const body = order.products.map((product) => [
-    product.name,
-    product.quantity,
-    `${product.price} €`,
-    `${product.promotion} %`
-  ])
-
-  // Adding table to the PDF
-  doc.autoTable({
-    head: head,
-    body: body,
-    startY: 72,
-    theme: 'grid',
-    headStyles: { fillColor: [216, 183, 117] },
-    styles: { overflow: 'linebreak' }
-  })
-
-  // Save the PDF
-  doc.save('facture.pdf')
 }
+
+const downloadPDF = async (orders) => {
+  // Vérifiez si orders est un tableau et non vide
+  if (!Array.isArray(orders) || orders.length === 0) {
+    console.error('Les données de la commande sont invalides');
+    return;
+  }
+
+  // Prendre la première commande du tableau
+  const order = orders[0];
+  try {
+    const doc = new jsPDF();
+
+    // Title
+    doc.setFontSize(18);
+    doc.text('Facture', 14, 22);
+
+    // Company details
+    doc.setFontSize(12);
+    doc.text('Parfums Entreprise', 140, 22);
+    doc.text('242 rue Fbg St Antoine, Paris', 140, 30);
+    doc.text('+33 1 23 45 67 89', 140, 38);
+    doc.text('parfumsesgi@contact.store', 140, 46);
+
+     // User details
+    doc.setFontSize(12);
+    doc.text(`Nom complet: ${order.orderName}`, 14, 30);
+    doc.text(`Adresse: ${order.address}`, 14, 38);
+    
+     // Adding a horizontal line
+    doc.setLineWidth(0.2);
+    doc.line(14, 52, 200, 52);
+    // Order details
+    doc.text(`Numéro de commande: ${order.orderId}`, 14, 68);
+    doc.text(`Date de la commande: ${new Date(order.dateOrder).toLocaleDateString()}`, 14, 76);
+    doc.text(`Statut de la livraison: ${order.deliveryStatus}`, 140, 68);
+    doc.text(`Statut du paiement: ${order.paymentStatus}`, 140, 76);
+    // Table headers
+    const head = [['Produit', 'Description', 'Quantité', 'Prix Unitaire', 'Promotion', 'Total']];
+
+    // Table body
+    const body = Array.isArray(order.products) ? order.products.map(product => {
+      const unitPrice = product.price;
+      const quantity = product.quantity;
+      const promotion = product.promotion;
+      const discountedPrice = unitPrice * (1 - promotion / 100);
+      const totalPrice = discountedPrice * quantity;
+
+      return [
+        product.name,
+        product.description,
+        quantity,
+        `${unitPrice.toFixed(2)} €`,
+        `${promotion} %`,
+        `${totalPrice.toFixed(2)} €`,
+      ];
+    }) : [];
+
+    // Adding total row
+    body.push(['', '', '', '', 'Total:', `${order.total.toFixed(2)} €`]);
+
+    // Adding table to the PDF
+    doc.autoTable({
+      head: head,
+      body: body,
+      startY: 92,
+      theme: 'grid',
+      headStyles: { fillColor: [216, 183, 117] },
+      styles: { overflow: 'linebreak' },
+    });
+
+    // Save the PDF
+    doc.save('facture.pdf');
+  } catch (error) {
+    console.error('Erreur lors de la génération du PDF:', error);
+  }
+};
 
 const handleRefundRequest = async (orderId: number) => {
   try {
@@ -424,9 +471,7 @@ const handleRefundRequest = async (orderId: number) => {
             >
               Demander un remboursement
             </button>
-            <button @click="downloadPDF(order)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded">
-              Télécharger la facture
-            </button>
+            <button @click="fetchOrderDetails(order)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded">Télécharger la facture</button>
             <ButtonDefault
               @click="reorder(order)"
               label="Commander à nouveau"
