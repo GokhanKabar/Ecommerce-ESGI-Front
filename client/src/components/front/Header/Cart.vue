@@ -45,7 +45,11 @@ const totalPrice = computed(() => {
     .toFixed(2)
 })
 
-const totalProducts = computed(() => store.state.cart.length)
+const totalProducts = computed(() => {
+  return store.state.cart.reduce((total, item) => {
+    return total + item.product.quantity;
+  }, 0);
+});
 const router = useRouter()
 
 const createCheckoutSession = async () => {
@@ -90,6 +94,20 @@ const createCheckoutSession = async () => {
     console.error(result.error.message)
   }
 }
+
+
+const CheckoutCart = async () => {
+  showLoginMessage.value = false
+
+  if (!isUserLoggedIn.value) {
+    showLoginMessage.value = true
+    return
+  }
+
+  // Redirection vers la page OrderRecap
+  router.push('/OrderRecap')
+}
+
 </script>
 
 <template>
@@ -170,7 +188,7 @@ const createCheckoutSession = async () => {
           </div>
           <div class="px-6 py-4">
             <button
-              @click="createCheckoutSession"
+              @click="CheckoutCart()"
               :disabled="!cartProducts.length"
               class="w-full py-2 bg-[#D8B775] text-white font-semibold rounded"
             >

@@ -20,6 +20,7 @@ import ForgatPassword from '@/views/front/ForgatPassword.vue'
 import store from '@/store/store'
 import ProductDetail from '@/views/front/ProductDetail.vue'
 import Success from '@/views/front/Success.vue'
+import OrderRecap from '@/views/front/OrderRecap.vue'
 import Cancel from '@/views/front/Cancel.vue'
 import ProfilView from '@/views/back/ProfilView.vue'
 import NotFound from '@/errors/NotFound.vue'
@@ -163,6 +164,12 @@ const router = createRouter({
       name: 'Success',
       component: Success,
       meta: { title: 'Success | Tendance Parfums' }
+    },
+    {
+      path: '/OrderRecap',
+      name: 'OrderRecap',
+      component: OrderRecap,
+      meta: { title: 'Recapitulatif de la commande', needsAuth: true  }
     },
     {
       path: '/cancel',

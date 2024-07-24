@@ -43,8 +43,21 @@ const formatPrice = (price) => {
 const calculateDiscountedPrice = (price, promotion) => {
   return price - (price * promotion) / 100
 }
+
 const userLink = computed(() => {
-  return store.state.isUserLoggedIn ? '/admin' : '/connexion'
+  if (!store.state.isUserLoggedIn) {
+    return '/connexion'
+  }
+  const role = store.state.user.role
+  switch (role) {
+    case 'ADMIN':
+    case 'ROLE_STORE_KEEPER':
+      return '/admin'
+    case 'USER':
+      return '/myorders'
+    default:
+      return '/'
+  }
 })
 
 </script>
