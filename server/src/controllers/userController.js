@@ -2591,42 +2591,43 @@ exports.updateUser = (
 };
 
 exports.deleteUser = (userId, role, token) => {
-  return new Promise((resolve, reject) => {
-    db.User.findByPk(userId)
-      .then((user) => {
-        if (!user) {
-          reject("User not found");
-        } else {
-          if (role === "USER" || role === "ROLE_STORE_KEEPER") {
-            if (token) {
-              const decoded = jwt.verify(token, config.development.privateKey);
-              if (parseInt(userId, 10) !== parseInt(decoded.id, 10)) {
-                return reject("Access denied: Forbidden");
+    return new Promise((resolve, reject) => {
+      db.User.findByPk(userId)
+        .then((user) => {
+          if (!user) {
+            reject("User not found");
+          } else {
+            if (role === "USER" || role === "ROLE_STORE_KEEPER") {
+              if (token) {
+                const decoded = jwt.verify(token, config.development.privateKey);
+                if (parseInt(userId, 10) !== parseInt(decoded.id, 10)) {
+                  return reject("Access denied: Forbidden");
+                }
               }
             }
+            
+            const pseudonym = `utilisateur_supprime`;
+  
+            user.firstName = pseudonym;
+            user.lastName = pseudonym;
+            user.address = null;
+            user.email = `${pseudonym}@example.com`;
+            user.phone = null;
+            user.password = "";
+            user.role = null;
+            user.accountConfirmation = false;
+            user.emailToken = null;
+            user.emailTokenExpiration = null;
+            user.resetToken = null;
+            user.resetTokenExpiration = null;
+            user.failedLoginAttempts = 0;
+            user.lastPasswordChange = null;
+            user.lockedUntil = null;
+            user.deleted = true;
+            return user.save();
           }
-          const pseudonym = `deleted_user_${uuidv4()}`;
-
-          user.firstName = pseudonym;
-          user.lastName = pseudonym;
-          user.address = null;
-          user.email = `${pseudonym}@example.com`;
-          user.phone = null;
-          user.password = "";
-          user.role = null;
-          user.accountConfirmation = false;
-          user.emailToken = null;
-          user.emailTokenExpiration = null;
-          user.resetToken = null;
-          user.resetTokenExpiration = null;
-          user.failedLoginAttempts = 0;
-          user.lastPasswordChange = null;
-          user.lockedUntil = null;
-          user.deleted = true;
-          return user.save();
-        }
-      })
-      .then(() => resolve())
-      .catch((err) => reject(err));
-  });
-};
+        })
+        .then(() => resolve())
+        .catch((err) => reject(err));
+    });
+  };
