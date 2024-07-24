@@ -9,7 +9,7 @@ const {
 exports.createOrder = async (data) => {
   try {
     // Extraire les données de la requête
-    const { userId, items, total } = data.metadata;
+    const { userId, items, total, name, address } = data.metadata;
     const itemsParse = JSON.parse(items);
 
     // Créer la commande
@@ -22,8 +22,8 @@ exports.createOrder = async (data) => {
       date_creation: new Date(),
       date_update: new Date(),
       order_status: "Confirmed",
-      order_user_name: data.shipping.name,
-      order_address: data.shipping.address,
+      order_user_name: name,
+      order_address: address,
     });
 
     // Ajouter les produits à la commande
@@ -218,6 +218,8 @@ exports.getOrderDetails = async (req, res) => {
       dateUpdate: order.date_update,
       orderStatus: order.order_status,
       userId: order.user_id,
+      orderUserName: order.order_user_name,
+      orderAddress: order.order_address,
       customerName: `${order.User.firstName} ${order.User.lastName}`,
       customerEmail: order.User.email,
       products: order.Products.map((product) => ({

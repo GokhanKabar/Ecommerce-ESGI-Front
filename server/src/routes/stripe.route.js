@@ -24,6 +24,8 @@ router.post("/create-checkout-session/:id", async (req, res) => {
       cancel_url: "http://localhost:5173/cancel",
       metadata: {
         userId: req.params.id,
+        name: req.body.firstName + " " + req.body.lastName,
+        address: req.body.address,
         total: items.reduce(
           (acc, item) => acc + item.amount * item.quantity,
           0
