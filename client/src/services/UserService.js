@@ -23,7 +23,7 @@ export default {
   updateUser(userId, updatedUserData) {
     if (!isAdmin() && !isUser() && !isStoreKeeper()) throw new Error('Access denied:Unauthorized ');
      return Api().put(`users/${userId}`, updatedUserData);
-  },
+  }, 
   
   deleteUser(userId) {
     if (!isAdmin() && !isUser() && !isStoreKeeper()) throw new Error('Access denied: Unauthorized');

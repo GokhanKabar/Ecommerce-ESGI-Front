@@ -9,7 +9,9 @@ interface CardItem {
   growthRate: number;
 }
 const isLoading = ref(true)
-
+const replaceInfinityWithZero = (value: number): number => {
+  return isFinite(value) ? value : 0;
+}
 const cardItems = ref<CardItem[]>([]);
 onMounted(() => {
 const fetchStatistics = async () => {
@@ -20,10 +22,11 @@ const fetchStatistics = async () => {
     const totalOrders = data.totalOrders ?? 0;
     const totalProducts = data.totalProducts ?? 0;
     const totalUsers = data.totalUsers ?? 0;
-    const userGrowthRate = ((totalUsers - data.previousUsers) / data.previousUsers) * 100;
-    const productGrowthRate = ((data.totalProducts - data.previousProducts) / data.previousProducts) * 100;
-    const orderGrowthRate = ((data.totalOrders - data.previousOrders) / data.previousOrders) * 100;
-    const revenueGrowthRate = ((data.totalRevenue - data.previousRevenue) / data.previousRevenue) * 100;
+    const userGrowthRate = replaceInfinityWithZero(((totalUsers - data.previousUsers) / data.previousUsers) * 100);
+      const productGrowthRate = replaceInfinityWithZero(((totalProducts - data.previousProducts) / data.previousProducts) * 100);
+      const orderGrowthRate = replaceInfinityWithZero(((totalOrders - data.previousOrders) / data.previousOrders) * 100);
+      const revenueGrowthRate = replaceInfinityWithZero(((data.totalRevenue - data.previousRevenue) / data.previousRevenue) * 100);
+
     cardItems.value = [{
     icon: `<svg
           class="fill-primary "
@@ -38,7 +41,7 @@ const fetchStatistics = async () => {
         </svg>`,
     title: 'Total Profit',
     total: `${totalRevenue} €`,
-    growthRate: revenueGrowthRate.toFixed(2)
+    growthRate: 0
   },
   {
     icon: `<svg
@@ -64,7 +67,7 @@ const fetchStatistics = async () => {
           </svg>`,
     title: 'Total commandes',
     total:  `${totalOrders}`,
-    growthRate: orderGrowthRate.toFixed(2)
+    growthRate: 0
   },
   {
     icon: `<svg
@@ -86,7 +89,7 @@ const fetchStatistics = async () => {
           </svg>`,
     title: 'Total Produits',
     total: totalProducts,
-    growthRate: productGrowthRate.toFixed(2)
+    growthRate: 0
   },
   {
     icon: `<svg

@@ -1,12 +1,13 @@
 const { Op, fn, col, literal } = require('sequelize');
 const { User, Product, Order } = require('../databases/sequelize/models');
 
+
 exports.getTotals = async (req, res) => {
     try {
         const totalUsers = await User.count();
         const totalProducts = await Product.count();
         const totalOrders = await Order.count();
-        const totalRevenue = await Order.sum('total');
+        const totalRevenue = parseFloat(await Order.sum('total')).toFixed(2);
 
         const startOfLastMonth = new Date();
         startOfLastMonth.setMonth(startOfLastMonth.getMonth() - 1, 1);
@@ -25,9 +26,9 @@ exports.getTotals = async (req, res) => {
         const previousOrders = await Order.count({
             where: { createdAt: { [Op.between]: [startOfLastMonth, endOfLastMonth] } }
         });
-        const previousRevenue = await Order.sum('total', {
+        const previousRevenue = parseFloat(await Order.sum('total', {
             where: { createdAt: { [Op.between]: [startOfLastMonth, endOfLastMonth] } }
-        });
+        })).toFixed(2);
 
         const yearStart = new Date();
         yearStart.setMonth(0, 1);
@@ -59,7 +60,7 @@ exports.getTotals = async (req, res) => {
             const monthIndex = parseInt(month, 10) - 1; 
 
             if (monthIndex >= 0 && monthIndex < 12) {
-                seriesData.revenue[monthIndex] = parseFloat(record.dataValues.totalRevenue) || 0;
+                seriesData.revenue[monthIndex] = parseFloat(record.dataValues.totalRevenue).toFixed(2) || 0;
                 seriesData.orders[monthIndex] = parseInt(record.dataValues.totalOrders) || 0;
             } else {
                 console.error(`Index de mois hors de portée: ${monthIndex}`);
@@ -98,7 +99,7 @@ exports.getTotals = async (req, res) => {
                 const dayDate = new Date(dayValue);
                 const dayIndex = dayDate.getDay();
                 dailyLabels.push(days[dayIndex]);
-                dailySeries.revenue.push(parseFloat(record.dataValues.totalRevenue) || 0);
+                dailySeries.revenue.push(parseFloat(record.dataValues.totalRevenue).toFixed(2) || 0);
                 dailySeries.orders.push(parseInt(record.dataValues.totalOrders) || 0);
             } else {
                 console.error('Jour de l\'enregistrement est indéfini:', record);
