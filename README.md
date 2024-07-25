@@ -8,8 +8,8 @@ akhelifa7@myges.fr
 gokhankabar@hotmail.fr
 ### Mohammad GONS SAIB :
 mohagonssaib@gmail.com
-
-
+### Ilyes KABRINE 
+ilyeskabrine0@gmail.com
 
 ### Fonctionnalités ALI khelifa
 ##### Remarque : j'ai deux  commits qui ne sont pas signés au début, sans faire attention. 
@@ -52,6 +52,21 @@ mohagonssaib@gmail.com
 20. Page contact front.
 21. Page profil.
 
+### Fonctionnalités Ilyes KABRINE
+1. Modélisation de la base de données 
+2. Création du model Order et l'association product_order (sequelize)
+3. Gestion de panier Front et Back
+4. Gestion des commandes CRUD 
+5. La création de la commande aprés la validation du paiement
+6. La fonctionnalité commander à nouveau
+7. Page mes commandes coté Client 
+8. Page commandes coté Admin
+9. Affichage du détails de la commande coté admin
+10. Création des composants (Cart,OrderCard=>order/ProductCard,OrderPopup,cardPerfumePromos).
+11. Génération de la facture coté client et coté admin
+12. Page récapitulatif de la commande avant le paiement
+13. Création de deux middlewares pour vérifier les permissions le l'utilisateur par rapport à la commande 
+14. Sécurisation de toutes les API des commandes
 
 ### Fonctionnalités Gokhan Kabar:
 1. Gestion d’alerte par mail (Front + Back)
