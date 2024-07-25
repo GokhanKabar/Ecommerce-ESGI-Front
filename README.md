@@ -47,7 +47,7 @@ mohagonssaib@gmail.com
 14. CRUD USER.
 15. Middlewares pour check authentification et role .
 16. cookies pop up .
-17. Page marque front back .
+17. Page marque front-back (récupérer toutes les marques triées par ordre alphabétique). 
 19. Statistique front back.
 20. Page contact front.
 21. Page profil.
@@ -71,6 +71,7 @@ les respecter
 - CRUD Marques
 - Sécurisation API produits,familles,marques
 - Upload image (back + front)
+- Api contact service
 4. Deploiement prod (branch prd)
 - mise en place de nginx sur docker
 - mise en place du certificat ssl
