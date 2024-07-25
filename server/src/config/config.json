@@ -1,0 +1,24 @@
+{
+  "development": {
+    "username": "me",
+    "password": "ali123",
+    "database": "ecommercedb",
+    "host": "db",
+    "dialect": "mysql",
+    "privateKey": "5F7bZ8s1EeU3rG5hT2iN9fP6dA4cV0qL3mK1oJ7wXpR4nY6t"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "ecommerceDB",
+    "host": "db",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "ecommerceDB",
+    "host": "db",
+    "dialect": "mysql"
+  }
+}

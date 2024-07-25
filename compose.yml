@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   client:
-    image: node:20.0.0-alpine
+    image: node:21.0.0-alpine
     user: node
     working_dir: /home/node
     command: sh -c "npm install && npm run dev"
@@ -12,7 +12,7 @@ services:
       - ./client:/home/node
 
   server:
-    image: node:20.0.0-alpine
+    image: node:21.0.0-alpine
     user: node
     tty: true
     stdin_open: true
@@ -24,4 +24,46 @@ services:
     volumes:
       - ./server:/home/node
     environment:
-      - HOST=0.0.0.0  
+      - HOST=0.0.0.0
+      - MONGO_URL=mongodb://root:password@mongodb:27017/app?authSource=admin
+    depends_on:
+      - db
+      - mongodb
+
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ecommercedb
+      MYSQL_USER: me
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    command: --pid-file=/var/lib/mysql/mysql.pid
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root
+
+  mongodb:
+    image: mongo
+    ports:
+      - 127.0.0.1:27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - db-data:/data/db
+      - ./mongo/data:/home/data
+    working_dir: /home/data
+
+volumes:
+  mysql-data: {}
+  db-data: {}

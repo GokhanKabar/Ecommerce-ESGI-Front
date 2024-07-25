@@ -1,6 +1,8 @@
-import Router from "express";
-import { HelloController } from "../controllers/helloController.js";
+const { Router } = require("express");
+const { HelloController } = require("../controllers/helloController.js");
 
-export const indexRouter = Router();
+const indexRouter = Router();
 
 indexRouter.get("/", HelloController.index);
+
+module.exports = { indexRouter };
